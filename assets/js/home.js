@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const featuredGrid = document.getElementById('featured-apps-grid');
 
     // You can define which apps to feature here by their title
-    const featuredAppTitles = ["Sample App 1", "Sample App 2"]; // Add the titles of your best apps
+    const featuredAppTitles = ["Fuel Calculator", "Global TV"]; // Add the titles of your best apps
 
     const featuredApps = apps.filter(app => featuredAppTitles.includes(app.title));
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3 class="text-xl font-bold mt-4">${app.title}</h3>
                     <p class="mt-2 h-16 overflow-hidden">${app.description}</p>
                     <div class="mt-4">
-                        <a href="apps/app.html?app=${appFileName}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        <a href="/apps/app.html?app=${appFileName}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             View App
                         </a>
                     </div>
