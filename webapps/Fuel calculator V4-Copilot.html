@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nexa:wght@700&display=swap');
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3f4f6;
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        h2 {
+            text-align: center;
+            color: #0070C0;
+            font-family: 'Nexa', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .input-group, .output-group {
+            margin-bottom: 15px;
+        }
+        .input-group label, .output-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0070C0;
+        }
+        .input-group input, .input-group select, .output-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            color: #0070C0;
+        }
+        .output-group div {
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .red {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            background-color: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+            }
+            button {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Fuel Calculator</h2>
+        <div class="input-group">
+            <label for="unit">Unit of Measure</label>
+            <select id="unit">
+                <option value="metric">Metric</option>
+                <option value="imperial">Imperial</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="fuel">Fuel in Tank</label>
+            <input type="number" id="fuel" placeholder="Liters/Gallons">
+        </div>
+        <div class="input-group">
+            <label for="distance">Distance to Travel</label>
+            <input type="number" id="distance" placeholder="Kilometers/Miles">
+        </div>
+        <div class="input-group">
+            <label for="cost">Fuel Cost per Liter</label>
+            <input type="number" id="cost" placeholder="Cost per Liter">
+        </div>
+        <div class="input-group">
+            <label for="efficiency">Fuel Efficiency</label>
+            <input type="number" id="efficiency" placeholder="Km/L or Miles/Gallon">
+        </div>
+        <div class="input-group">
+            <label for="speed">Average Driving Speed</label>
+            <input type="number" id="speed" placeholder="Km/h or Miles/h">
+        </div>
+        <div class="input-group">
+            <label for="toll">Toll Charges (if applicable)</label>
+            <input type="number" id="toll" placeholder="Toll Charges">
+        </div>
+        <button onclick="calculate()">Calculate</button>
+        <div class="output-group">
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const unit = document.getElementById('unit').value;
+            const fuel = parseFloat(document.getElementById('fuel').value);
+            const distance = parseFloat(document.getElementById('distance').value);
+            const cost = parseFloat(document.getElementById('cost').value);
+            const efficiency = parseFloat(document.getElementById('efficiency').value);
+            const speed = parseFloat(document.getElementById('speed').value);
+            const toll = parseFloat(document.getElementById('toll').value) || 0;
+
+            let fuelRequired = distance / efficiency;
+            let additionalFuelRequired = fuelRequired - fuel;
+            let costAdditionalFuel = additionalFuelRequired > 0 ? additionalFuelRequired * cost : 0;
+            if (additionalFuelRequired <= 0) {
+                additionalFuelRequired = 0;
+            }
+            let totalFuelCost = fuelRequired * cost;
+            let costPerDistance = totalFuelCost / distance;
+            let totalTime = distance / speed;
+            let totalCost = totalFuelCost + toll;
+
+            // Formatting output
+            let additionalFuelClass = additionalFuelRequired > 0 ? 'red' : '';
+            let costAdditionalFuelText = additionalFuelRequired > 0 ? costAdditionalFuel.toFixed(2) : '0';
+
+            let outputHtml = `
+                <div><strong>Fuel Required:</strong> ${fuelRequired.toFixed(2)} ${unit === 'metric' ? 'Liters' : 'Gallons'}</div>
+                <div><strong>Distance Covered with Fuel:</strong> ${(fuel * efficiency).toFixed(2)} ${unit === 'metric' ? 'Km' : 'Miles'}</div>
+                <div class="${additionalFuelClass}"><strong>Additional Fuel Required:</strong> ${additionalFuelRequired.toFixed(2)} ${unit === 'metric' ? 'Liters' : 'Gallons'}</div>
+                <div><strong>Cost of Additional Fuel:</strong> $${costAdditionalFuelText}</div>
+                <div><strong>Total Fuel Cost:</strong> $${totalFuelCost.toFixed(2)}</div>
+                <div><strong>Cost per ${unit === 'metric' ? 'Km' : 'Mile'}:</strong> $${costPerDistance.toFixed(2)}</div>
+                <div><strong>Total Distance in ${unit === 'metric' ? 'Miles' : 'Km'}:</strong> ${(unit === 'metric' ? (distance / 1.609).toFixed(2) : (distance * 1.609).toFixed(2))}</div>
+                <div><strong>Total Fuel Required in ${unit === 'metric' ? 'Gallons' : 'Liters'}:</strong> ${(unit === 'metric' ? (fuelRequired / 3.785).toFixed(2) : (fuelRequired * 3.785).toFixed(2))}</div>
+                <div><strong>Total Trip Duration:</strong> ${Math.floor(totalTime)}:${Math.round((totalTime % 1) * 60).toString().padStart(2, '0')} HH:MM</div>
+                <div><strong>Total Trip Cost:</strong> $${totalCost.toFixed(2)}</div>
+            `;
+
+            document.getElementById('output').innerHTML = outputHtml;
+        }
+    </script>
+</body>
+</html>

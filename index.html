@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <header class="container mx-auto px-4 py-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">MyPortfolio</h1>
+        <nav class="flex-grow text-center">
+            <a href="#about" class="mr-4 font-bold">About</a>
+            <a href="apps/index.html" class="mr-4 font-bold">WebApps</a>
+            <a href="#contact" class="font-bold">Contact</a>
+        </nav>
+
+        
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" value="" id="theme-toggle" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300 peer-checked:text-blue-600">Dark</span>
+            <span class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300 peer-checked:hidden">Light</span>
+        </label>
+    </header>
+
+    
+
+    
+
+    <main class="container mx-auto px-4 py-6">
+        <!-- Hero Section -->
+        <section class="text-center my-12">
+            <h2 class="text-5xl font-bold">My-Apps</h2>
+            <p class="mt-4 text-xl">Building apps using AI tools is my new hobby. Explore my work.</p>
+            </section>
+
+        <!-- Featured Projects -->
+        <section id="featured-projects" class="my-12">
+            <h3 class="text-3xl font-bold text-center mb-8"></h3>
+            <div id="featured-apps-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Featured apps will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="my-4 py-12">
+            <h3 class="text-3xl font-bold text-center mb-8">About Me</h3>
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="md:w-1/3 text-center">
+                    <img src="C:\Users\mahes\assets\images\MHT.webp" alt="Your Name" class="rounded-full w-64 h-64 mx-auto">
+                    <h4 class="text-2xl font-bold mt-4">Thakkar</h4>
+                    <p class="text-lg"></p>
+                </div>
+                <div class="md:w-2/3">
+                    <p class="text-lg mb-4">Welcome to My-Apps Gallery!
+Thank you for visiting my website! Here, you’ll find a collection of web applications I created using GPT technology—no manual coding involved. These apps are the result of my experimental journey of using prompt engineering, vibe coding and exploring AI tools, and I am thrilled to share them with you.I hope you enjoy using these applications as much as I enjoyed building them. Stay tuned as I continue to delve deeper into the fascinating world of AI and share my discoveries along the way.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Overview -->
+        <section id="skills" class="my-12 bg-gray-100 dark:bg-gray-800 py-12 rounded-lg">
+            <h3 class="text-3xl font-bold text-center mb-8">Core Technologies</h3>
+            <div class="flex justify-center flex-wrap gap-8 px-4">
+		<span class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-full font-semibold">Prompt Engineering</span>
+                <span class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-full font-semibold">Vibe coding</span>
+		<span class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-full font-semibold">Gemini</span>
+                <span class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-full font-semibold">ChatGPT</span>
+                <span class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-full font-semibold">Claude</span>
+                <span class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-full font-semibold">DeepSeek</span>
+              </div>
+            <div class="text-center mt-8">
+                <a href="apps/index.html" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full">
+                    View All 90+ WebApps
+                </a>
+            </div>
+        </section>
+
+        <!-- Quick Statistics -->
+        <section id="stats" class="my-12 text-center">
+            <div class="flex justify-around">
+                <div>
+                    <p class="text-4xl font-bold">90+</p>
+                    <p>WebApps</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold">5+</p>
+                    <p>Core Technologies</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold">90</p>
+                    <p>Days of Coding</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="my-12 py-12 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <h3 class="text-3xl font-bold text-center mb-8">Contact & Collaboration</h3>
+            <div class="w-full max-w-2xl mx-auto px-4">
+                <p class="text-center mb-8">Thank you for stopping by! Your visit truly matters, I am constantly working to enhance WebApp collection, and user experience is very important. Your feedback helps me understand what I am doing right, where I can improve app quality, and what new types of apps you would like to see next. Your feedback is truly appreciated.</p>
+                <form action="https://formspree.io/f/mzzgqzry" method="POST" class="space-y-4">
+                    <div>
+                        <label for="name" class="block mb-2">Name</label>
+                        <input type="text" id="name" name="name" class="w-full p-2 rounded bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
+                    </div>
+                    <div>
+                        <label for="email" class="block mb-2">Email</label>
+                        <input type="email" id="email" name="email" class="w-full p-2 rounded bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
+                    </div>
+                    <div>
+                        <label for="message" class="block mb-2">Message</label>
+                        <textarea id="message" name="message" rows="4" class="w-full p-2 rounded bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full">Send Message</button>
+                    </div>
+                </form>
+                <div class="text-center mt-8">
+                    <p class="mb-2">You can also find me on:</p>
+                    <a href="#" class="text-blue-500 hover:underline mr-4">GitHub</a>
+                    <a href="#" class="text-blue-500 hover:underline mr-4">LinkedIn</a>
+                    <a href="#" class="text-blue-500 hover:underline">Youtube</a>
+		</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-6">
+        <p>&copy; 2025 MyPortfolio. All rights reserved.</p>
+    </footer>
+
+    <script src="assets/js/apps.js"></script>
+    <script src="assets/js/home.js"></script>
+    <script src="assets/js/theme.js"></script>
+</body>
+</html>

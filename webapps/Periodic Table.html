@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Periodic Table</title>
+    <style>
+        /* Basic Reset & Dark Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+             scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #1a1a1a; /* Dark background */
+            color: #f0f0f0; /* Light text */
+            padding: 15px; /* Slightly reduced padding */
+            overscroll-behavior: none; /* Prevent pull-to-refresh on mobile */
+             -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #cccccc;
+            font-weight: 300;
+            font-size: clamp(1.5em, 5vw, 2.2em); /* Responsive heading */
+        }
+
+        /* Controls & Legend Area */
+        .controls-legend {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align items to the top */
+            margin: 0 auto 20px auto; /* Center horizontally */
+            max-width: 1200px; /* Match table width */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 20px; /* Space between controls and legend */
+            padding: 0 5px; /* Reduced horizontal padding */
+        }
+
+        .controls {
+           flex: 1 1 250px; /* Allow growing and shrinking, base 250px */
+           min-width: 220px; /* Slightly smaller min-width */
+           text-align: center; /* Center controls on smaller screens when wrapped */
+        }
+
+        .controls label {
+            margin-right: 8px;
+            font-size: 0.9em;
+        }
+
+        .controls select {
+            padding: 6px 10px;
+            border-radius: 4px;
+            background-color: #333;
+            color: #f0f0f0;
+            border: 1px solid #555;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        #legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 15px; /* Row gap, column gap */
+            flex: 2 1 400px; /* Allow growing/shrinking, more base width */
+            justify-content: center; /* Center legend items when wrapped */
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8em;
+        }
+
+        .legend-color-box {
+            width: 15px;
+            height: 15px;
+            border: 1px solid #666;
+            flex-shrink: 0; /* Prevent box from shrinking */
+        }
+
+        /* Table Wrapper for Scrolling */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto; /* Enable horizontal scroll */
+            margin: 20px auto;
+            max-width: 1200px; /* Limit width */
+            -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+            scrollbar-width: thin; /* Firefox scrollbar */
+            scrollbar-color: #555 #333; /* Firefox scrollbar colors */
+        }
+         /* Webkit scrollbar styles */
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 4px;
+        }
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+            border: 2px solid #333;
+        }
+
+
+        /* Periodic Table Grid - Keep original layout */
+        #periodic-table-grid {
+            display: grid;
+            grid-template-columns: repeat(18, minmax(55px, 1fr)); /* Keep 18 columns, adjust min size slightly */
+            grid-template-rows: repeat(10, minmax(60px, auto)); /* Keep 10 rows */
+            gap: 4px;
+            /* max-width removed - let wrapper handle width */
+            min-width: 1000px; /* Ensure grid has a minimum width to force scroll */
+            margin: 0; /* Reset margin as wrapper handles centering */
+            position: relative; /* Needed for placeholder positioning */
+            padding-bottom: 10px; /* Space at bottom */
+        }
+
+        /* Loading / Error States within Grid */
+        #periodic-table-grid.loading::before,
+        #periodic-table-grid.error::before {
+             content: 'Loading Element Data...';
+             position: absolute;
+             top: 50px; /* Position below potential header */
+             left: 50%;
+             transform: translateX(-50%);
+             color: #aaa;
+             font-size: 1.1em;
+             grid-column: 1 / -1; /* Span all columns */
+             text-align: center;
+             padding: 20px;
+        }
+        #periodic-table-grid.error::before {
+             content: 'Error loading element data. Please check connection or try again.';
+             color: #ff6b6b; /* Error color */
+        }
+
+        /* Element Tile Styling - Minor adjustments */
+        .element-tile {
+            border: 1px solid #444;
+            background-color: #333;
+            padding: 4px 2px; /* Slightly adjust padding */
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            font-size: 0.9rem; /* Adjust base size slightly */
+            min-height: 60px;
+        }
+
+        .element-tile:hover {
+            transform: scale(1.08); /* Slightly reduce hover scale */
+            border-color: #eee;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+            z-index: 10;
+        }
+
+        .element-tile .atomic-number {
+            font-size: 0.65em; /* Slightly larger */
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            color: rgba(240, 240, 240, 0.75);
+        }
+
+        .element-tile .symbol {
+            font-size: 1.3em; /* Make symbol prominent */
+            font-weight: bold;
+            line-height: 1.1;
+            margin-top: 2px; /* Add little space from number */
+        }
+
+        .element-tile .name {
+            font-size: 0.6em; /* Keep name small */
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 95%;
+            color: rgba(240, 240, 240, 0.85);
+        }
+
+        /* Placeholder tiles for Lanthanides/Actinides in main table */
+        .series-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em;
+            color: #aaa;
+            border: 1px dashed #555;
+            background-color: #2a2a2a;
+            text-align: center;
+            padding: 5px;
+            line-height: 1.2;
+        }
+
+
+        /* Category Color Classes - Defined in JS now for dynamic assignment */
+
+        /* Filtering State */
+        .filtered-out {
+            opacity: 0.15;
+            pointer-events: none; /* Make non-matching elements non-interactive */
+             transform: scale(0.95); /* Slightly shrink filtered items */
+        }
+
+        /* Modal Styling - Mostly unchanged */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+            padding: 40px 15px 15px 15px; /* Adjust padding */
+             align-items: center;
+             justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #2f2f2f; /* Slightly lighter than body */
+            margin: auto;
+            padding: 20px 30px 30px 30px;
+            border: 1px solid #555;
+            width: 90%; /* Increase default width slightly */
+            max-width: 750px; /* Increase max width slightly */
+            border-radius: 8px;
+            position: relative;
+            color: #f0f0f0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            max-height: 90vh; /* Adjust max height */
+            overflow-y: auto; /* Add scrollbar if content overflows */
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        #modal-body h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #f0f0f0; /* White header */
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            font-size: 1.4em; /* Slightly larger modal heading */
+        }
+        #modal-body .modal-category {
+             font-weight: bold;
+             text-transform: capitalize;
+             margin-left: 10px;
+             font-size: 0.9em;
+        }
+
+         #modal-body h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #bdbdbd;
+            border-bottom: 1px solid #4a4a4a;
+            padding-bottom: 5px;
+            font-weight: 400;
+            font-size: 1.1em;
+         }
+
+        #modal-body p, #modal-body ul {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        #modal-body ul {
+            list-style: none;
+            padding-left: 0;
+        }
+         #modal-body li {
+            margin-bottom: 6px;
+         }
+        #modal-body strong {
+            color: #b0b0b0; /* Lighter gray for keys */
+            min-width: 160px; /* Align keys */
+            display: inline-block; /* Make it take up space */
+            vertical-align: top; /* Align with top of value */
+        }
+         #modal-body li span {
+             display: inline-block; /* Ensure value text wraps correctly */
+             max-width: calc(100% - 170px); /* Prevent long values pushing image */
+         }
+
+         #modal-body a {
+             color: #7aa0ff; /* Link color */
+             text-decoration: none;
+         }
+         #modal-body a:hover {
+             text-decoration: underline;
+         }
+
+        .modal-summary {
+            font-style: italic;
+            color: #d0d0d0;
+             margin-bottom: 20px !important; /* More space after summary */
+             text-align: justify;
+        }
+
+        .modal-image-container {
+             float: right; /* Float image to the right */
+             margin: 0 0 10px 20px; /* Adjust margin */
+             max-width: 150px; /* Limit image width */
+        }
+        .modal-image-container img {
+             max-width: 100%;
+             height: auto;
+             border-radius: 4px;
+             border: 1px solid #555;
+             background-color: #444; /* Placeholder bg */
+             display: block; /* Prevent extra space below image */
+        }
+         .modal-image-container figcaption {
+             font-size: 0.75em;
+             color: #aaa;
+             margin-top: 5px;
+             text-align: center;
+             max-width: 150px;
+         }
+
+
+        /* Responsive adjustments - Simplified */
+        @media (max-width: 600px) {
+            body { padding: 10px 5px; } /* Reduce body padding */
+            h1 { font-size: 1.4em; }
+            .controls-legend { flex-direction: column; align-items: center; }
+            .controls { width: 90%; }
+            #legend { width: 100%; justify-content: center; }
+
+            /* Adjust tile size/fonts for very small screens if needed */
+            .element-tile .name {
+                 /* Optionally hide name completely if still too cramped */
+                 /* display: none; */
+            }
+            .element-tile .symbol {
+                font-size: 1.1em;
+            }
+
+            .modal-content { width: 95%; padding: 15px; }
+            #modal-body h2 { font-size: 1.2em; }
+            #modal-body h3 { font-size: 1.05em; }
+            #modal-body p, #modal-body ul { font-size: 0.9em; }
+            #modal-body strong { min-width: 130px; } /* Adjust key alignment */
+             #modal-body li span { max-width: calc(100% - 140px); }
+             .modal-image-container { max-width: 120px; float: none; margin: 15px auto 10px auto;} /* Center image */
+             .modal-image-container figcaption { font-size: 0.7em; }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <h1>Interactive Periodic Table</h1>
+
+    <div class="controls-legend">
+        <div class="controls">
+            <label for="state-filter">Filter by State at STP:</label>
+            <select id="state-filter">
+                <option value="All">All States</option>
+                <option value="Solid">Solid</option>
+                <option value="Liquid">Liquid</option>
+                <option value="Gas">Gas</option>
+                <option value="Unknown">Unknown</option>
+            </select>
+        </div>
+        <div id="legend">
+            <!-- Legend items will be added by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Wrapper Div for Horizontal Scrolling -->
+    <div class="table-wrapper">
+        <div id="periodic-table-grid" class="loading">
+            <!-- Element tiles will be added by JavaScript -->
+            <!-- Placeholders are now added by JS for better control -->
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="element-modal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close-button" title="Close">×</span>
+            <div id="modal-body">
+                <!-- Element details will be loaded here -->
+                <h2>Element Name</h2>
+                <p>Details loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      // --- CONFIGURATION ---
+      // URL to fetch the JSON data from (Using the reliable Bowserinator source)
+      const dataUrl = 'https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json';
+
+      // Globally scoped variable to hold the fetched and processed data
+      let elementsData = [];
+
+        // --- CATEGORY COLORS --- (Adjust colors as desired)
+        const categories = {
+            "diatomic nonmetal": "#38761d", // Greenish
+            "noble gas": "#cc0000", // Reddish
+            "alkali metal": "#a64d79", // Purple-pink
+            "alkaline earth metal": "#e69138", // Orange
+            "metalloid": "#8e7cc3", // Purple
+            "polyatomic nonmetal": "#38761d", // Greenish (same as diatomic)
+            "post-transition metal": "#6fa8dc", // Light Blue
+            "transition metal": "#f1c232", // Yellowish
+            "lanthanide": "#6aa84f", // Green
+            "actinide": "#3d85c6", // Blue
+            "unknown, probably transition metal": "#f1c232", // Defaulting to transition metal color
+            "unknown, probably post-transition metal": "#6fa8dc", // Defaulting to post-transition
+            "unknown, predicted to be noble gas": "#cc0000", // Defaulting to noble gas
+            "unknown, but predicted to be an alkali metal": "#a64d79", // Defaulting to alkali metal
+            "unknown, probably metalloid": "#8e7cc3", // Defaulting to metalloid
+            // Add fallbacks if needed
+            "unknown": "#666666" // Default gray for truly unknown categories
+        };
+
+
+        // --- DOM Elements ---
+        const grid = document.getElementById('periodic-table-grid');
+        const modal = document.getElementById('element-modal');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalButton = document.querySelector('.close-button');
+        const stateFilter = document.getElementById('state-filter');
+        const legendContainer = document.getElementById('legend');
+
+
+        // --- FUNCTIONS ---
+
+        // Helper function to format values, handling null/undefined
+        function formatValue(value, unit = '') {
+           if (value === null || value === undefined) {
+               return 'N/A';
+           }
+           // Simple rounding for display if it's a number
+           if (typeof value === 'number') {
+                // Avoid excessive decimals for common values
+                if (Math.abs(value) > 1000 || (Math.abs(value) > 0 && Math.abs(value) < 0.01)) {
+                     // Check if it's practically an integer before forcing scientific
+                    if (Math.abs(value) < 1e6 && value % 1 === 0) { // Check if it's a whole number
+                        return `${value}${unit}`;
+                    }
+                    return `${value.toExponential(2)}${unit}`; // Use scientific notation for large/small numbers
+                } else if (value !== Math.floor(value)) { // Check if it has decimals
+                     // Check for many decimal places, e.g. atomic mass
+                     const decimalPart = value.toString().split('.')[1];
+                     if (decimalPart && decimalPart.length > 4) {
+                         return `${value.toFixed(4)}${unit}`; // Limit decimals
+                     }
+                     return `${Number(value.toFixed(3))}${unit}`; // Round to 3 decimals otherwise
+                }
+           }
+           return `${value}${unit}`; // Return as is if not a number or is integer
+        }
+
+        // Helper to format electron config for better readability
+        function formatConfig(config) {
+            if (!config) return 'N/A';
+             // Add space after noble gas core like [Ar] or [Xe]
+            let formattedConfig = config.replace(/\[([A-Za-z]+)\]/g, '[$1] ');
+             // Superscript numbers like 2p6 -> 2p⁶
+             formattedConfig = formattedConfig.replace(/(\d*)([spdf])(\d+)/g, '$1$2<sup>$3</sup>');
+             // Add spaces between orbitals like 4f14 5d10 6s2
+             formattedConfig = formattedConfig.replace(/([spdf]\d*<sup>\d+<\/sup>)/g, '$1 ');
+
+             return formattedConfig.trim(); // Trim trailing space
+        }
+
+
+        // Function to create and display the periodic table
+        function createTable() {
+            grid.innerHTML = ''; // Clear existing grid (including loading/error message)
+            grid.classList.remove('loading', 'error'); // Remove status classes
+
+            // Add placeholders back
+            grid.insertAdjacentHTML('beforeend', `
+                 <div class="series-placeholder" style="grid-column: 3; grid-row: 6;" title="Lanthanides 57-71">57-71<br>La-Lu</div>
+                 <div class="series-placeholder" style="grid-column: 3; grid-row: 7;" title="Actinides 89-103">89-103<br>Ac-Lr</div>
+             `);
+
+
+            elementsData.forEach(element => {
+                const tile = document.createElement('div');
+                tile.className = 'element-tile';
+                tile.title = `${element.name} (${element.symbol})`; // Tooltip
+
+                const categoryKey = element.category || 'unknown';
+                const bgColor = categories[categoryKey] || categories['unknown']; // Fallback color
+                tile.style.backgroundColor = bgColor;
+
+                // Set grid position using data attributes for easier media query targeting potentially
+                tile.dataset.xpos = element.xpos;
+                tile.dataset.ypos = element.ypos;
+                tile.style.gridColumnStart = element.xpos;
+                tile.style.gridRowStart = element.ypos;
+
+
+                // Add basic info to tile
+                tile.innerHTML = `
+                    <div class="atomic-number">${element.number}</div>
+                    <div class="symbol">${element.symbol}</div>
+                    <div class="name">${element.name}</div>
+                `;
+
+                // Store data for modal and filtering
+                tile.dataset.elementNumber = element.number;
+                // Normalize phase data for filtering consistency
+                let normalizedPhase = (element.phase || 'Unknown').toLowerCase();
+                 if (normalizedPhase === 'solid' || normalizedPhase === 'liquid' || normalizedPhase === 'gas') {
+                    tile.dataset.state = element.phase; // Keep original case for display if needed
+                 } else {
+                     tile.dataset.state = 'Unknown'; // Map all others to Unknown
+                 }
+
+
+                // Add click listener to open modal
+                tile.addEventListener('click', () => showElementDetails(element.number));
+
+                grid.appendChild(tile);
+            });
+             // Apply initial filter if needed (e.g., if default isn't "All")
+             filterByState();
+        }
+
+         // Function to create the legend
+        function createLegend() {
+            legendContainer.innerHTML = ''; // Clear existing legend
+            const addedColors = new Set(); // Keep track of added colors to avoid duplicates from category aliases
+
+            // Sort categories for a more consistent legend order (optional)
+            const sortedCategoryNames = Object.keys(categories).sort((a, b) => a.localeCompare(b));
+
+            sortedCategoryNames.forEach(category => {
+                 if (category === 'unknown') return; // Skip 'unknown' for the legend
+
+                const color = categories[category];
+                 if (!addedColors.has(color)) { // Check color to group aliases
+                    const legendItem = document.createElement('div');
+                    legendItem.className = 'legend-item';
+                    // Format category name for display
+                    let displayName = category.replace(/,.*$| \(.*$/, ''); // Remove qualifiers like ", predicted..." or "(...) nonmetal"
+                    displayName = displayName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()); // Capitalize
+
+                    legendItem.innerHTML = `
+                        <div class="legend-color-box" style="background-color: ${color};"></div>
+                        <span>${displayName}</span>
+                    `;
+                    legendContainer.appendChild(legendItem);
+                    addedColors.add(color); // Mark this color as added
+                 }
+            });
+        }
+
+
+        // Function to display element details in the modal
+        function showElementDetails(elementNumber) {
+             // Find element in the globally stored `elementsData` array
+            const element = elementsData.find(el => el.number === elementNumber);
+            if (!element) return; // Element not found
+
+            const categoryKey = element.category || 'unknown';
+            const categoryColor = categories[categoryKey] || categories['unknown'];
+             // Format category name for display in modal header
+            let categoryDisplayName = categoryKey.replace(/,.*$| \(.*$/, '');
+            categoryDisplayName = categoryDisplayName.replace(/\b\w/g, l => l.toUpperCase());
+
+
+             // Image handling
+            let imageHTML = '';
+             // Check if image URL exists and is not a generic placeholder
+            if (element.image && element.image.url && !element.image.url.includes('transactinoid.png') && element.image.title !== 'No Image Found') {
+                imageHTML = `
+                    <figure class="modal-image-container">
+                        <img src="${element.image.url}" alt="${element.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.display='none';"> <!-- Hide if image fails to load -->
+                        <figcaption>${element.image.title || element.name}</figcaption>
+                         ${element.image.attribution ? `<p style="font-size: 0.7em; margin-top: 3px; color: #888;">${element.image.attribution}</p>` : ''}
+                    </figure>
+                `;
+            }
+
+            modalBody.innerHTML = `
+                <h2>
+                     ${element.number}. ${element.name} (${element.symbol})
+                     <span class="modal-category" style="color:${categoryColor};">${categoryDisplayName}</span>
+                 </h2>
+
+                 ${imageHTML}
+
+                <p class="modal-summary">${element.summary}</p>
+                <div style="clear: both;"></div> <!-- Clear float -->
+
+
+                <h3>Properties</h3>
+                <ul>
+                    <li><strong>Atomic Mass:</strong> <span>${formatValue(element.atomic_mass, ' u')}</span></li>
+                    <li><strong>State at STP:</strong> <span>${formatValue(element.phase)}</span></li>
+                     <li><strong>Appearance:</strong> <span>${formatValue(element.appearance)}</span></li>
+                    <li><strong>Density:</strong> <span>${formatValue(element.density, ' g/cm³')}</span></li>
+                    <li><strong>Melting Point:</strong> <span>${formatValue(element.melting_point, ' K')}</span></li>
+                    <li><strong>Boiling Point:</strong> <span>${formatValue(element.boiling_point, ' K')}</span></li>
+                    <li><strong>Molar Heat Capacity:</strong> <span>${formatValue(element.molar_heat, ' J/(mol·K)')}</span></li>
+                    <li><strong>Electron Configuration:</strong> <span style="font-size: 0.9em; word-break: break-all;">${formatConfig(element.electron_configuration_semantic)}</span></li>
+                    <li><strong>Electronegativity (Pauling):</strong> <span>${formatValue(element.electronegativity_pauling)}</span></li>
+                    <li><strong>Electron Affinity:</strong> <span>${formatValue(element.electron_affinity, ' kJ/mol')}</span></li>
+                     <li><strong>Ionization Energies:</strong> <span>${element.ionization_energies && element.ionization_energies.length > 0 ? element.ionization_energies.map(e => formatValue(e, ' kJ/mol')).join(', ') : 'N/A'}</span></li>
+                </ul>
+
+                <h3>History & Source</h3>
+                <ul>
+                    <li><strong>Discovered By:</strong> <span>${formatValue(element.discovered_by)}</span></li>
+                    <li><strong>Named By:</strong> <span>${formatValue(element.named_by)}</span></li>
+                     <li><strong>Source:</strong> <span>${element.source ? `<a href="${element.source}" target="_blank" rel="noopener noreferrer">Wikipedia</a>` : 'N/A'}</span></li>
+
+                </ul>
+            `;
+            modal.style.display = 'flex'; // Show modal
+            modal.scrollTop = 0; // Scroll modal container to top
+            modalBody.scrollTop = 0; // Scroll modal body content to top
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Function to filter elements by state
+        function filterByState() {
+            const selectedState = stateFilter.value; // "Solid", "Liquid", "Gas", "Unknown", "All"
+            const tiles = grid.querySelectorAll('.element-tile');
+
+            tiles.forEach(tile => {
+                // dataset.state was normalized to "Solid", "Liquid", "Gas", or "Unknown" during creation
+                const tileState = tile.dataset.state;
+
+                if (selectedState === 'All' || tileState === selectedState) {
+                   tile.classList.remove('filtered-out');
+                } else {
+                    tile.classList.add('filtered-out');
+                }
+            });
+        }
+
+         // Function to fetch and process the element data
+         async function loadElementData() {
+             try {
+                 const response = await fetch(dataUrl);
+                 if (!response.ok) {
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                 }
+                 const periodicTableDataJSON = await response.json(); // Parse the JSON response
+
+                  // --- DATA TRANSFORMATION --- (Moved inside the fetch success)
+                  // Clear previous data if any
+                  elementsData = [];
+
+                 // The source JSON has an 'elements' array property
+                 if (periodicTableDataJSON && periodicTableDataJSON.elements) {
+                     periodicTableDataJSON.elements.forEach(elementSource => {
+                         if (elementSource) {
+                             const phase = elementSource.phase || 'Unknown';
+                             const category = (elementSource.category || 'unknown').toLowerCase();
+
+                             elementsData.push({
+                                 number: elementSource.number,
+                                 symbol: elementSource.symbol,
+                                 name: elementSource.name,
+                                 atomic_mass: elementSource.atomic_mass,
+                                 category: category,
+                                 phase: phase,
+                                 xpos: elementSource.xpos,
+                                 ypos: elementSource.ypos,
+                                 summary: elementSource.summary || 'No summary available.',
+                                 discovered_by: elementSource.discovered_by,
+                                 named_by: elementSource.named_by,
+                                 appearance: elementSource.appearance,
+                                 boiling_point: elementSource.boil,
+                                 melting_point: elementSource.melt,
+                                 density: elementSource.density,
+                                 molar_heat: elementSource.molar_heat,
+                                 electron_configuration_semantic: elementSource.electron_configuration_semantic,
+                                 ionization_energies: elementSource.ionization_energies || [],
+                                 electron_affinity: elementSource.electron_affinity,
+                                 electronegativity_pauling: elementSource.electronegativity_pauling,
+                                 source: elementSource.source,
+                                 image: elementSource.image || { title: 'No image available', url: '', attribution: '' }
+                             });
+                         }
+                     });
+                     // Now that data is loaded and processed, build the UI
+                     createLegend();
+                     createTable();
+                 } else {
+                     console.error("Fetched JSON data format is not as expected (missing 'elements' array).");
+                     grid.classList.remove('loading');
+                     grid.classList.add('error');
+                 }
+
+             } catch (error) {
+                 console.error("Failed to load or process element data:", error);
+                 grid.classList.remove('loading');
+                 grid.classList.add('error'); // Show error state in the grid
+             }
+         }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+             loadElementData(); // Fetch data when the page is ready
+         });
+
+        closeModalButton.addEventListener('click', closeModal);
+
+        // Close modal if user clicks outside the modal content
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) { // Check if the click is on the modal background itself
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key press
+         document.addEventListener('keydown', (event) => {
+             if (event.key === 'Escape' && modal.style.display === 'flex') {
+                 closeModal();
+             }
+         });
+
+        // Filter listener
+        stateFilter.addEventListener('change', filterByState);
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Mortgage Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* --- Base Styles & Resets --- */
+        :root { /* ... Root variables ... */
+             --primary-bg-light: #f4f7fc; --secondary-bg-light: #ffffff; --primary-text-light: #333333; --secondary-text-light: #555555; --accent-color-light: #4a90e2; --border-color-light: #d1d9e6; --shadow-light: rgba(0, 0, 0, 0.1); --input-bg-light: #ffffff; --header-bg-light: #e9effa; --danger-color-light: #e74c3c; --success-color-light: #2ecc71;
+             --primary-bg-dark: #2c3e50; --secondary-bg-dark: #34495e; --primary-text-dark: #ecf0f1; --secondary-text-dark: #bdc3c7; --accent-color-dark: #5dade2; --border-color-dark: #4a6572; --shadow-dark: rgba(0, 0, 0, 0.4); --input-bg-dark: #4a6572; --header-bg-dark: #3a506b; --danger-color-dark: #e74c3c; --success-color-dark: #58d68d;
+            --border-radius: 8px; --outer-shadow: 0 5px 15px var(--shadow-color); --inner-shadow: inset 0 2px 4px var(--shadow-color);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; }
+        html, body { overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; transition: background-color 0.3s ease, color 0.3s ease; padding: 1rem; background-color: var(--current-primary-bg); color: var(--current-primary-text); }
+
+        /* --- Themeing --- */
+        body.light-theme { /* ... Theme variables ... */ --shadow-color: var(--shadow-light); --current-primary-bg: var(--primary-bg-light); --current-secondary-bg: var(--secondary-bg-light); --current-primary-text: var(--primary-text-light); --current-secondary-text: var(--secondary-text-light); --current-accent-color: var(--accent-color-light); --current-border-color: var(--border-color-light); --current-input-bg: var(--input-bg-light); --current-header-bg: var(--header-bg-light); --current-danger-color: var(--danger-color-light); --current-success-color: var(--success-color-light); }
+        body.dark-theme { /* ... Theme variables ... */ --shadow-color: var(--shadow-dark); --current-primary-bg: var(--primary-bg-dark); --current-secondary-bg: var(--secondary-bg-dark); --current-primary-text: var(--primary-text-dark); --current-secondary-text: var(--secondary-text-dark); --current-accent-color: var(--accent-color-dark); --current-border-color: var(--border-color-dark); --current-input-bg: var(--input-bg-dark); --current-header-bg: var(--header-bg-dark); --current-danger-color: var(--danger-color-dark); --current-success-color: var(--success-color-dark); }
+
+        /* --- Layout & Containers --- */
+        .calculator-container { max-width: 1300px; margin: 2rem auto; padding: 1.5rem; background-color: var(--current-secondary-bg); border-radius: var(--border-radius); box-shadow: var(--outer-shadow); transition: background-color 0.3s ease; }
+        .main-content { display: flex; flex-wrap: wrap; gap: 2rem; }
+        .input-section { flex: 1; min-width: 300px; }
+        .results-section { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 1rem; height: auto; }
+        .input-group { margin-bottom: 1.2rem; }
+        h1, h2, h3 { color: var(--current-accent-color); margin-bottom: 1rem; }
+        h1 { text-align: center; font-size: 1.8rem; }
+        h2 { font-size: 1.4rem; border-bottom: 2px solid var(--current-border-color); padding-bottom: 0.5rem; margin-top: 1.5rem; }
+        h3 { font-size: 1.2rem; margin-top: 1rem; }
+
+        /* --- Input Fields & Controls --- */
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--current-secondary-text); font-size: 0.95rem; }
+        label .mandatory { color: var(--current-danger-color); font-weight: bold; margin-left: 2px; }
+        input[type="number"], input[type="date"], select { width: 100%; padding: 0.75rem; border: 1px solid var(--current-border-color); border-radius: var(--border-radius); background-color: var(--current-input-bg); color: var(--current-primary-text); font-size: 1rem; transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; box-shadow: var(--inner-shadow); color-scheme: light; }
+        body.dark-theme input[type="date"] { color-scheme: dark; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; } input[type=number] { -moz-appearance: textfield; }
+        input[type="number"]:focus, input[type="date"]:focus, select:focus { outline: none; border-color: var(--current-accent-color); box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3), var(--inner-shadow); }
+
+        /* --- Buttons --- */
+        .button, button { display: inline-block; padding: 0.8rem 1.5rem; background-color: var(--current-accent-color); color: #ffffff; border: none; border-radius: var(--border-radius); cursor: pointer; font-size: 1rem; font-weight: bold; text-align: center; transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease; box-shadow: 0 3px 6px var(--shadow-color); margin-top: 0.5rem; margin-right: 0.5rem; }
+        .button:hover, button:hover { filter: brightness(110%); box-shadow: 0 5px 10px var(--shadow-color); }
+        .button:active, button:active { transform: translateY(1px); box-shadow: 0 2px 4px var(--shadow-color); }
+        .button.secondary { background-color: var(--current-secondary-text); color: var(--current-primary-bg); opacity: 0.8; }
+        .button.secondary:hover { opacity: 1; filter: brightness(110%); }
+        .button.add { background-color: var(--current-success-color); }
+        #theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 1px solid var(--current-border-color); color: var(--current-secondary-text); box-shadow: none; padding: 0.5rem 0.8rem; }
+        #theme-toggle:hover { background-color: rgba(0,0,0,0.05); box-shadow: none; } body.dark-theme #theme-toggle:hover { background-color: rgba(255,255,255,0.1); }
+
+        /* --- Payment Increase Section --- */
+        .payment-increase-section { margin-top: 1.5rem; padding: 1rem; border: 1px dashed var(--current-border-color); border-radius: var(--border-radius); background-color: rgba(0,0,0,0.01); }
+        body.dark-theme .payment-increase-section { background-color: rgba(255,255,255,0.03); }
+        .payment-increase-section .input-group { display: flex; gap: 1rem; align-items: flex-end; }
+        .payment-increase-section label { margin-bottom: 0.2rem; flex-shrink: 0; }
+        .payment-increase-section input { flex-grow: 1; }
+
+        /* --- Multiple Prepayments UI (Date Input) --- */
+        .prepayments-list-container { margin-top: 1.5rem; padding: 1rem; border: 1px dashed var(--current-border-color); border-radius: var(--border-radius); }
+        .prepayment-entry { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--current-border-color); }
+         .prepayment-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .prepayment-entry label { margin-bottom: 0; font-size: 0.9rem; flex-shrink: 0; width: 80px; }
+        .prepayment-entry input[type="number"], .prepayment-entry input[type="date"] { width: auto; flex-grow: 1; padding: 0.5rem; font-size: 0.9rem; min-width: 100px; }
+        .prepayment-entry .remove-prepayment { padding: 0.3rem 0.6rem; font-size: 0.8rem; background-color: var(--current-danger-color); margin: 0 0 0 auto; flex-shrink: 0; }
+
+        /* --- Results & Summary --- */
+        .summary-output { order: 1; }
+        #modificationImpact {
+            /* Base style is hidden by default via class */
+            position: relative;
+            width: 100%;
+            order: 2;
+            /* Background/padding styles */
+            background-color: var(--current-header-bg); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem; box-shadow: var(--inner-shadow);
+        }
+        /* NEW Visibility Classes */
+        .impact-hidden {
+             display: none !important;
+         }
+         .impact-visible {
+             display: block !important;
+             min-height: 1px !important; /* Ensure it takes up some space */
+             visibility: visible !important;
+             opacity: 1 !important;
+         }
+
+        .summary-output p, #modificationImpact p { margin-bottom: 0.5rem; font-size: 1.05rem; }
+        .summary-output strong, #modificationImpact strong { color: var(--current-accent-color); margin-right: 5px; display: inline-block; min-width: 170px; }
+        .savings-highlight { color: var(--current-success-color); font-weight: bold; }
+
+        /* --- Amortization Table (Date Column) --- */
+        .amortization-section { margin-top: 2rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; box-shadow: 0 2px 8px var(--shadow-color); border-radius: var(--border-radius); overflow: hidden; }
+        th, td { padding: 0.8rem 0.6rem; text-align: right; border-bottom: 1px solid var(--current-border-color); white-space: nowrap; }
+        th:first-child, td:first-child { text-align: center; } th:nth-child(2), td:nth-child(2) { text-align: left; }
+        th:nth-child(7) { /* Lump Sum Header */
+             color: var(--current-success-color); font-weight: bold; min-width: 80px;
+             visibility: visible !important; /* Ensure header visible */
+             opacity: 1 !important;
+        }
+        td:nth-child(7) { /* Lump Sum Cell */
+             color: var(--current-success-color); font-weight: bold;
+             /* Ensure cell itself is technically visible */
+             display: table-cell !important;
+             visibility: visible !important;
+             opacity: 1 !important;
+             padding: 0.8rem 0.6rem !important; /* Force padding */
+         }
+         /* NEW Class for the content inside the cell */
+         .lump-sum-value {
+             display: inline !important; /* Or block, try inline first */
+             visibility: visible !important;
+             opacity: 1 !important;
+             color: inherit; /* Inherit color from parent td */
+             font-weight: inherit; /* Inherit weight */
+         }
+        thead th { background-color: var(--current-header-bg); color: var(--current-accent-color); font-weight: bold; position: sticky; top: 0; z-index: 1; }
+        tbody tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.02); } body.dark-theme tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        tbody tr:hover { background-color: rgba(74, 144, 226, 0.1); } body.dark-theme tbody tr:hover { background-color: rgba(93, 173, 226, 0.15); }
+
+        /* --- Chart --- */
+        #chart-container { position: relative; height: 300px; width: 100%; margin-top: 1rem; background-color: var(--current-header-bg); padding: 1rem; border-radius: var(--border-radius); box-shadow: var(--inner-shadow); order: 3; }
+
+        /* --- README Box --- */
+        .readme-box { margin-top: 2rem; background-color: var(--current-header-bg); border-radius: var(--border-radius); border: 1px solid var(--current-border-color); }
+        .readme-box summary { padding: 1rem; font-weight: bold; cursor: pointer; color: var(--current-accent-color); outline: none; border-bottom: 1px solid var(--current-border-color); list-style: none; position: relative; }
+        .readme-box summary::-webkit-details-marker { display: none; } .readme-box summary::after { content: '▼'; position: absolute; right: 1rem; transition: transform 0.2s ease; } .readme-box[open] summary::after { transform: rotate(180deg); }
+        .readme-content { padding: 1rem; font-size: 0.95rem; color: var(--current-secondary-text); } .readme-content h4 { margin-top: 1rem; margin-bottom: 0.5rem; color: var(--current-accent-color); } .readme-content code { background-color: rgba(0,0,0,0.05); padding: 2px 5px; border-radius: 4px; font-family: monospace; } body.dark-theme .readme-content code { background-color: rgba(255,255,255,0.1); color: var(--primary-text-dark); }
+
+        /* --- Error Handling --- */
+        .error-message { color: var(--current-danger-color); font-size: 0.85rem; margin-top: 0.3rem; display: none; }
+        input.error, select.error { border-color: var(--current-danger-color) !important; }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 768px) {
+            html { font-size: 15px; }
+            .calculator-container { margin: 1rem auto; padding: 1rem; overflow-x: hidden; }
+            .main-content { flex-direction: column; gap: 1rem; width: 100%; }
+            .input-section, .results-section { width: 100%; min-width: 0; }
+            h1 { font-size: 1.6rem; } h2 { font-size: 1.3rem; } th, td { padding: 0.6rem 0.4rem; } table { font-size: 0.85rem; }
+            #theme-toggle { position: static; display: block; margin: 1rem auto 0; width: fit-content; }
+            .payment-increase-section .input-group { flex-direction: column; align-items: stretch; gap: 0.5rem;}
+            .prepayment-entry label { width: 100%; margin-bottom: 0.2rem; } .prepayment-entry input[type="number"], .prepayment-entry input[type="date"] { min-width: 80px; } .prepayment-entry .remove-prepayment { margin-left: auto; margin-top: 0.5rem; }
+        }
+        @media (max-width: 480px) {
+             html { font-size: 14px; } .calculator-container { margin: 0.5rem auto; padding: 0.8rem; }
+             input[type="number"], input[type="date"], select, button, .button { padding: 0.6rem; font-size: 0.9rem;}
+             th, td { padding: 0.5rem 0.3rem; } table { font-size: 0.8rem; } label { font-size: 0.9rem; }
+             #chart-container { height: 250px; }
+             .summary-output strong, #modificationImpact strong { min-width: 150px; }
+             .prepayment-entry input[type="number"], .prepayment-entry input[type="date"] { min-width: 70px; }
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <button id="theme-toggle" class="button secondary">🌓 Theme</button>
+
+    <div class="calculator-container">
+        <h1>Mortgage Calculator</h1>
+
+        <div class="main-content">
+            <section class="input-section">
+                <h2>Loan Details</h2>
+                <form id="mortgage-form">
+                     <div class="input-group"> <label for="mortgageAmount">Mortgage Amount ($)<span class="mandatory">*</span></label> <input type="number" id="mortgageAmount" placeholder="e.g., 300000" required step="any" min="1"> <div class="error-message" id="amountError"></div> </div>
+                     <div class="input-group"> <label for="interestRate">Interest Rate (%)<span class="mandatory">*</span></label> <input type="number" id="interestRate" placeholder="e.g., 5.5" required step="0.01" min="0" max="100"> <div class="error-message" id="rateError"></div> </div>
+                     <div class="input-group"> <label for="termDuration">Term Duration (Years)<span class="mandatory">*</span></label> <input type="number" id="termDuration" placeholder="e.g., 30" required step="1" min="1" max="50"> <div class="error-message" id="termError"></div> </div>
+                     <div class="input-group"> <label for="firstPaymentDate">First Payment Date<span class="mandatory">*</span></label> <input type="date" id="firstPaymentDate" required> <div class="error-message" id="firstDateError"></div> </div>
+                     <div class="input-group"> <label for="paymentSchedule">Payment Schedule<span class="mandatory">*</span></label> <select id="paymentSchedule" required> <option value="" disabled selected>-- Select Schedule --</option> <option value="monthly">Monthly</option> <option value="bi-weekly">Bi-Weekly (Every 14 days)</option> <option value="weekly">Weekly (Every 7 days)</option> <option value="accel-bi-weekly">Accelerated Bi-Weekly</option> <option value="accel-weekly">Accelerated Weekly</option> </select> <div class="error-message" id="scheduleError"></div> </div>
+                </form>
+
+                <h2>Payment Increase Option</h2>
+                 <section class="payment-increase-section">
+                     <div class="input-group"> <label for="increaseAmount">Increase Regular Payment By ($):</label> <input type="number" id="increaseAmount" placeholder="e.g., 100" min="0" step="any"> </div>
+                     <div class="input-group"> <label for="increaseStartDate">Start Increase After Date:</label> <input type="date" id="increaseStartDate"> <div class="error-message" id="increaseDateError"></div> </div>
+                 </section>
+
+                <h2>Multiple Prepayments (Lump Sum)</h2>
+                 <div class="prepayments-list-container"> <div id="prepayments-list"></div> <button id="addPrepaymentButton" class="button add" type="button">+ Add Lump Sum</button> <div class="error-message" id="prepayError"></div> </div>
+
+                 <button id="resetButton" class="button secondary" type="button">Reset All</button>
+            </section>
+
+            <section class="results-section">
+                <h2>Summary</h2>
+                 <div class="summary-output" id="summaryOutput"> <p><strong>Base Payment:</strong> <span id="paymentResult">-</span></p> <p><strong>Original Term:</strong> <span id="originalTerm">-</span></p> <p><strong>Original Payoff Date:</strong> <span id="originalPayoffDate">-</span></p> <p><strong>Total Principal:</strong> <span id="totalPrincipal">-</span></p> <p><strong>Total Interest (Standard):</strong> <span id="totalInterest">-</span></p> <p><strong>Total Cost (Standard):</strong> <span id="totalCost">-</span></p> </div>
+
+                <!-- Apply impact-hidden class by default -->
+                <div class="modification-impact impact-hidden" id="modificationImpact"> <h3>Payment Modification Impact</h3> <p><strong>New Loan Term:</strong> <span id="newTerm" class="savings-highlight">-</span></p> <p><strong>New Payoff Date:</strong> <span id="newPayoffDate" class="savings-highlight">-</span></p> <p><strong>Total Interest (Modified):</strong> <span id="newTotalInterest">-</span></p> <p><strong>Total Cost (Modified):</strong> <span id="newTotalCost">-</span></p> <p><strong>Total Interest Saved:</strong> <span id="interestSaved" class="savings-highlight">-</span></p> <p><strong>Loan Paid Off Early By:</strong> <span id="termReduction" class="savings-highlight">-</span></p> </div>
+
+                 <h2>Payment Distribution Chart</h2>
+                 <div id="chart-container"> <canvas id="paymentChart"></canvas> </div>
+            </section>
+        </div>
+
+        <section class="amortization-section">
+             <h2>Amortization Schedule <span id="schedule-type">(Standard)</span></h2>
+             <div style="max-height: 400px; overflow-y: auto;"> <table> <thead> <tr> <th>Pmt #</th> <th>Payment Date</th> <th>Starting Balance</th> <th>Payment</th> <th>Principal</th> <th>Interest</th> <th>Lump Sum</th> <th>Ending Balance</th> </tr> </thead> <tbody id="amortizationTableBody"> <tr><td colspan="8" style="text-align: center;">Enter loan details to see the schedule.</td></tr> </tbody> </table> </div>
+        </section>
+
+        <details class="readme-box">
+             <summary>How to Use & Formulas</summary>
+             <div class="readme-content"> <!-- README Content Updated --> <h4>How to Use</h4> <ol> <li>Enter core <strong>Loan Details</strong> (Amount, Rate, Term, First Payment Date, Schedule).</li> <li>(Optional) To increase your regular payments, enter the extra amount in <strong>Increase Regular Payment By ($)</strong> and the <strong>Start Increase After Date</strong>. The payment shown in the schedule will reflect this increase from that point onwards.</li> <li>(Optional) To make one-off lump sum payments, use the <strong>Multiple Prepayments (Lump Sum)</strong> section. Click "+ Add Lump Sum", enter the Amount and the Date for each.</li> <li>The calculator shows the combined impact of *both* payment increases and lump sums in the "Payment Modification Impact" summary and the updated Amortization Schedule.</li> <li>The schedule table includes the calculated payment dates and a "Lump Sum" column.</li> <li>Use the Theme/Reset buttons as before. Data is saved locally.</li> </ol> <h4>Formulas & Logic</h4> <p><strong>Payment Dates:</strong> Calculated sequentially based on First Payment Date and Schedule (Monthly: +1 month, Bi-Weekly: +14 days, Weekly: +7 days). Month-end logic applies.</p> <p><strong>Base Periodic Payment (M):</strong> Calculated using the standard formula based on initial loan details.</p> <p><strong>Actual Payment in Schedule:</strong> <ul> <li>If the current payment date is *after* the 'Start Increase After Date', Actual Payment = `Base Periodic Payment + Increase Amount`.</li> <li>Otherwise, Actual Payment = `Base Periodic Payment`.</li> </ul> </p> <p><strong>Lump Sum Prepayment Application:</strong> A lump sum entered for `Date P` is applied to the balance *after* the regular (potentially increased) payment for the period ending on or just before `Date P` is processed.</p> <p><strong>Amortization Split:</strong> `Interest = Balance * Periodic Rate`, `Principal = Actual Payment - Interest`. The final payment is adjusted to zero out the balance.</p> <p><strong>Savings Calculation:</strong> The modified schedule (incorporating increases and lump sums) is compared against the original standard schedule (using only base payments and no lump sums) to calculate total interest saved and term reduction.</p> <p><i>(Core financial formulas for Periodic Rate etc. remain.)</i></p> <h4>Assumptions</h4> <ul> <li>(Same as before regarding date calculation, compounding, no fees)</li> <li>Payment increases apply from the first payment *after* the specified start date.</li> <li>Lump sums and payment increases work cumulatively.</li> </ul> </div>
+        </details>
+
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        // ... Same variable declarations ...
+        const mortgageAmountInput = document.getElementById('mortgageAmount'); const interestRateInput = document.getElementById('interestRate'); const termDurationInput = document.getElementById('termDuration'); const paymentScheduleSelect = document.getElementById('paymentSchedule'); const firstPaymentDateInput = document.getElementById('firstPaymentDate');
+        const increaseAmountInput = document.getElementById('increaseAmount'); const increaseStartDateInput = document.getElementById('increaseStartDate'); const increaseDateError = document.getElementById('increaseDateError');
+        const prepaymentsListDiv = document.getElementById('prepayments-list'); const addPrepaymentButton = document.getElementById('addPrepaymentButton'); const prepayErrorDiv = document.getElementById('prepayError');
+        const paymentResultSpan = document.getElementById('paymentResult'); const originalTermSpan = document.getElementById('originalTerm'); const originalPayoffDateSpan = document.getElementById('originalPayoffDate'); const totalPrincipalSpan = document.getElementById('totalPrincipal'); const totalInterestSpan = document.getElementById('totalInterest'); const totalCostSpan = document.getElementById('totalCost');
+        const modificationImpactDiv = document.getElementById('modificationImpact'); const newTermSpan = document.getElementById('newTerm'); const newPayoffDateSpan = document.getElementById('newPayoffDate'); const interestSavedSpan = document.getElementById('interestSaved'); const termReductionSpan = document.getElementById('termReduction'); const newTotalInterestSpan = document.getElementById('newTotalInterest'); const newTotalCostSpan = document.getElementById('newTotalCost');
+        const amortizationTableBody = document.getElementById('amortizationTableBody'); const scheduleTypeSpan = document.getElementById('schedule-type'); const resetButton = document.getElementById('resetButton'); const themeToggleButton = document.getElementById('theme-toggle'); const form = document.getElementById('mortgage-form');
+        const amountError = document.getElementById('amountError'); const rateError = document.getElementById('rateError'); const termError = document.getElementById('termError'); const firstDateError = document.getElementById('firstDateError'); const scheduleError = document.getElementById('scheduleError');
+        const ctx = document.getElementById('paymentChart').getContext('2d'); let paymentChart = null;
+
+        // --- Date Helper Functions ---
+        // ... Same date functions ...
+        function isValidDate(d) { return d instanceof Date && !isNaN(d); } function formatDate(date) { if (!isValidDate(date)) return '-'; const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; } function parseDate(dateString) { if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return null; const date = new Date(dateString + 'T00:00:00'); return isValidDate(date) ? date : null; } function addMonths(date, months) { if (!isValidDate(date)) return null; const d = new Date(date); const originalDay = d.getDate(); d.setMonth(d.getMonth() + months); if (d.getDate() !== originalDay) { d.setDate(0); } return d; } function addDays(date, days) { if (!isValidDate(date)) return null; const d = new Date(date); d.setDate(d.getDate() + days); return d; } function getNextPaymentDate(currentPaymentDate, scheduleType) { if (!isValidDate(currentPaymentDate)) return null; switch (scheduleType) { case 'monthly': return addMonths(currentPaymentDate, 1); case 'bi-weekly': case 'accel-bi-weekly': return addDays(currentPaymentDate, 14); case 'weekly': case 'accel-weekly': return addDays(currentPaymentDate, 7); default: return null; } }
+
+        // --- Formatting & Validation Helpers ---
+        // ... Same formatting/validation functions ...
+        function formatCurrency(value) { if (isNaN(value) || value === null) return '-'; return Number(Math.abs(value)).toLocaleString('en-US', { style: 'currency', currency: 'USD' }); } function formatYearsMonths(totalMonths) { if (isNaN(totalMonths) || totalMonths <= 0) return '-'; totalMonths = Math.round(totalMonths); const y = Math.floor(totalMonths / 12); const m = totalMonths % 12; let r = ''; if (y > 0) r += `${y} yr${y > 1 ? 's' : ''}`; if (m > 0) r += `${y > 0 ? ' ' : ''}${m} mo${m > 1 ? 's' : ''}`; return r || '0 mo'; } function validateInput(inputElement, errorElement, condition, message) { let isValid = condition; if (inputElement.hasAttribute('required') && !inputElement.value) { isValid = false; message = message || "This field is required."; } if (!isValid) { inputElement.classList.add('error'); errorElement.textContent = message; errorElement.style.display = 'block'; return false; } else { inputElement.classList.remove('error'); errorElement.style.display = 'none'; return true; } }
+
+        // --- Prepayment UI Management ---
+        // ... Same addPrepaymentEntry & getLumpSumPrepaymentsFromUI functions ...
+        function addPrepaymentEntry(amount = '', dateStr = '') { const entryDiv = document.createElement('div'); entryDiv.classList.add('prepayment-entry'); entryDiv.innerHTML = `<label>Amount ($):</label><input type="number" class="prepayment-amount" placeholder="e.g., 5000" min="0.01" step="any" value="${amount}"><label>Date:</label><input type="date" class="prepayment-date" value="${dateStr}"><button class="remove-prepayment button secondary" type="button">X</button>`; entryDiv.querySelector('.remove-prepayment').addEventListener('click', (e) => { e.target.closest('.prepayment-entry').remove(); saveModificationDataToStorage(); calculateMortgage(); }); entryDiv.querySelectorAll('input').forEach(input => input.addEventListener('input', () => { saveModificationDataToStorage(); calculateMortgage(); })); prepaymentsListDiv.appendChild(entryDiv); } function getLumpSumPrepaymentsFromUI() { const entries = []; let hasInvalidEntry = false; const firstPayDate = parseDate(firstPaymentDateInput.value); prepaymentsListDiv.querySelectorAll('.prepayment-entry').forEach(entryDiv => { const amountInput = entryDiv.querySelector('.prepayment-amount'); const dateInput = entryDiv.querySelector('.prepayment-date'); const amount = parseFloat(amountInput.value); const dateStr = dateInput.value; const date = parseDate(dateStr); const isAmountValid = !isNaN(amount) && amount > 0; const isDateValid = date !== null; const isDateAfterFirst = firstPayDate && date && date >= firstPayDate; amountInput.classList.toggle('error', !isAmountValid && amountInput.value !== ''); dateInput.classList.toggle('error', (!isDateValid || !isDateAfterFirst) && dateInput.value !== ''); if (amountInput.value !== '' || dateInput.value !== '') { if (isAmountValid && isDateValid && isDateAfterFirst) { entries.push({ amount, date }); } else { hasInvalidEntry = true; } } }); prepayErrorDiv.style.display = hasInvalidEntry ? 'block' : 'none'; prepayErrorDiv.textContent = hasInvalidEntry ? "Invalid lump sum entry: Amount positive, Date valid & on/after first payment." : ""; return entries.sort((a, b) => a.date - b.date); }
+
+        // --- Payment Increase Data ---
+        // ... Same getPaymentIncreaseData function ...
+        function getPaymentIncreaseData() { const increaseAmount = parseFloat(increaseAmountInput.value) || 0; const increaseStartDateStr = increaseStartDateInput.value; const increaseStartDate = parseDate(increaseStartDateStr); const firstPayDate = parseDate(firstPaymentDateInput.value); let isValid = true; let errorMsg = ""; if (increaseAmount < 0) { isValid = false; errorMsg = "Increase amount cannot be negative."; increaseAmountInput.classList.add('error'); } else { increaseAmountInput.classList.remove('error'); } if (increaseStartDateStr && !increaseStartDate) { isValid = false; errorMsg = "Increase start date is invalid."; increaseStartDateInput.classList.add('error'); } else if (increaseStartDate && firstPayDate && increaseStartDate < firstPayDate) { isValid = false; errorMsg = "Increase start date must be on or after first payment date."; increaseStartDateInput.classList.add('error'); } else if (!increaseStartDateStr && increaseAmount > 0) { isValid = false; errorMsg = "Please enter start date for payment increase."; increaseStartDateInput.classList.add('error'); } else { increaseStartDateInput.classList.remove('error'); } increaseDateError.textContent = errorMsg; increaseDateError.style.display = errorMsg ? 'block' : 'none'; if (isValid && increaseAmount > 0 && increaseStartDate) { return { amount: increaseAmount, startDate: increaseStartDate }; } return null; }
+
+        // --- Storage ---
+        // ... Same save/load functions ...
+        function saveModificationDataToStorage() { const entries = []; prepaymentsListDiv.querySelectorAll('.prepayment-entry').forEach(entryDiv => { const amount = entryDiv.querySelector('.prepayment-amount').value; const dateStr = entryDiv.querySelector('.prepayment-date').value; if (amount.trim() !== '' || dateStr.trim() !== '') { entries.push({ amount, dateStr }); } }); localStorage.setItem('mortgageLumpSums', JSON.stringify(entries)); localStorage.setItem('mortgageIncreaseAmount', increaseAmountInput.value); localStorage.setItem('mortgageIncreaseStartDate', increaseStartDateInput.value); localStorage.setItem('mortgageFirstPaymentDate', firstPaymentDateInput.value); } function loadModificationDataFromStorage() { const savedFirstDate = localStorage.getItem('mortgageFirstPaymentDate'); if (savedFirstDate) { firstPaymentDateInput.value = savedFirstDate; } increaseAmountInput.value = localStorage.getItem('mortgageIncreaseAmount') || ''; increaseStartDateInput.value = localStorage.getItem('mortgageIncreaseStartDate') || ''; const savedLumpSums = localStorage.getItem('mortgageLumpSums'); if (savedLumpSums) { try { const entries = JSON.parse(savedLumpSums); if (Array.isArray(entries)) { entries.forEach(entry => addPrepaymentEntry(entry.amount, entry.dateStr)); } } catch (e) { console.error("Error parsing saved lump sums:", e); localStorage.removeItem('mortgageLumpSums'); } } }
+
+        // --- Calculation Logic ---
+        // ... Same generateAmortizationSchedule function ...
+        function generateAmortizationSchedule(principal, periodicRate, basePeriodicPayment, firstPaymentDate, scheduleType, paymentsPerYear, termYears, lumpSumPrepayments = [], paymentIncrease = null) { let schedule = []; let currentBalance = principal; let totalInterestPaid = 0; let paymentCount = 0; let cumulativeLumpSum = 0; let currentPaymentDate = null; let previousPaymentDate = null; let prepayIndex = 0; const maxPayments = termYears * paymentsPerYear * 1.5; for (let i = 1; currentBalance > 0.005 && i <= maxPayments; i++) { currentPaymentDate = (i === 1) ? new Date(firstPaymentDate) : getNextPaymentDate(previousPaymentDate, scheduleType); if (!isValidDate(currentPaymentDate)) { console.error("Date calc error", i); return { schedule: [], error: true }; } let actualPayment = basePeriodicPayment; if (paymentIncrease && currentPaymentDate > paymentIncrease.startDate) { actualPayment += paymentIncrease.amount; } const interestComponent = currentBalance * periodicRate; let principalComponent = actualPayment - interestComponent; let lumpSumMadeThisPeriod = 0; while (prepayIndex < lumpSumPrepayments.length) { const prepayDate = lumpSumPrepayments[prepayIndex].date; if (prepayDate <= currentPaymentDate && (!previousPaymentDate || prepayDate > previousPaymentDate)) { lumpSumMadeThisPeriod += lumpSumPrepayments[prepayIndex].amount; prepayIndex++; } else if (prepayDate > currentPaymentDate) { break; } else { prepayIndex++; } } cumulativeLumpSum += lumpSumMadeThisPeriod; let endingBalance = currentBalance - principalComponent; if (endingBalance - lumpSumMadeThisPeriod <= 0.005) { principalComponent = currentBalance - lumpSumMadeThisPeriod; if (principalComponent < 0) principalComponent = 0; actualPayment = principalComponent + interestComponent; endingBalance = 0; } else { endingBalance -= lumpSumMadeThisPeriod; } if (principalComponent < 0) principalComponent = 0; if (endingBalance < 0.005) endingBalance = 0; schedule.push({ paymentNumber: i, paymentDate: currentPaymentDate, startingBalance: currentBalance, payment: actualPayment, principalPaid: principalComponent, interestPaid: interestComponent, prepaymentMade: lumpSumMadeThisPeriod, endingBalance: endingBalance }); totalInterestPaid += interestComponent; currentBalance = endingBalance; paymentCount = i; previousPaymentDate = currentPaymentDate; if (currentBalance <= 0.005) break; } if (paymentCount >= maxPayments && currentBalance > 0.005) { console.error("Max payments reached."); return { schedule: schedule.slice(0, maxPayments), error: true }; } return { schedule, totalInterestPaid, paymentCount, lastPaymentDate: previousPaymentDate, totalLumpSum: cumulativeLumpSum, error: false }; }
+
+        // --- Calculate Mortgage (Main Function) ---
+        function calculateMortgage() {
+            try {
+                let isValid = true; /* ... Validation logic ... */
+                 const principal = parseFloat(mortgageAmountInput.value); const annualInterestRate = parseFloat(interestRateInput.value); const termYears = parseInt(termDurationInput.value, 10); const firstPaymentDateStr = firstPaymentDateInput.value; const firstPaymentDate = parseDate(firstPaymentDateStr); const paymentSchedule = paymentScheduleSelect.value;
+                 isValid &= validateInput(mortgageAmountInput, amountError, !isNaN(principal) && principal > 0, "Please enter a valid positive amount."); isValid &= validateInput(interestRateInput, rateError, !isNaN(annualInterestRate) && annualInterestRate >= 0 && annualInterestRate <= 100, "Please enter a valid rate (0-100)."); isValid &= validateInput(termDurationInput, termError, !isNaN(termYears) && termYears >= 1 && termYears <= 50, "Please enter a valid term (1-50 years)."); isValid &= validateInput(firstPaymentDateInput, firstDateError, firstPaymentDate !== null, "Please enter a valid date."); isValid &= validateInput(paymentScheduleSelect, scheduleError, paymentSchedule !== "", "Please select a payment schedule.");
+                 const paymentIncrease = getPaymentIncreaseData(); const lumpSumPrepayments = getLumpSumPrepaymentsFromUI();
+                 if ((paymentIncrease === null && (increaseAmountInput.value || increaseStartDateInput.value)) || (lumpSumPrepayments.length === 0 && prepaymentsListDiv.children.length > 0 && prepayErrorDiv.style.display === 'block') ) { isValid = false; }
+                 if (!firstPaymentDate && (paymentIncrease || lumpSumPrepayments.length > 0)) { isValid = false; }
+
+                if (!isValid) { clearResults(false); return; }
+
+                // --- Calculate Core Metrics ---
+                /* ... Calculation logic ... */
+                let paymentsPerYear; let paymentFrequencyName = ""; switch (paymentSchedule) { case 'monthly': paymentsPerYear = 12; paymentFrequencyName = "Monthly"; break; case 'bi-weekly': paymentsPerYear = 26; paymentFrequencyName = "Bi-Weekly"; break; case 'weekly': paymentsPerYear = 52; paymentFrequencyName = "Weekly"; break; case 'accel-bi-weekly': paymentsPerYear = 26; paymentFrequencyName = "Accelerated Bi-Weekly"; break; case 'accel-weekly': paymentsPerYear = 52; paymentFrequencyName = "Accelerated Weekly"; break; default: paymentsPerYear = 12; paymentFrequencyName = "Monthly"; } const originalTotalPayments = termYears * paymentsPerYear; const monthlyRate = annualInterestRate / 100 / 12; const periodicRate = annualInterestRate / 100 / paymentsPerYear; let monthlyPayment = 0; if (principal <= 0) { clearResults(); return; } if (monthlyRate > 0) { monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, termYears * 12)) / (Math.pow(1 + monthlyRate, termYears * 12) - 1); } else { monthlyPayment = (termYears * 12 > 0) ? principal / (termYears * 12) : 0; } if (isNaN(monthlyPayment) || !isFinite(monthlyPayment)) monthlyPayment = 0; let basePeriodicPayment; if (paymentSchedule === 'monthly') { basePeriodicPayment = monthlyPayment; } else if (paymentSchedule === 'bi-weekly') { basePeriodicPayment = monthlyPayment / 2; } else if (paymentSchedule === 'weekly') { basePeriodicPayment = monthlyPayment / 4; } else if (paymentSchedule === 'accel-bi-weekly') { basePeriodicPayment = monthlyPayment / 2; } else if (paymentSchedule === 'accel-weekly') { basePeriodicPayment = monthlyPayment / 4; } else { basePeriodicPayment = monthlyPayment; } if (periodicRate === 0 && originalTotalPayments > 0) { basePeriodicPayment = principal / originalTotalPayments; } if (isNaN(basePeriodicPayment) || !isFinite(basePeriodicPayment)) basePeriodicPayment = 0;
+
+
+                // --- Generate Schedules ---
+                const standardResult = generateAmortizationSchedule(principal, periodicRate, basePeriodicPayment, firstPaymentDate, paymentSchedule, paymentsPerYear, termYears);
+                if (standardResult.error) { throw new Error("Error generating standard schedule."); }
+                const hasModifications = paymentIncrease !== null || lumpSumPrepayments.length > 0;
+                let modifiedResult = standardResult;
+                if (hasModifications) {
+                    modifiedResult = generateAmortizationSchedule(principal, periodicRate, basePeriodicPayment, firstPaymentDate, paymentSchedule, paymentsPerYear, termYears, lumpSumPrepayments, paymentIncrease);
+                    if (modifiedResult.error) { console.error("Error generating modified schedule."); scheduleTypeSpan.textContent = "(Standard - Error in Mods)"; hasModifications = false; } // Fallback, don't show impact div
+                }
+
+                // --- Update UI ---
+                // Summary
+                paymentResultSpan.textContent = `${formatCurrency(basePeriodicPayment)} (${paymentFrequencyName})`; originalTermSpan.textContent = formatYearsMonths(standardResult.paymentCount / (paymentsPerYear / 12)); originalPayoffDateSpan.textContent = formatDate(standardResult.lastPaymentDate); totalPrincipalSpan.textContent = formatCurrency(principal); totalInterestSpan.textContent = formatCurrency(standardResult.totalInterestPaid); totalCostSpan.textContent = formatCurrency(principal + standardResult.totalInterestPaid);
+
+                // Modification Impact - Use Class Toggling
+                modificationImpactDiv.classList.remove('impact-visible', 'impact-hidden'); // Clear previous classes
+                if (hasModifications && modifiedResult.paymentCount < standardResult.paymentCount) {
+                    const interestSaved = standardResult.totalInterestPaid - modifiedResult.totalInterestPaid; const termReductionPeriods = standardResult.paymentCount - modifiedResult.paymentCount;
+                    newTermSpan.textContent = formatYearsMonths(modifiedResult.paymentCount / (paymentsPerYear / 12)); newPayoffDateSpan.textContent = formatDate(modifiedResult.lastPaymentDate); newTotalInterestSpan.textContent = formatCurrency(modifiedResult.totalInterestPaid); newTotalCostSpan.textContent = formatCurrency(principal + modifiedResult.totalInterestPaid); interestSavedSpan.textContent = formatCurrency(interestSaved); termReductionSpan.textContent = formatYearsMonths(termReductionPeriods / (paymentsPerYear / 12));
+                    modificationImpactDiv.classList.add('impact-visible'); // SHOW IMPACT SECTION
+                    scheduleTypeSpan.textContent = "(With Modifications)";
+                } else {
+                    modificationImpactDiv.classList.add('impact-hidden'); // HIDE IMPACT SECTION
+                    scheduleTypeSpan.textContent = "(Standard)";
+                }
+
+                // Amortization Table
+                amortizationTableBody.innerHTML = ''; const scheduleToDisplay = hasModifications ? modifiedResult.schedule : standardResult.schedule;
+                if (scheduleToDisplay.length > 0) {
+                    scheduleToDisplay.forEach(row => { const tr = document.createElement('tr');
+                        // Wrap lump sum value in a span
+                        const lumpSumDisplay = row.prepaymentMade > 0 ? formatCurrency(row.prepaymentMade) : '-';
+                        tr.innerHTML = `<td>${row.paymentNumber}</td><td>${formatDate(row.paymentDate)}</td><td>${formatCurrency(row.startingBalance)}</td><td>${formatCurrency(row.payment)}</td><td>${formatCurrency(row.principalPaid)}</td><td>${formatCurrency(row.interestPaid)}</td><td><span class="lump-sum-value">${lumpSumDisplay}</span></td><td>${formatCurrency(row.endingBalance)}</td>`;
+                        amortizationTableBody.appendChild(tr); });
+                } else { amortizationTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Calculation resulted in no payments. Check inputs.</td></tr>'; }
+
+                // Chart
+                updateChart(standardResult.schedule, hasModifications ? modifiedResult.schedule : null);
+
+            } catch (error) { /* ... Error handling ... */ console.error("Error during mortgage calculation:", error); amortizationTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--current-danger-color);">An unexpected error occurred. Please check console.</td></tr>`; clearResults(false); }
+        }
+
+
+        function clearResults(clearAllErrors = true) { /* ... Same clearResults ... */ paymentResultSpan.textContent = '-'; originalTermSpan.textContent = '-'; originalPayoffDateSpan.textContent = '-'; totalPrincipalSpan.textContent = '-'; totalInterestSpan.textContent = '-'; totalCostSpan.textContent = '-'; modificationImpactDiv.classList.remove('impact-visible'); modificationImpactDiv.classList.add('impact-hidden'); /* Use class */ newTermSpan.textContent = '-'; newPayoffDateSpan.textContent = '-'; interestSavedSpan.textContent = '-'; termReductionSpan.textContent = '-'; newTotalInterestSpan.textContent = '-'; newTotalCostSpan.textContent = '-'; scheduleTypeSpan.textContent = "(Standard)"; amortizationTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Enter loan details to see the schedule.</td></tr>'; if (paymentChart) { try { paymentChart.destroy(); } catch(e){} paymentChart = null; } if (clearAllErrors) { prepayErrorDiv.style.display = 'none'; firstDateError.style.display = 'none'; amountError.style.display='none'; rateError.style.display='none'; termError.style.display='none'; scheduleError.style.display='none'; increaseDateError.style.display = 'none'; prepaymentsListDiv.querySelectorAll('input.error').forEach(el => el.classList.remove('error')); [mortgageAmountInput, interestRateInput, termDurationInput, firstPaymentDateInput, paymentScheduleSelect, increaseAmountInput, increaseStartDateInput].forEach(input => input.classList.remove('error')); } }
+        function resetCalculator() { /* ... Same resetCalculator ... */ form.reset(); firstPaymentDateInput.value = ''; increaseAmountInput.value = ''; increaseStartDateInput.value = ''; prepaymentsListDiv.innerHTML = ''; paymentScheduleSelect.value = ""; localStorage.removeItem('mortgageLumpSums'); localStorage.removeItem('mortgageIncreaseAmount'); localStorage.removeItem('mortgageIncreaseStartDate'); localStorage.removeItem('mortgageFirstPaymentDate'); clearResults(true); }
+
+        // --- Charting Function ---
+        // ... Same updateChart function ...
+        function updateChart(standardSchedule, modifiedSchedule) { try { if (!window.Chart) { console.error("Chart.js library not loaded."); document.getElementById('chart-container').innerHTML = '<p style="text-align:center; color:red;">Error: Chart library not loaded.</p>'; return; } if (!standardSchedule || standardSchedule.length === 0) { if (paymentChart) { try { paymentChart.destroy(); } catch(e){} paymentChart = null; } return; } const standardLabels = standardSchedule.map(row => row.paymentNumber); const standardInterestData = standardSchedule.map(row => row.interestPaid); const standardPrincipalData = standardSchedule.map(row => row.principalPaid); const themeColorToRgba = (cssVar, alpha) => { let color = getComputedStyle(document.body).getPropertyValue(cssVar); if (!color) { if (cssVar.includes('danger')) return `rgba(231, 76, 60, ${alpha})`; if (cssVar.includes('accent')) return `rgba(74, 144, 226, ${alpha})`; return `rgba(0, 0, 0, ${alpha})`; } if (color.startsWith('#')) { let r = parseInt(color.slice(1, 3), 16); let g = parseInt(color.slice(3, 5), 16); let b = parseInt(color.slice(5, 7), 16); return `rgba(${r}, ${g}, ${b}, ${alpha})`; } return color.replace(/rgba?\(([^)]+)\)/, (match, rgb) => `rgba(${rgb.split(',').slice(0, 3).join(',')}, ${alpha})`); }; const datasets = [ { label: 'Interest (Std)', data: standardInterestData, borderColor: themeColorToRgba('--current-danger-color', 0.8), backgroundColor: themeColorToRgba('--current-danger-color', 0.5), fill: 'origin', pointRadius: 0, borderWidth: 1.5 }, { label: 'Principal (Std)', data: standardPrincipalData, borderColor: themeColorToRgba('--current-accent-color', 0.8), backgroundColor: themeColorToRgba('--current-accent-color', 0.5), fill: 'origin', pointRadius: 0, borderWidth: 1.5 } ]; let displayLabels = standardLabels; if (modifiedSchedule && modifiedSchedule.length > 0 && modifiedSchedule.length !== standardSchedule.length) { const modLabels = modifiedSchedule.map(row => row.paymentNumber); if (modLabels.length > standardLabels.length) displayLabels = modLabels; datasets.push({ label: 'Interest (Mod)', data: modifiedSchedule.map(r => r.interestPaid), borderColor: themeColorToRgba('--current-danger-color', 0.6), fill: false, borderDash: [5, 5], pointRadius: 0, borderWidth: 1.5, tension: 0.1 }); datasets.push({ label: 'Principal (Mod)', data: modifiedSchedule.map(r => r.principalPaid), borderColor: themeColorToRgba('--current-accent-color', 0.6), fill: false, borderDash: [5, 5], pointRadius: 0, borderWidth: 1.5, tension: 0.1 }); } const data = { labels: displayLabels, datasets: datasets }; const config = { type: 'line', data: data, options: { responsive: true, maintainAspectRatio: false, interaction:{mode:'index',intersect:false}, plugins: { title: { display: true, text: 'Principal vs. Interest Over Time', color: getComputedStyle(document.body).getPropertyValue('--current-primary-text')}, tooltip: { mode: 'index', intersect: false, callbacks: { label: (ctx)=>`${ctx.dataset.label||''}: ${formatCurrency(ctx.parsed.y)}` } }, legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--current-secondary-text')}} }, scales: { x: { title: { display: true, text: 'Payment Number', color: getComputedStyle(document.body).getPropertyValue('--current-secondary-text')}, ticks: { color: getComputedStyle(document.body).getPropertyValue('--current-secondary-text'), autoSkip: true, maxTicksLimit: 15 } }, y: { title: { display: true, text: 'Amount ($)', color: getComputedStyle(document.body).getPropertyValue('--current-secondary-text')}, ticks: { color: getComputedStyle(document.body).getPropertyValue('--current-secondary-text'), callback: (v)=>formatCurrency(v) }, stacked: false } } }}; if (paymentChart) { try { paymentChart.destroy(); } catch(e){} paymentChart = null; } paymentChart = new Chart(ctx, config); } catch(chartError) { console.error("Error updating chart:", chartError); document.getElementById('chart-container').innerHTML = `<p style="text-align:center; color:${getComputedStyle(document.body).getPropertyValue('--current-danger-color')};">Error displaying chart.</p>`; if (paymentChart) { try { paymentChart.destroy(); } catch(e){} paymentChart = null; } } }
+
+        // --- Theme Switching ---
+        // ... Same applyTheme function ...
+        function applyTheme(theme) { if (theme === 'dark') { document.body.classList.remove('light-theme'); document.body.classList.add('dark-theme'); } else { document.body.classList.remove('dark-theme'); document.body.classList.add('light-theme'); } if (mortgageAmountInput.value && interestRateInput.value && termDurationInput.value && firstPaymentDateInput.value && paymentScheduleSelect.value) { calculateMortgage(); } else if (paymentChart) { try { paymentChart.destroy(); } catch(e){} paymentChart = null; } }
+        themeToggleButton.addEventListener('click', () => { const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light'; const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(newTheme); localStorage.setItem('mortgageCalcTheme', newTheme); });
+
+        // --- Event Listeners ---
+        // ... Same event listeners + increase listeners ...
+        mortgageAmountInput.addEventListener('input', calculateMortgage); interestRateInput.addEventListener('input', calculateMortgage); termDurationInput.addEventListener('input', calculateMortgage); firstPaymentDateInput.addEventListener('change', () => { saveModificationDataToStorage(); calculateMortgage(); }); paymentScheduleSelect.addEventListener('change', calculateMortgage);
+        increaseAmountInput.addEventListener('input', () => { saveModificationDataToStorage(); calculateMortgage(); }); increaseStartDateInput.addEventListener('change', () => { saveModificationDataToStorage(); calculateMortgage(); });
+        addPrepaymentButton.addEventListener('click', () => addPrepaymentEntry()); resetButton.addEventListener('click', resetCalculator);
+
+        // --- Initial Load ---
+        // ... Same DOMContentLoaded listener ...
+        document.addEventListener('DOMContentLoaded', () => { const savedTheme = localStorage.getItem('mortgageCalcTheme') || 'light'; applyTheme(savedTheme); loadModificationDataFromStorage(); if (mortgageAmountInput.value && interestRateInput.value && termDurationInput.value && firstPaymentDateInput.value && paymentScheduleSelect.value) { calculateMortgage(); } else { clearResults(true); } });
+
+    </script>
+
+</body>
+</html>
