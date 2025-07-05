@@ -2,175 +2,1577 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuel Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Cruise Cost</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nexa:wght@700&display=swap');
+        :root {
+            --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            
+            /* Light Theme */
+            --bg-color-light: #e0e5ec;
+            --text-color-light: #3a3a3c;
+            --primary-color-light: #007aff;
+            --secondary-color-light: #5856d6;
+            --danger-color-light: #ff3b30;
+            --success-color-light: #34c759;
+            --card-bg-light: #e0e5ec; 
+            --input-bg-light: #dde1e7; 
+            --button-text-color-light: var(--primary-color-light);
+            --heading-text-color-light: var(--secondary-color-light);
+            --shadow-main-light: #a3b1c6;
+            --shadow-highlight-light: #ffffff;
+            --warning-text-color-light: #B45309; 
+            --star-color-light: #ffcc00; /* Gold for default star */
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f3f4f6;
+
+            /* Dark Theme */
+            --bg-color-dark: #232328; 
+            --text-color-dark: #f0f0f0;
+            --primary-color-dark: #0a84ff;
+            --secondary-color-dark: #5e5ce6;
+            --danger-color-dark: #ff453a;
+            --success-color-dark: #30d158;
+            --card-bg-dark: #232328; 
+            --input-bg-dark: #2c2c30; 
+            --button-text-color-dark: var(--primary-color-dark);
+            --heading-text-color-dark: #aEaaff;
+            --shadow-main-dark: #121212; 
+            --shadow-highlight-dark: #3c3c43; 
+            --warning-text-color-dark: #F59E0B;  
+            --star-color-dark: #ffd633; /* Brighter gold for dark theme */
+
+            /* Neumorphic Shadows */
+            --neumorphic-offset: 6px;
+            --neumorphic-blur: 12px;
+            
+            /* Default to Light Theme */
+            --bg-color: var(--bg-color-light);
+            --text-color: var(--text-color-light);
+            --primary-color: var(--primary-color-light);
+            --secondary-color: var(--secondary-color-light);
+            --danger-color: var(--danger-color-light);
+            --success-color: var(--success-color-light);
+            --card-bg: var(--card-bg-light);
+            --input-bg: var(--input-bg-light);
+            --button-text-color: var(--button-text-color-light);
+            --heading-text-color: var(--heading-text-color-light);
+            --shadow-main: var(--shadow-main-light);
+            --shadow-highlight: var(--shadow-highlight-light);
+            --warning-text-color: var(--warning-text-color-light);
+            --star-color: var(--star-color-light);
         }
-        .container {
-            width: 90%;
-            max-width: 500px;
-            padding: 20px;
-            border: 1px solid #e2e8f0;
+
+        body.dark-theme {
+            --bg-color: var(--bg-color-dark);
+            --text-color: var(--text-color-dark);
+            --primary-color: var(--primary-color-dark);
+            --secondary-color: var(--secondary-color-dark);
+            --danger-color: var(--danger-color-dark);
+            --success-color: var(--success-color-dark);
+            --card-bg: var(--card-bg-dark);
+            --input-bg: var(--input-bg-dark);
+            --button-text-color: var(--button-text-color-dark);
+            --heading-text-color: var(--heading-text-color-dark);
+            --shadow-main: var(--shadow-main-dark);
+            --shadow-highlight: var(--shadow-highlight-dark);
+            --warning-text-color: var(--warning-text-color-dark);
+            --star-color: var(--star-color-dark);
+        }
+        
+        .neumorphic {
+            background: var(--card-bg);
             border-radius: 12px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            max-height: 90vh;
+            box-shadow: 
+                var(--neumorphic-offset) var(--neumorphic-offset) var(--neumorphic-blur) var(--shadow-main),
+                calc(-1 * var(--neumorphic-offset)) calc(-1 * var(--neumorphic-offset)) var(--neumorphic-blur) var(--shadow-highlight);
+            transition: box-shadow 0.2s ease-out, background-color 0.3s ease;
         }
-        h2 {
+
+        .neumorphic-inset {
+            background: var(--input-bg); 
+            border-radius: 8px;
+            box-shadow: 
+                inset calc(var(--neumorphic-offset) / 2) calc(var(--neumorphic-offset) / 2) calc(var(--neumorphic-blur) / 2) var(--shadow-main),
+                inset calc(-1 * var(--neumorphic-offset) / 2) calc(-1 * var(--neumorphic-offset) / 2) calc(var(--neumorphic-blur) / 2) var(--shadow-highlight);
+            border: 1px solid transparent; 
+        }
+        .neumorphic-pressed, .btn:active:not(.btn-primary) { 
+            box-shadow: 
+                inset var(--neumorphic-offset) var(--neumorphic-offset) var(--neumorphic-blur) var(--shadow-main),
+                inset calc(-1 * var(--neumorphic-offset)) calc(-1 * var(--neumorphic-offset)) var(--neumorphic-blur) var(--shadow-highlight);
+            transform: translateY(1px) translateX(1px); 
+        }
+
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+
+        .app-header {
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid color-mix(in srgb, var(--shadow-main) 30%, transparent);
+        }
+        .app-title { font-size: 1.5em; font-weight: 600; color: var(--primary-color); }
+        .header-controls button {
+            margin-left: 10px; padding: 8px 12px; font-size: 0.9em; cursor: pointer;
+            border: none; color: var(--button-text-color);
+        }
+
+        .main-content-wrapper {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            scroll-behavior: smooth; width: 100%; flex-grow: 1;
+            margin-top: 65px; 
+        }
+        .app-screen {
+            min-width: 100vw; height: 100%; padding: 20px;
+            scroll-snap-align: start; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 25px; 
+        }
+        
+        .bento-item { 
+            padding: 20px;
+        }
+        .bento-item h2 {
+            margin-bottom: 20px; font-size: 1.3em; font-weight: 600;
+            color: var(--heading-text-color);
+            border-bottom: 1px solid color-mix(in srgb, var(--text-color) 20%, transparent);
+            padding-bottom: 10px; display: flex; align-items: center;
+        }
+        .bento-item h2 .icon { margin-right: 10px; font-size: 1.2em; }
+
+        .form-group { 
+            margin-bottom: 15px; 
+            position: relative; 
+        }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9em; font-weight: 500; color: var(--text-color); }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%; padding: 12px 15px; 
+            color: var(--text-color); font-size: 1em;
+            border: none; 
+            padding-right: 30px; /* Make space for potential clear button */
+        }
+        .form-group .input-clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%; 
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            opacity: 0.6;
+            font-size: 1.2em;
+            line-height: 1;
+            padding: 5px;
+            cursor: pointer;
+            display: none; 
+        }
+        .form-group label + .input-clear-btn { /* If label is direct sibling, not input */
+             top: calc(50% + 12px); 
+        }
+         /* For inputs inside a flex container directly after a label */
+        .form-group label + div > input + .input-clear-btn {
+            right: 5px; /* Adjust as needed for flex items */
+            /* If the button is also a flex item, this might not be needed, or use margin-left on button */
+        }
+         .form-group label + div > .input-clear-btn { /* If clear button is direct child of flex div */
+            margin-left: -28px; /* Pull it back over input padding */
+            height: 100%;
+            display: flex;
+            align-items: center;
+            z-index: 2; /* To be above the input border/shadow */
+            position: relative; /* Override absolute */
+        }
+
+
+        .form-group input[type="checkbox"] { 
+            margin-right: 8px;
+            transform: scale(1.2); 
+            accent-color: var(--primary-color); 
+        }
+        .form-group-inline { 
+            display: flex;
+            align-items: center;
+        }
+        .form-group-inline label {
+            margin-bottom: 0; 
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group select:focus {
+            outline: none;
+             box-shadow: 
+                inset calc(var(--neumorphic-offset) / 2) calc(var(--neumorphic-offset) / 2) calc(var(--neumorphic-blur) / 2) var(--shadow-main),
+                inset calc(-1 * var(--neumorphic-offset) / 2) calc(-1 * var(--neumorphic-offset) / 2) calc(var(--neumorphic-blur) / 2) var(--shadow-highlight),
+                0 0 0 2px var(--primary-color); 
+        }
+        
+        #active-profile-display.is-active {
+            border: 2px solid var(--primary-color);
+            box-shadow: 
+                inset calc(var(--neumorphic-offset) / 2) calc(var(--neumorphic-offset) / 2) calc(var(--neumorphic-blur) / 2) color-mix(in srgb, var(--shadow-main) 80%, var(--primary-color)),
+                inset calc(-1 * var(--neumorphic-offset) / 2) calc(-1 * var(--neumorphic-offset) / 2) calc(var(--neumorphic-blur) / 2) color-mix(in srgb, var(--shadow-highlight) 80%, var(--primary-color)),
+                0 0 0 1px var(--primary-color);
+        }
+        #active-profile-display.is-active strong {
+            color: var(--primary-color);
+        }
+
+        .empty-state-message {
             text-align: center;
-            color: #0070C0;
-            font-family: 'Nexa', sans-serif;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            font-size: 24px;
+            padding: 20px;
+            color: var(--text-color);
+            opacity: 0.7;
         }
-        .input-group, .output-group {
-            margin-bottom: 15px;
-        }
-        .input-group label, .output-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #0070C0;
-        }
-        .input-group input, .input-group select, .output-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            box-sizing: border-box;
-            color: #0070C0;
-        }
-        .output-group div {
+        .empty-state-message p {
             margin-bottom: 10px;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            background-color: #f9fafb;
-            line-height: 1.5;
+        }
+        .empty-state-message .cta-link { 
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
             font-weight: 500;
         }
-        .red {
-            color: red;
-            font-weight: bold;
+
+        .profile-actions .btn {
+            padding: 6px 8px; 
+            font-size: 0.8em;
+            line-height: 1; 
         }
-        button {
-            background-color: #2563eb;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            width: 100%;
+        .profile-actions .default-star-btn {
+            color: var(--text-color); 
+            opacity: 0.5;
+        }
+        .profile-actions .default-star-btn.is-default {
+            color: var(--star-color); 
+            opacity: 1;
+        }
+        .btn-small { /* For converter button */
+            padding: 8px 10px !important; 
+            font-size: 0.85em !important;
+            line-height: 1.2; 
+        }
+
+        .btn {
+            padding: 12px 20px; font-size: 1em; font-weight: 500;
+            cursor: pointer; border: none;
+            color: var(--button-text-color);
+            transition: transform 0.1s ease, box-shadow 0.2s ease-out;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color); 
+            color: white; 
+             box-shadow: 
+                3px 3px 8px color-mix(in srgb, var(--primary-color) 70%, var(--shadow-main)),
+                -3px -3px 8px color-mix(in srgb, var(--primary-color) 70%, var(--shadow-highlight));
+        }
+        .btn-primary:active {
+            box-shadow: 
+                inset 3px 3px 8px color-mix(in srgb, var(--primary-color) 70%, var(--shadow-main)),
+                inset -3px -3px 8px color-mix(in srgb, var(--primary-color) 70%, var(--shadow-highlight));
+            transform: translateY(1px) translateX(1px); 
+        }
+        
+        .standard-modal {
+            display: none; position: fixed; z-index: 1001;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.6); 
+            animation: fadeInModal 0.3s ease-out; 
+            opacity: 0; 
+            align-items: center; justify-content: center; 
+        }
+        .standard-modal-content {
+            background-color: var(--card-bg); 
+            color: var(--text-color);
+            padding: 30px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 650px; 
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+            max-height: 80vh; 
+            overflow-y: auto; 
+            transform: scale(0.95); 
+            transition: transform 0.3s ease-out;
+        }
+         .standard-modal.confirm-modal .standard-modal-content {
+            max-width: 400px; 
+        }
+        .standard-modal.fade-in .standard-modal-content { 
+            transform: scale(1);
+        }
+        .standard-modal-content h2 { margin-top: 0; color: var(--primary-color); margin-bottom: 15px; }
+        .standard-modal-content h3 { margin-top: 20px; margin-bottom: 10px; color: var(--secondary-color); }
+        .standard-modal-content p, .standard-modal-content li { line-height: 1.6; }
+        .standard-modal-close-btn { 
+            position: absolute; top: 15px; right: 20px; font-size: 2em;
+            font-weight: bold; cursor: pointer; color: var(--text-color);
+            background: none; border: none; padding: 5px; line-height: 1;
+        }
+        .standard-modal-close-btn:hover { opacity: 0.7; }
+        .confirm-modal-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        #manual-copy-textarea { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 10px; 
+            font-family: monospace; 
+            border-radius: 6px; 
+            border: 1px solid var(--input-bg); 
+            background-color: var(--input-bg); 
+            color: var(--text-color); 
+            resize: vertical; 
+            min-height: 100px;
+        }
+
+
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOutModal { from { opacity: 1; } to { opacity: 0; } }
+        .standard-modal.fade-out { 
+            animation: fadeOutModal 0.3s ease-out forwards; 
+        }
+        .standard-modal.fade-out .standard-modal-content {
+            transform: scale(0.95);
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+            color: white;
+            font-size: 0.9em;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        button:hover {
-            background-color: #1d4ed8;
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
-        /* Responsive design */
-        @media (max-width: 600px) {
-            .container {
+        .toast-notification.success { background-color: var(--success-color); }
+        .toast-notification.info { background-color: var(--primary-color); }
+        .toast-notification.error { background-color: var(--danger-color); }
+
+
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+        .result-item { padding: 15px; text-align: center; }
+        .result-item .value { font-size: 1.6em; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; }
+        .result-item .label { font-size: 0.9em; opacity: 0.8; color: var(--text-color); }
+        
+        .result-item.fuel-alert .value {
+            color: var(--warning-text-color); 
+            font-weight: 700; 
+        }
+        .result-item.fuel-alert .label::before {
+            content: "⛽"; 
+            display: inline-block;
+            margin-right: 5px; 
+            font-size: 0.9em; 
+            vertical-align: baseline;
+        }
+
+        .list-container { margin-top: 20px; }
+        .list-item { 
+            padding: 12px 15px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .list-item span { flex-grow: 1; margin-right: 10px; color: var(--text-color); }
+        .list-item .profile-actions { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+        }
+        .list-item > div:not(.profile-actions) .btn { 
+            padding: 8px 12px; 
+            font-size: 0.9em; 
+        }
+        .list-item .delete-profile-btn, .list-item .delete-trip-btn {
+            background-color: var(--danger-color); color: white;
+            border-radius: 8px; 
+            width: auto; height: auto; 
+            padding: 8px 10px; 
+            line-height: normal; text-align: center; font-weight: bold;
+        }
+        
+        .screen-nav { 
+            display: flex; justify-content: center; gap: 12px; padding: 12px 0;
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            z-index: 900; background-color: color-mix(in srgb, var(--card-bg) 80%, transparent);
+            border-radius: 20px; padding: 8px 15px;
+        }
+        .nav-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background-color: var(--text-color); opacity: 0.4;
+            cursor: pointer; transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-dot.active { opacity: 1; background-color: var(--primary-color); transform: scale(1.2); }
+
+        .screen-navigation-buttons { 
+            display: flex; justify-content: space-between;
+            margin-top: auto; padding-top: 25px;
+        }
+        .screen-navigation-buttons .btn { 
+            min-width: 120px; padding: 12px 20px; font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .app-title { font-size: 1.3em; }
+            .header-controls button { padding: 7px 10px; font-size: 0.85em; }
+            .app-screen { padding: 15px; gap: 20px; }
+            .bento-item { padding: 15px; }
+            .bento-item h2 { font-size: 1.2em; margin-bottom: 15px; padding-bottom: 8px; }
+            .standard-modal-content { width: 90%; padding: 20px; max-height: 85vh;}
+            .results-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;}
+            .result-item .value { font-size: 1.4em; }
+            .screen-navigation-buttons .btn { min-width: 100px; font-size: 0.95em; padding: 10px 15px;}
+             .form-group .input-clear-btn { right: 5px; } 
+             .form-group input[type="text"], .form-group input[type="number"] { padding-right: 25px; }
+             .form-group label + div > .input-clear-btn { margin-left: -30px; } /* Adjust for flex clear button */
+        }
+        @media (max-width: 480px) {
+            .list-item { flex-direction: column; align-items: stretch; gap:10px; }
+            .list-item span { margin-bottom: 0; text-align: center;}
+            .list-item .profile-actions, .list-item > div:not(.profile-actions) { 
+                justify-content: center; 
                 width: 100%;
-                padding: 15px;
             }
-            button {
-                padding: 10px;
+            .list-item .profile-actions .btn, .list-item > div:not(.profile-actions) .btn {
+                flex-grow: 1; 
+                font-size: 0.9em; 
             }
+            
+            .screen-navigation-buttons { flex-direction: column; gap: 10px; }
+            .screen-navigation-buttons .btn { width: 100%; }
+            .results-grid { grid-template-columns: 1fr; } 
+            .toast-notification { width: 90%; bottom: 10px; }
+            .standard-modal.confirm-modal .standard-modal-content { max-width: 90%; }
+             #manual-copy-textarea { min-height: 150px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Fuel Calculator</h2>
-        <div class="input-group">
-            <label for="unit">Unit of Measure</label>
-            <select id="unit">
-                <option value="metric">Metric</option>
-                <option value="imperial">Imperial</option>
-            </select>
+    <header class="app-header">
+        <div class="app-title">Cruise Cost</div>
+        <div class="header-controls">
+            <button id="theme-toggle-btn" class="neumorphic">🌓 Theme</button>
+            <button id="readme-btn" class="neumorphic">ℹ️ Readme</button>
         </div>
-        <div class="input-group">
-            <label for="fuel">Fuel in Tank</label>
-            <input type="number" id="fuel" placeholder="Liters/Gallons">
-        </div>
-        <div class="input-group">
-            <label for="distance">Distance to Travel</label>
-            <input type="number" id="distance" placeholder="Kilometers/Miles">
-        </div>
-        <div class="input-group">
-            <label for="cost">Fuel Cost per Liter</label>
-            <input type="number" id="cost" placeholder="Cost per Liter">
-        </div>
-        <div class="input-group">
-            <label for="efficiency">Fuel Efficiency</label>
-            <input type="number" id="efficiency" placeholder="Km/L or Miles/Gallon">
-        </div>
-        <div class="input-group">
-            <label for="speed">Average Driving Speed</label>
-            <input type="number" id="speed" placeholder="Km/h or Miles/h">
-        </div>
-        <div class="input-group">
-            <label for="toll">Toll Charges (if applicable)</label>
-            <input type="number" id="toll" placeholder="Toll Charges">
-        </div>
-        <button onclick="calculate()">Calculate</button>
-        <div class="output-group">
-            <div id="output"></div>
+    </header>
+
+    <div class="main-content-wrapper" id="main-content-wrapper">
+        <!-- Screen 1: Settings & Vehicle Profiles -->
+        <section id="screen-settings" class="app-screen">
+            <div class="bento-item neumorphic">
+                <h2><span class="icon">⚙️</span>App Settings</h2>
+                <div class="form-group">
+                    <label for="currency-symbol">Currency Symbol:</label>
+                    <input type="text" id="currency-symbol" class="neumorphic-inset input-with-clear" value="$">
+                    <button class="input-clear-btn" data-target="currency-symbol">×</button>
+                </div>
+                <div class="form-group">
+                    <label for="distance-unit">Distance Unit:</label>
+                    <select id="distance-unit" class="neumorphic-inset">
+                        <option value="km">Kilometers (Km)</option>
+                        <option value="miles">Miles</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="volume-unit">Volume Unit:</label>
+                    <select id="volume-unit" class="neumorphic-inset">
+                        <option value="liters">Liters (L)</option>
+                        <option value="gallons">Gallons (US)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bento-item neumorphic">
+                <h2><span class="icon">🚗</span>Vehicle Profiles</h2>
+                <div id="vehicle-profile-form">
+                    <input type="hidden" id="editing-profile-id"> 
+                    <div class="form-group">
+                        <label for="profile-name">Profile Name:</label>
+                        <input type="text" id="profile-name" class="neumorphic-inset input-with-clear" placeholder="e.g., My Sedan">
+                        <button class="input-clear-btn" data-target="profile-name">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicle-type">Vehicle Type:</label>
+                        <input type="text" id="vehicle-type" class="neumorphic-inset input-with-clear" placeholder="e.g., Sedan, SUV">
+                        <button class="input-clear-btn" data-target="vehicle-type">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="fuel-efficiency" id="fuel-efficiency-label">Fuel Efficiency (Km/L)</label>
+                        <div style="display: flex; align-items: center; gap: 5px;"> <!-- Reduced gap -->
+                            <input type="number" id="fuel-efficiency" class="neumorphic-inset input-with-clear" step="0.1" style="flex-grow: 1; padding-right: 25px;"> <!-- Adjusted padding -->
+                            <button class="input-clear-btn" data-target="fuel-efficiency" style="/* Adjusted CSS for clear button in flex will be applied by JS if needed, or use the general one if input not direct child */">×</button>
+                            <button id="open-efficiency-converter-btn" class="btn neumorphic btn-small" title="Open Fuel Efficiency Converter">🔄</button>
+                        </div>
+                    </div>
+                    <button id="save-profile-btn" class="btn neumorphic">Save Profile</button>
+                     <button id="cancel-edit-profile-btn" class="btn neumorphic" style="display:none; margin-left:10px;">Cancel Edit</button>
+                </div>
+                <div id="vehicle-profiles-list" class="list-container"></div>
+            </div>
+            <div class="screen-navigation-buttons">
+                <button class="prev-screen-btn btn neumorphic" style="visibility: hidden;">Previous</button>
+                <button class="next-screen-btn btn neumorphic">Next</button>
+            </div>
+        </section>
+
+        <!-- Screen 2: Trip Details Input (HTML structure is the same as previous version with return trip/travelers) -->
+        <section id="screen-trip-input" class="app-screen">
+            <div class="bento-item neumorphic">
+                <h2><span class="icon">🗺️</span>Plan New Trip</h2>
+                <div class="form-group">
+                    <label for="trip-name">Trip Name (Optional):</label>
+                    <input type="text" id="trip-name" class="neumorphic-inset input-with-clear" placeholder="e.g., Summer Roadtrip">
+                    <button class="input-clear-btn" data-target="trip-name">×</button>
+                </div>
+                <div class="form-group">
+                    <label for="active-profile-display">Active Vehicle Profile:</label>
+                    <div id="active-profile-display" class="neumorphic-inset" style="padding:10px; min-height:40px; display:flex; align-items:center;">None selected</div>
+                </div>
+                <div class="form-group">
+                    <label for="travel-distance" id="travel-distance-label">Travel Distance (One Way - Km):</label>
+                    <input type="number" id="travel-distance" class="neumorphic-inset input-with-clear" step="1">
+                    <button class="input-clear-btn" data-target="travel-distance">×</button>
+                </div>
+                <div class="form-group form-group-inline">
+                    <input type="checkbox" id="include-return-trip" class="neumorphic-inset">
+                    <label for="include-return-trip">Include Return Trip?</label>
+                </div>
+                <div class="form-group">
+                    <label for="existing-fuel" id="existing-fuel-label">Existing Fuel in Tank (L):</label>
+                    <input type="number" id="existing-fuel" class="neumorphic-inset input-with-clear" step="0.1" value="0">
+                    <button class="input-clear-btn" data-target="existing-fuel">×</button>
+                </div>
+                <div class="form-group">
+                    <label for="fuel-cost" id="fuel-cost-label">Fuel Cost (per L):</label>
+                    <input type="number" id="fuel-cost" class="neumorphic-inset input-with-clear" step="0.01">
+                    <button class="input-clear-btn" data-target="fuel-cost">×</button>
+                </div>
+                <div class="form-group">
+                    <label for="toll-charges" id="toll-charges-label">Toll Charges (Total for trip):</label>
+                    <input type="number" id="toll-charges" class="neumorphic-inset input-with-clear" step="0.01" value="0">
+                    <button class="input-clear-btn" data-target="toll-charges">×</button>
+                </div>
+                 <div class="form-group">
+                    <label for="num-travelers">Number of Travelers:</label>
+                    <input type="number" id="num-travelers" class="neumorphic-inset input-with-clear" step="1" value="1" min="1">
+                    <button class="input-clear-btn" data-target="num-travelers">×</button>
+                </div>
+                <div class="form-group">
+                    <label for="avg-speed" id="avg-speed-label">Average Driving Speed (km/h):</label>
+                    <input type="number" id="avg-speed" class="neumorphic-inset input-with-clear" step="1">
+                    <button class="input-clear-btn" data-target="avg-speed">×</button>
+                </div>
+                <button id="calculate-trip-btn" class="btn btn-primary" style="width:100%;">Calculate Trip</button> 
+            </div>
+            <div class="screen-navigation-buttons">
+                <button class="prev-screen-btn btn neumorphic">Previous</button>
+                <button class="next-screen-btn btn neumorphic">Next</button>
+            </div>
+        </section>
+
+        <!-- Screen 3: Results (HTML structure remains same) -->
+         <section id="screen-results" class="app-screen">
+            <div class="bento-item neumorphic">
+                <h2><span class="icon">📊</span>Trip Summary: <span id="result-trip-name"></span></h2>
+                <div class="results-grid">
+                    <div class="result-item neumorphic">
+                        <div class="value" id="res-fuel-required">0</div>
+                        <div class="label" id="res-fuel-required-label">Fuel Required (L)</div>
+                    </div>
+                    <div class="result-item neumorphic">
+                        <div class="value" id="res-dist-on-existing">0</div>
+                        <div class="label" id="res-dist-on-existing-label">Distance on Existing Fuel (Km)</div>
+                    </div>
+                    <div class="result-item neumorphic"> 
+                        <div class="value" id="res-additional-fuel">0</div>
+                        <div class="label" id="res-additional-fuel-label">Additional Fuel Needed (L)</div>
+                    </div>
+                    <div class="result-item neumorphic"> 
+                        <div class="value" id="res-cost-additional-fuel">0</div>
+                        <div class="label" id="res-cost-additional-fuel-label">Cost of Additional Fuel ($)</div>
+                    </div>
+                    <div class="result-item neumorphic">
+                        <div class="value" id="res-total-fuel-cost">0</div>
+                        <div class="label" id="res-total-fuel-cost-label">Total Fuel Cost ($)</div>
+                    </div>
+                    <div class="result-item neumorphic">
+                        <div class="value" id="res-total-trip-cost">0</div>
+                        <div class="label" id="res-total-trip-cost-label">Total Trip Cost ($)</div>
+                    </div>
+                    <div class="result-item neumorphic">
+                        <div class="value" id="res-cost-per-dist">0</div>
+                        <div class="label" id="res-cost-per-dist-label">Cost per Km ($)</div>
+                    </div>
+                     <div class="result-item neumorphic"> 
+                        <div class="value" id="res-cost-per-person">0</div>
+                        <div class="label" id="res-cost-per-person-label">Cost per Person ($)</div>
+                    </div>
+                    <div class="result-item neumorphic">
+                        <div class="value" id="res-trip-duration">0</div>
+                        <div class="label">Total Trip Duration</div>
+                    </div>
+                </div>
+                <div class="bento-item neumorphic" style="margin-top:25px;"> 
+                    <h3>Equivalent Units</h3>
+                    <p id="res-total-dist-km">Total Distance: 0 Km</p>
+                    <p id="res-total-dist-miles">Total Distance: 0 Miles</p>
+                    <p id="res-total-fuel-liters">Total Fuel: 0 Liters</p>
+                    <p id="res-total-fuel-gallons">Total Fuel: 0 Gallons</p>
+                </div>
+                <div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="share-results-btn" class="btn neumorphic">Copy Summary</button>
+                    <button id="print-results-btn" class="btn neumorphic">Print Info</button>
+                    <button id="save-trip-btn" class="btn neumorphic">Save Trip</button>
+                </div>
+            </div>
+             <div class="screen-navigation-buttons">
+                <button class="prev-screen-btn btn neumorphic">Previous</button>
+                <button class="next-screen-btn btn neumorphic">Next</button>
+            </div>
+        </section>
+
+        <!-- Screen 4: Saved Trips (HTML structure remains same) -->
+        <section id="screen-saved-trips" class="app-screen">
+            <div class="bento-item neumorphic">
+                <h2><span class="icon">💾</span>Saved Trips</h2>
+                <div id="saved-trips-list" class="list-container">
+                </div>
+            </div>
+             <div class="screen-navigation-buttons">
+                <button class="prev-screen-btn btn neumorphic">Previous</button>
+                <button class="next-screen-btn btn neumorphic" style="visibility: hidden;">Next</button>
+            </div>
+        </section>
+    </div>
+
+    <div class="screen-nav neumorphic" id="screen-nav-dots"></div>
+
+    <!-- Modals (Readme, Confirm, Manual Copy, Efficiency Converter) -->
+    <div id="readme-modal" class="standard-modal">
+        <div class="standard-modal-content"> 
+            <button class="standard-modal-close-btn" id="readme-modal-close-btn">×</button>
+            <h2>About Cruise Cost</h2>
+            <p>Welcome to Cruise Cost! This app helps you calculate fuel consumption and costs for your trips.</p>
+            <h3>Features:</h3>
+            <ul>
+                <li>Calculate fuel needs, costs, and trip duration.</li>
+                <li>Supports one-way and return trips.</li>
+                <li>Calculates cost per person for group travel.</li>
+                <li>Save, edit, and set default vehicle profiles.</li>
+                <li>Fuel efficiency unit converter.</li>
+                <li>Name and save your trip calculations for future reference.</li>
+                <li>Copy trip summaries.</li>
+                <li>Instructions for printing results.</li>
+                <li>Switch between Light and Dark themes.</li>
+                <li>Responsive design for all screen sizes.</li>
+            </ul>
+            <h3>Calculation Formulas:</h3>
+            <small>
+                <p><strong>Unit Conversions:</strong><br>
+                    1 Mile = 1.60934 Km<br>
+                    1 US Gallon = 3.78541 Liters<br>
+                    1 Imperial Gallon = 4.54609 Liters<br>
+                    MPG to KPL = MPG * (1.60934 / 3.78541)    [US Gallon]<br>
+                    KPL to MPG = KPL * (3.78541 / 1.60934)    [US Gallon]<br>
+                    L/100Km = 100 / (Km/L)
+                </p>
+                <p><strong>Core Calculations:</strong><br>
+                    1. Total Fuel for Trip = Trip Distance / Fuel Efficiency<br>
+                    2. Distance on Existing Fuel = Existing Fuel * Fuel Efficiency<br>
+                    3. Additional Fuel = max(0, Total Fuel for Trip - Existing Fuel)<br>
+                    4. Cost of Additional Fuel = Additional Fuel * Fuel Cost per Unit<br>
+                    5. Total Fuel Cost = Total Fuel for Trip * Fuel Cost per Unit<br>
+                    6. Total Trip Cost = Total Fuel Cost + Toll Charges<br>
+                    7. Cost per Distance Unit = Total Trip Cost / Trip Distance<br>
+                    8. Trip Duration = Trip Distance / Average Speed<br>
+                    9. Cost Per Person = Total Trip Cost / Number of Travelers
+                </p>
+            </small>
+            <p style="margin-top:20px;">Ensure all units are consistent before calculation. The app attempts to convert your saved profile's efficiency to the currently selected trip units.</p>
         </div>
     </div>
 
+    <div id="confirm-modal" class="standard-modal confirm-modal">
+        <div class="standard-modal-content">
+            <h2 id="confirm-modal-title">Confirm Action</h2>
+            <p id="confirm-modal-message">Are you sure?</p>
+            <div class="confirm-modal-buttons">
+                <button id="confirm-modal-cancel-btn" class="btn neumorphic">Cancel</button>
+                <button id="confirm-modal-confirm-btn" class="btn neumorphic btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="manual-copy-modal" class="standard-modal">
+        <div class="standard-modal-content">
+            <button class="standard-modal-close-btn" id="manual-copy-modal-close-btn">×</button>
+            <h2>Copy Trip Summary</h2>
+            <p>Please select all the text below and copy it (e.g., Ctrl+C or Cmd+C).</p>
+            <textarea id="manual-copy-textarea" rows="8" readonly></textarea>
+            <div style="text-align: right; margin-top: 15px;">
+                 <button id="manual-copy-done-btn" class="btn neumorphic">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="efficiency-converter-modal" class="standard-modal">
+        <div class="standard-modal-content">
+            <button class="standard-modal-close-btn" id="efficiency-converter-modal-close-btn">×</button>
+            <h2>Fuel Efficiency Converter</h2>
+            <div class="form-group">
+                <label for="convert-value">Value to Convert:</label>
+                <input type="number" id="convert-value" class="neumorphic-inset input-with-clear" step="any">
+                <button class="input-clear-btn" data-target="convert-value">×</button>
+            </div>
+            <div class="form-group">
+                <label for="convert-from-unit">From Unit:</label>
+                <select id="convert-from-unit" class="neumorphic-inset">
+                    <option value="mpg_us">MPG (US Gallon)</option>
+                    <option value="mpg_imp">MPG (Imperial Gallon)</option>
+                    <option value="km_l">Km / Liter</option>
+                    <option value="l_100km">Liters / 100Km</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="convert-to-unit">To Unit:</label>
+                <select id="convert-to-unit" class="neumorphic-inset">
+                    <option value="mpg_us">MPG (US Gallon)</option>
+                    <option value="mpg_imp">MPG (Imperial Gallon)</option>
+                    <option value="km_l">Km / Liter</option>
+                    <option value="l_100km">Liters / 100Km</option>
+                </select>
+            </div>
+            <button id="perform-conversion-btn" class="btn btn-primary neumorphic" style="width:100%; margin-top:15px;">Convert</button>
+            <div style="margin-top: 20px; padding:10px;" class="neumorphic-inset">
+                <strong>Converted Value:</strong> 
+                <span id="converted-result" style="font-weight: bold; color: var(--primary-color);">---</span>
+                <span id="converted-result-unit"></span>
+            </div>
+             <p style="font-size:0.8em; opacity:0.7; margin-top:15px;">
+                Conversions based on: <br>
+                1 US Gallon = 3.78541 Liters<br>
+                1 Imperial Gallon = 4.54609 Liters<br>
+                1 Mile = 1.60934 Kilometers
+            </p>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast-notification"></div>
+
     <script>
-        function calculate() {
-            const unit = document.getElementById('unit').value;
-            const fuel = parseFloat(document.getElementById('fuel').value);
-            const distance = parseFloat(document.getElementById('distance').value);
-            const cost = parseFloat(document.getElementById('cost').value);
-            const efficiency = parseFloat(document.getElementById('efficiency').value);
-            const speed = parseFloat(document.getElementById('speed').value);
-            const toll = parseFloat(document.getElementById('toll').value) || 0;
-
-            let fuelRequired = distance / efficiency;
-            let additionalFuelRequired = fuelRequired - fuel;
-            let costAdditionalFuel = additionalFuelRequired > 0 ? additionalFuelRequired * cost : 0;
-            if (additionalFuelRequired <= 0) {
-                additionalFuelRequired = 0;
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- UTILITY FUNCTIONS (Defined EARLY) ---
+            function getNumericValue(elementId, defaultValue = 0) {
+                const inputElement = document.getElementById(elementId);
+                if (!inputElement) {
+                    console.warn(`Element with ID "${elementId}" not found for getNumericValue.`);
+                    return defaultValue;
+                }
+                const valStr = inputElement.value;
+                if (valStr.trim() === '') return defaultValue;
+                const val = parseFloat(valStr);
+                return isNaN(val) ? defaultValue : val;
             }
-            let totalFuelCost = fuelRequired * cost;
-            let costPerDistance = totalFuelCost / distance;
-            let totalTime = distance / speed;
-            let totalCost = totalFuelCost + toll;
 
-            // Formatting output
-            let additionalFuelClass = additionalFuelRequired > 0 ? 'red' : '';
-            let costAdditionalFuelText = additionalFuelRequired > 0 ? costAdditionalFuel.toFixed(2) : '0';
+            function formatNumber(num, decimals = 2) {
+                if (typeof num !== 'number' || isNaN(num)) return 'N/A';
+                return num.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            }
 
-            let outputHtml = `
-                <div><strong>Fuel Required:</strong> ${fuelRequired.toFixed(2)} ${unit === 'metric' ? 'Liters' : 'Gallons'}</div>
-                <div><strong>Distance Covered with Fuel:</strong> ${(fuel * efficiency).toFixed(2)} ${unit === 'metric' ? 'Km' : 'Miles'}</div>
-                <div class="${additionalFuelClass}"><strong>Additional Fuel Required:</strong> ${additionalFuelRequired.toFixed(2)} ${unit === 'metric' ? 'Liters' : 'Gallons'}</div>
-                <div><strong>Cost of Additional Fuel:</strong> $${costAdditionalFuelText}</div>
-                <div><strong>Total Fuel Cost:</strong> $${totalFuelCost.toFixed(2)}</div>
-                <div><strong>Cost per ${unit === 'metric' ? 'Km' : 'Mile'}:</strong> $${costPerDistance.toFixed(2)}</div>
-                <div><strong>Total Distance in ${unit === 'metric' ? 'Miles' : 'Km'}:</strong> ${(unit === 'metric' ? (distance / 1.609).toFixed(2) : (distance * 1.609).toFixed(2))}</div>
-                <div><strong>Total Fuel Required in ${unit === 'metric' ? 'Gallons' : 'Liters'}:</strong> ${(unit === 'metric' ? (fuelRequired / 3.785).toFixed(2) : (fuelRequired * 3.785).toFixed(2))}</div>
-                <div><strong>Total Trip Duration:</strong> ${Math.floor(totalTime)}:${Math.round((totalTime % 1) * 60).toString().padStart(2, '0')} HH:MM</div>
-                <div><strong>Total Trip Cost:</strong> $${totalCost.toFixed(2)}</div>
-            `;
+            function formatDuration(hours) {
+                if (typeof hours !== 'number' || isNaN(hours) || hours < 0) return 'N/A';
+                const h = Math.floor(hours);
+                const m = Math.round((hours - h) * 60);
+                return `${h}h ${m}m`;
+            }
+            
+            const toastNotification = document.getElementById('toast-notification'); 
+            function showToast(message, type = 'info', duration = 3000) { 
+                toastNotification.textContent = message;
+                toastNotification.className = 'toast-notification';
+                toastNotification.classList.add(type);
+                toastNotification.classList.add('show');
+                setTimeout(() => {
+                    toastNotification.classList.remove('show');
+                }, duration);
+            }
 
-            document.getElementById('output').innerHTML = outputHtml;
-        }
+            function openModal(modalElement) { 
+                modalElement.style.display = 'flex';
+                modalElement.classList.remove('fade-out');
+                modalElement.classList.add('fade-in');
+                setTimeout(() => {
+                    modalElement.style.opacity = 1;
+                    modalElement.querySelector('.standard-modal-content').style.transform = 'scale(1)';
+                }, 10);
+            }
+
+            function closeModal(modalElement) { 
+                modalElement.style.opacity = 0;
+                modalElement.querySelector('.standard-modal-content').style.transform = 'scale(0.95)';
+                modalElement.classList.add('fade-out');
+                setTimeout(() => {
+                    modalElement.style.display = 'none';
+                    modalElement.classList.remove('fade-in', 'fade-out');
+                }, 300);
+            }
+            
+            let confirmCallback = null; 
+            const confirmModal = document.getElementById('confirm-modal'); 
+            const confirmModalTitle = document.getElementById('confirm-modal-title');
+            const confirmModalMessage = document.getElementById('confirm-modal-message');
+
+            function showConfirm(title, message, callback) { 
+                confirmModalTitle.textContent = title;
+                confirmModalMessage.textContent = message;
+                confirmCallback = callback;
+                openModal(confirmModal);
+            }
+
+
+            // --- Constants & DOM Elements ---
+            const KM_PER_MILE = 1.60934;
+            const LITERS_PER_GALLON = 3.78541; // US Gallon
+            const IMPERIAL_GALLON_TO_LITERS = 4.54609;
+
+
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const readmeBtn = document.getElementById('readme-btn');
+            const readmeModal = document.getElementById('readme-modal');
+            const readmeModalCloseBtn = document.getElementById('readme-modal-close-btn');
+            
+            const confirmModalCancelBtn = document.getElementById('confirm-modal-cancel-btn');
+            const confirmModalConfirmBtn = document.getElementById('confirm-modal-confirm-btn');
+
+            const manualCopyModal = document.getElementById('manual-copy-modal');
+            const manualCopyModalCloseBtn = document.getElementById('manual-copy-modal-close-btn');
+            const manualCopyTextarea = document.getElementById('manual-copy-textarea');
+            const manualCopyDoneBtn = document.getElementById('manual-copy-done-btn');
+
+            const efficiencyConverterModal = document.getElementById('efficiency-converter-modal');
+            const openEfficiencyConverterBtn = document.getElementById('open-efficiency-converter-btn');
+            const efficiencyConverterModalCloseBtn = document.getElementById('efficiency-converter-modal-close-btn');
+            const convertValueInput = document.getElementById('convert-value');
+            const convertFromUnitSelect = document.getElementById('convert-from-unit');
+            const convertToUnitSelect = document.getElementById('convert-to-unit');
+            const performConversionBtn = document.getElementById('perform-conversion-btn');
+            const convertedResultSpan = document.getElementById('converted-result');
+            const convertedResultUnitSpan = document.getElementById('converted-result-unit');
+
+
+            const distanceUnitSelect = document.getElementById('distance-unit');
+            const volumeUnitSelect = document.getElementById('volume-unit');
+            const currencySymbolInput = document.getElementById('currency-symbol');
+            const fuelEfficiencyLabel = document.getElementById('fuel-efficiency-label');
+            const fuelEfficiencyInput = document.getElementById('fuel-efficiency');
+            const existingFuelLabel = document.getElementById('existing-fuel-label');
+            const travelDistanceLabel = document.getElementById('travel-distance-label');
+            const fuelCostLabel = document.getElementById('fuel-cost-label');
+            const avgSpeedLabel = document.getElementById('avg-speed-label');
+            const tollChargesLabel = document.getElementById('toll-charges-label');
+            const saveProfileBtn = document.getElementById('save-profile-btn');
+            const cancelEditProfileBtn = document.getElementById('cancel-edit-profile-btn');
+            const editingProfileIdInput = document.getElementById('editing-profile-id');
+            const profilesListDiv = document.getElementById('vehicle-profiles-list');
+            const activeProfileDisplay = document.getElementById('active-profile-display');
+            
+            const includeReturnTripCheckbox = document.getElementById('include-return-trip');
+            const numTravelersInput = document.getElementById('num-travelers');
+            
+            const calculateTripBtn = document.getElementById('calculate-trip-btn');
+            const mainContentWrapper = document.getElementById('main-content-wrapper');
+            const screens = document.querySelectorAll('.app-screen');
+            const screenNavDotsContainer = document.getElementById('screen-nav-dots');
+            
+            const resTripName = document.getElementById('result-trip-name');
+            const resFuelRequired = document.getElementById('res-fuel-required');
+            const resFuelRequiredLabel = document.getElementById('res-fuel-required-label');
+            const resDistOnExisting = document.getElementById('res-dist-on-existing');
+            const resDistOnExistingLabel = document.getElementById('res-dist-on-existing-label');
+            const resAdditionalFuelValue = document.getElementById('res-additional-fuel'); 
+            const resAdditionalFuelItem = resAdditionalFuelValue.closest('.result-item'); 
+            const resCostAdditionalFuelValue = document.getElementById('res-cost-additional-fuel'); 
+            const resCostAdditionalFuelItem = resCostAdditionalFuelValue.closest('.result-item'); 
+            const resAdditionalFuelLabelElement = document.getElementById('res-additional-fuel-label');
+            const resCostAdditionalFuelLabelElement = document.getElementById('res-cost-additional-fuel-label');
+            const resTotalFuelCost = document.getElementById('res-total-fuel-cost');
+            const resTotalFuelCostLabel = document.getElementById('res-total-fuel-cost-label');
+            const resTotalTripCost = document.getElementById('res-total-trip-cost');
+            const resTotalTripCostLabel = document.getElementById('res-total-trip-cost-label');
+            const resCostPerDist = document.getElementById('res-cost-per-dist');
+            const resCostPerDistLabel = document.getElementById('res-cost-per-dist-label');
+            const resCostPerPerson = document.getElementById('res-cost-per-person');
+            const resCostPerPersonLabel = document.getElementById('res-cost-per-person-label');
+            const resTripDuration = document.getElementById('res-trip-duration');
+            const resTotalDistKm = document.getElementById('res-total-dist-km');
+            const resTotalDistMiles = document.getElementById('res-total-dist-miles');
+            const resTotalFuelLiters = document.getElementById('res-total-fuel-liters');
+            const resTotalFuelGallons = document.getElementById('res-total-fuel-gallons');
+            
+            const shareResultsBtn = document.getElementById('share-results-btn');
+            const printResultsBtn = document.getElementById('print-results-btn');
+            const saveTripBtn = document.getElementById('save-trip-btn');
+            const savedTripsListDiv = document.getElementById('saved-trips-list');
+
+            let currentTheme = localStorage.getItem('theme') || 'light';
+            let currentSettings = {
+                distanceUnit: 'km',
+                volumeUnit: 'liters',
+                currencySymbol: '$'
+            };
+            let vehicleProfiles = JSON.parse(localStorage.getItem('vehicleProfiles')) || [];
+            let activeProfile = null; 
+            let savedTrips = JSON.parse(localStorage.getItem('savedTrips')) || [];
+            let currentTripResults = null;
+            
+            // --- MODAL & TOAST EVENT LISTENERS ---
+            confirmModalCancelBtn.addEventListener('click', () => { 
+                closeModal(confirmModal);
+                if (confirmCallback) confirmCallback(false);
+            });
+            confirmModalConfirmBtn.addEventListener('click', () => { 
+                closeModal(confirmModal);
+                if (confirmCallback) confirmCallback(true);
+            });
+            [readmeModal, confirmModal, manualCopyModal, efficiencyConverterModal].forEach(modal => { 
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        closeModal(modal);
+                         if (modal === confirmModal && confirmCallback) confirmCallback(false); 
+                    }
+                });
+            });
+            manualCopyModalCloseBtn.addEventListener('click', () => closeModal(manualCopyModal));
+            manualCopyDoneBtn.addEventListener('click', () => closeModal(manualCopyModal));
+            readmeBtn.addEventListener('click', () => openModal(readmeModal));
+            readmeModalCloseBtn.addEventListener('click', () => closeModal(readmeModal));
+            openEfficiencyConverterBtn.addEventListener('click', () => openModal(efficiencyConverterModal));
+            efficiencyConverterModalCloseBtn.addEventListener('click', () => closeModal(efficiencyConverterModal));
+
+
+            // --- THEME MANAGEMENT ---
+            function applyTheme(theme) { /* ... same ... */ 
+                document.body.classList.remove('light-theme', 'dark-theme');
+                document.body.classList.add(theme + '-theme');
+                currentTheme = theme;
+                localStorage.setItem('theme', theme);
+            }
+            themeToggleBtn.addEventListener('click', () => { /* ... same ... */ 
+                applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+            });
+            applyTheme(currentTheme); 
+
+
+            // --- NAVIGATION ---
+            function updateNavDotsAndButtons() { /* ... same ... */ 
+                const currentIdx = getCurrentScreenIndex();
+                screenNavDotsContainer.innerHTML = '';
+                screens.forEach((screen, index) => {
+                    const dot = document.createElement('div');
+                    dot.classList.add('nav-dot');
+                    if (index === currentIdx) dot.classList.add('active');
+                    dot.addEventListener('click', () => scrollToScreen(index));
+                    screenNavDotsContainer.appendChild(dot);
+                    const prevBtn = screen.querySelector('.prev-screen-btn');
+                    const nextBtn = screen.querySelector('.next-screen-btn');
+                    if (prevBtn) prevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
+                    if (nextBtn) nextBtn.style.visibility = (index === screens.length - 1) ? 'hidden' : 'visible';
+                });
+            }
+            function getCurrentScreenIndex() { /* ... same ... */ 
+                const scrollLeft = mainContentWrapper.scrollLeft;
+                const offsetWidth = mainContentWrapper.offsetWidth;
+                if (offsetWidth === 0) return 0;
+                return Math.round(scrollLeft / offsetWidth);
+            }
+            function scrollToScreen(index) { /* ... same ... */ 
+                 if (index >= 0 && index < screens.length) {
+                    mainContentWrapper.scrollTo({ left: screens[index].offsetLeft, behavior: 'smooth' });
+                }
+            }
+            mainContentWrapper.addEventListener('scroll', updateNavDotsAndButtons);
+            window.addEventListener('resize', () => {  /* ... same ... */
+                 updateNavDotsAndButtons();
+                 scrollToScreen(getCurrentScreenIndex()); 
+            });
+            document.querySelectorAll('.prev-screen-btn').forEach(btn => { /* ... same ... */ 
+                btn.addEventListener('click', () => scrollToScreen(getCurrentScreenIndex() - 1));
+            });
+            document.querySelectorAll('.next-screen-btn').forEach(btn => { /* ... same ... */ 
+                btn.addEventListener('click', () => scrollToScreen(getCurrentScreenIndex() + 1));
+            });
+
+
+            // --- UNIT MANAGEMENT & LABEL UPDATES ---
+            function updateLabels() { /* ... same ... */ 
+                const distUnit = distanceUnitSelect.value;
+                const volUnit = volumeUnitSelect.value;
+                const isReturnTrip = includeReturnTripCheckbox.checked;
+                currentSettings.distanceUnit = distUnit;
+                currentSettings.volumeUnit = volUnit;
+                currentSettings.currencySymbol = currencySymbolInput.value.trim() || '$';
+
+                fuelEfficiencyLabel.textContent = `Fuel Efficiency (${distUnit}/${volUnit})`;
+                existingFuelLabel.textContent = `Existing Fuel in Tank (${volUnit})`;
+                travelDistanceLabel.textContent = `Travel Distance (${isReturnTrip ? 'Round Trip' : 'One Way'} - ${distUnit})`;
+                fuelCostLabel.textContent = `Fuel Cost (${currentSettings.currencySymbol} per ${volUnit})`;
+                avgSpeedLabel.textContent = `Average Driving Speed (${distUnit}/h)`;
+                tollChargesLabel.textContent = `Toll Charges (Total for trip - ${currentSettings.currencySymbol})`;
+                
+                resFuelRequiredLabel.textContent = `Fuel Required (${volUnit})`;
+                resDistOnExistingLabel.textContent = `Distance on Existing Fuel (${distUnit})`;
+                resAdditionalFuelLabelElement.textContent = `Additional Fuel Needed (${volUnit})`;
+                resCostAdditionalFuelLabelElement.textContent = `Cost of Additional Fuel (${currentSettings.currencySymbol})`;
+                resTotalFuelCostLabel.textContent = `Total Fuel Cost (${currentSettings.currencySymbol})`;
+                resTotalTripCostLabel.textContent = `Total Trip Cost (${currentSettings.currencySymbol})`;
+                resCostPerDistLabel.textContent = `Cost per ${distUnit} (${currentSettings.currencySymbol})`;
+                resCostPerPersonLabel.textContent = `Cost per Person (${currentSettings.currencySymbol})`;
+                localStorage.setItem('appSettings', JSON.stringify(currentSettings));
+            }
+            distanceUnitSelect.addEventListener('change', updateLabels);
+            volumeUnitSelect.addEventListener('change', updateLabels);
+            currencySymbolInput.addEventListener('input', updateLabels);
+            includeReturnTripCheckbox.addEventListener('change', updateLabels);
+            function loadSettings() { /* ... same ... */ 
+                const savedSettings = JSON.parse(localStorage.getItem('appSettings'));
+                if (savedSettings) {
+                    currentSettings = savedSettings;
+                    distanceUnitSelect.value = currentSettings.distanceUnit;
+                    volumeUnitSelect.value = currentSettings.volumeUnit;
+                    currencySymbolInput.value = currentSettings.currencySymbol;
+                }
+                updateLabels(); 
+            }
+
+
+            // --- INPUT CLEAR BUTTON FUNCTIONALITY ---
+            function setupInputClearButtons() { /* ... same ... */ 
+                document.querySelectorAll('.input-with-clear').forEach(inputEl => {
+                    // Find the clear button; it might not be a direct sibling if input is in a flex div
+                    let clearBtn = inputEl.nextElementSibling;
+                    if (!clearBtn || !clearBtn.classList.contains('input-clear-btn')) {
+                        // Check if parent has a clear button (for flex case)
+                        if(inputEl.parentElement.querySelector('.input-clear-btn')) {
+                           clearBtn = inputEl.parentElement.querySelector('.input-clear-btn');
+                        }
+                    }
+
+                    if (clearBtn && clearBtn.classList.contains('input-clear-btn') && clearBtn.dataset.target === inputEl.id) {
+                        const toggleClearButton = () => {
+                            clearBtn.style.display = inputEl.value ? 'block' : 'none';
+                        };
+                        inputEl.addEventListener('input', toggleClearButton);
+                        inputEl.addEventListener('focus', toggleClearButton); 
+                        clearBtn.addEventListener('mousedown', (e) => { 
+                            e.preventDefault(); 
+                            inputEl.value = '';
+                            inputEl.dispatchEvent(new Event('input')); 
+                            toggleClearButton();
+                            inputEl.focus(); 
+                        });
+                        toggleClearButton(); 
+                    }
+                });
+            }
+
+            // --- VEHICLE PROFILE MANAGEMENT ---
+            const profileNameInput = document.getElementById('profile-name');
+            const vehicleTypeInput = document.getElementById('vehicle-type');
+
+            function getDefaultProfileId() { return localStorage.getItem('defaultProfileId'); }
+            function setDefaultProfileInStorage(profileId) { localStorage.setItem('defaultProfileId', profileId); }
+            function clearDefaultProfileInStorage() { localStorage.removeItem('defaultProfileId'); }
+
+            function resetProfileForm() { /* ... same ... */ 
+                editingProfileIdInput.value = '';
+                profileNameInput.value = '';
+                vehicleTypeInput.value = '';
+                fuelEfficiencyInput.value = '';
+                saveProfileBtn.textContent = 'Save Profile';
+                cancelEditProfileBtn.style.display = 'none';
+                [profileNameInput, vehicleTypeInput, fuelEfficiencyInput].forEach(input => input.dispatchEvent(new Event('input')));
+            }
+            cancelEditProfileBtn.addEventListener('click', resetProfileForm);
+
+            function renderVehicleProfiles() { /* ... same ... */ 
+                profilesListDiv.innerHTML = '';
+                const defaultProfileId = getDefaultProfileId();
+
+                if (vehicleProfiles.length === 0) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'empty-state-message';
+                    emptyDiv.innerHTML = `<p>No vehicle profiles saved yet. 🚗</p><p><span class="cta-link" id="empty-profile-cta">Tap here to create one!</span></p>`;
+                    profilesListDiv.appendChild(emptyDiv);
+                    const emptyCta = document.getElementById('empty-profile-cta');
+                    if(emptyCta) emptyCta.addEventListener('click', () => profileNameInput.focus());
+                    activeProfileDisplay.classList.remove('is-active');
+                    activeProfile = null; 
+                } else {
+                    profilesListDiv.innerHTML = '<h3>Your Profiles:</h3>';
+                    const ul = document.createElement('ul');
+                    vehicleProfiles.forEach((profile) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-item neumorphic';
+                        const isDefault = profile.id === defaultProfileId;
+                        li.innerHTML = `
+                            <span>${profile.name} (${profile.type} - ${profile.efficiency} ${profile.efficiencyUnits.dist}/${profile.efficiencyUnits.vol})</span>
+                            <div class="profile-actions">
+                                <button data-id="${profile.id}" class="default-star-btn btn neumorphic ${isDefault ? 'is-default' : ''}" title="${isDefault ? 'Current Default' : 'Set as Default'}">${isDefault ? '★' : '☆'}</button>
+                                <button data-id="${profile.id}" class="edit-profile-btn btn neumorphic">Edit</button>
+                                <button data-id="${profile.id}" class="select-profile-btn btn neumorphic">Select</button>
+                                <button data-id="${profile.id}" class="delete-profile-btn btn neumorphic">X</button>
+                            </div>
+                        `;
+                        ul.appendChild(li);
+                    });
+                    profilesListDiv.appendChild(ul);
+                }
+                updateActiveProfileDisplay(); 
+            }
+
+            function setActiveProfile(profile) { /* ... same ... */ 
+                activeProfile = profile;
+                localStorage.setItem('activeProfileId', profile ? profile.id : null); 
+                updateActiveProfileDisplay();
+            }
+
+            function updateActiveProfileDisplay() {  /* ... same ... */
+                 if (activeProfile) {
+                    activeProfileDisplay.innerHTML = `<strong>${activeProfile.name}</strong> (${activeProfile.type} - ${activeProfile.efficiency} ${activeProfile.efficiencyUnits.dist}/${activeProfile.efficiencyUnits.vol})`;
+                    activeProfileDisplay.classList.add('is-active');
+                } else {
+                    activeProfileDisplay.textContent = 'None selected. Please add or select a profile.';
+                    activeProfileDisplay.classList.remove('is-active');
+                }
+            }
+            
+            saveProfileBtn.addEventListener('click', () => { /* ... same ... */ 
+                const name = profileNameInput.value.trim();
+                const type = vehicleTypeInput.value.trim();
+                const efficiency = parseFloat(fuelEfficiencyInput.value);
+                const editingId = editingProfileIdInput.value;
+
+                if (!name || !type || isNaN(efficiency) || efficiency <= 0) {
+                    showToast('Please fill all profile fields with valid data.', 'error'); return;
+                }
+
+                const profileData = {
+                    name, type, efficiency,
+                    efficiencyUnits: { dist: distanceUnitSelect.value, vol: volumeUnitSelect.value }
+                };
+
+                if (editingId) { 
+                    const profileIndex = vehicleProfiles.findIndex(p => p.id === editingId);
+                    if (profileIndex > -1) {
+                        vehicleProfiles[profileIndex] = { ...vehicleProfiles[profileIndex], ...profileData };
+                        showToast('Profile updated!', 'success');
+                        if (activeProfile && activeProfile.id === editingId) {
+                             setActiveProfile(vehicleProfiles[profileIndex]);
+                        }
+                    }
+                } else { 
+                    profileData.id = Date.now().toString();
+                    vehicleProfiles.push(profileData);
+                    setActiveProfile(profileData); 
+                    showToast('Profile saved!', 'success');
+                }
+                
+                localStorage.setItem('vehicleProfiles', JSON.stringify(vehicleProfiles));
+                resetProfileForm();
+                renderVehicleProfiles();
+            });
+
+            profilesListDiv.addEventListener('click', (e) => { /* ... same ... */ 
+                const targetButton = e.target.closest('button');
+                if (!targetButton) {
+                    if (e.target.classList.contains('cta-link') && e.target.id === 'empty-profile-cta') {
+                        profileNameInput.focus();
+                    }
+                    return;
+                }
+
+                const profileId = targetButton.dataset.id;
+                const profile = vehicleProfiles.find(p => p.id === profileId);
+                if (!profile) return;
+
+                if (targetButton.classList.contains('select-profile-btn')) {
+                    setActiveProfile(profile);
+                    showToast(`Profile "${profile.name}" selected.`, 'info');
+                    scrollToScreen(1); 
+                } else if (targetButton.classList.contains('edit-profile-btn')) {
+                    editingProfileIdInput.value = profile.id;
+                    profileNameInput.value = profile.name;
+                    vehicleTypeInput.value = profile.type;
+                    fuelEfficiencyInput.value = profile.efficiency;
+                    saveProfileBtn.textContent = 'Update Profile';
+                    cancelEditProfileBtn.style.display = 'inline-block';
+                    profileNameInput.focus();
+                    [profileNameInput, vehicleTypeInput, fuelEfficiencyInput].forEach(input => input.dispatchEvent(new Event('input')));
+                } else if (targetButton.classList.contains('delete-profile-btn')) {
+                    showConfirm('Delete Profile', `Delete profile "${profile.name}"?`, (confirmed) => {
+                        if (confirmed) {
+                            const defaultProfileId = getDefaultProfileId();
+                            if (profile.id === defaultProfileId) {
+                                clearDefaultProfileInStorage(); 
+                            }
+                            if(activeProfile && activeProfile.id === profile.id) {
+                                activeProfile = null; 
+                            }
+                            vehicleProfiles = vehicleProfiles.filter(p => p.id !== profile.id);
+                            localStorage.setItem('vehicleProfiles', JSON.stringify(vehicleProfiles));
+                            renderVehicleProfiles(); 
+                            loadActiveProfile(); 
+                            showToast('Profile deleted.', 'success');
+                        }
+                    });
+                } else if (targetButton.classList.contains('default-star-btn')) {
+                    const currentDefaultId = getDefaultProfileId();
+                    if (currentDefaultId === profile.id) { 
+                        clearDefaultProfileInStorage();
+                        showToast(`"${profile.name}" is no longer default.`, 'info');
+                    } else {
+                        setDefaultProfileInStorage(profile.id);
+                        showToast(`"${profile.name}" set as default.`, 'success');
+                        setActiveProfile(profile);
+                    }
+                    renderVehicleProfiles(); 
+                }
+            });
+            
+            function loadActiveProfile() { /* ... same ... */ 
+                const defaultProfileId = getDefaultProfileId();
+                let profileToActivate = null;
+
+                if (defaultProfileId) {
+                    profileToActivate = vehicleProfiles.find(p => p.id === defaultProfileId);
+                }
+                
+                if (!profileToActivate && vehicleProfiles.length > 0) { 
+                    profileToActivate = vehicleProfiles[0];
+                }
+                
+                setActiveProfile(profileToActivate); 
+            }
+
+
+            // --- EFFICIENCY CONVERTER LOGIC ---
+            performConversionBtn.addEventListener('click', () => {
+                const value = parseFloat(convertValueInput.value);
+                const fromUnit = convertFromUnitSelect.value;
+                const toUnit = convertToUnitSelect.value;
+
+                if (isNaN(value)) {
+                    showToast('Please enter a valid number to convert.', 'error');
+                    convertedResultSpan.textContent = '---';
+                    convertedResultUnitSpan.textContent = '';
+                    return;
+                }
+                if (fromUnit === toUnit) {
+                    convertedResultSpan.textContent = formatNumber(value);
+                    convertedResultUnitSpan.textContent = getUnitLabel(toUnit);
+                    showToast('Units are the same, no conversion needed.', 'info');
+                    return;
+                }
+
+                let valueInKmPerLiter;
+                switch (fromUnit) {
+                    case 'mpg_us': valueInKmPerLiter = (value * KM_PER_MILE) / LITERS_PER_GALLON; break;
+                    case 'mpg_imp': valueInKmPerLiter = (value * KM_PER_MILE) / IMPERIAL_GALLON_TO_LITERS; break;
+                    case 'km_l': valueInKmPerLiter = value; break;
+                    case 'l_100km':
+                        if (value === 0) { 
+                            showToast('L/100Km cannot be zero for this conversion.', 'error');
+                            convertedResultSpan.textContent = 'Error'; convertedResultUnitSpan.textContent = ''; return;
+                        }
+                        valueInKmPerLiter = 100 / value; break;
+                    default: showToast('Invalid "From Unit".', 'error'); return;
+                }
+
+                let result;
+                switch (toUnit) {
+                    case 'mpg_us': result = (valueInKmPerLiter * LITERS_PER_GALLON) / KM_PER_MILE; break;
+                    case 'mpg_imp': result = (valueInKmPerLiter * IMPERIAL_GALLON_TO_LITERS) / KM_PER_MILE; break;
+                    case 'km_l': result = valueInKmPerLiter; break;
+                    case 'l_100km':
+                        if (valueInKmPerLiter === 0) { result = Infinity; } 
+                        else { result = 100 / valueInKmPerLiter; }
+                        break;
+                    default: showToast('Invalid "To Unit".', 'error'); return;
+                }
+                
+                if (isFinite(result)) {
+                    convertedResultSpan.textContent = formatNumber(result, 3); 
+                    convertedResultUnitSpan.textContent = getUnitLabel(toUnit);
+                } else {
+                    convertedResultSpan.textContent = 'Error (e.g. cannot convert 0 Km/L to L/100Km)'; 
+                    convertedResultUnitSpan.textContent = '';
+                }
+            });
+
+            function getUnitLabel(unitKey) {
+                switch (unitKey) {
+                    case 'mpg_us': return 'MPG (US)';
+                    case 'mpg_imp': return 'MPG (Imp)';
+                    case 'km_l': return 'Km/L';
+                    case 'l_100km': return 'L/100Km';
+                    default: return '';
+                }
+            }
+
+
+            // --- TRIP CALCULATION ---
+            calculateTripBtn.addEventListener('click', () => { 
+                if (!activeProfile) {
+                    showToast('Please select or create a vehicle profile first.', 'error'); scrollToScreen(0); return;
+                }
+                let oneWayDistance = getNumericValue('travel-distance');
+                const isReturnTrip = includeReturnTripCheckbox.checked;
+                const numTravelers = Math.max(1, getNumericValue('num-travelers', 1)); 
+
+                let actualTravelDistance = isReturnTrip ? oneWayDistance * 2 : oneWayDistance;
+                
+                const existingFuel = getNumericValue('existing-fuel',0); 
+                const fuelCost = getNumericValue('fuel-cost');
+                const tollCharges = getNumericValue('toll-charges',0); 
+                const avgSpeed = getNumericValue('avg-speed');
+                const tripName = document.getElementById('trip-name').value.trim() || "Unnamed Trip";
+                
+                if(resAdditionalFuelItem) resAdditionalFuelItem.classList.remove('fuel-alert');
+                if(resCostAdditionalFuelItem) resCostAdditionalFuelItem.classList.remove('fuel-alert');
+
+                if (oneWayDistance <= 0) { showToast('Travel distance (one way) must be a positive value.', 'error'); return; }
+                if (fuelCost < 0) { showToast('Fuel cost cannot be negative.', 'error'); return; } 
+                if (avgSpeed <= 0) { showToast('Average speed must be a positive value.', 'error'); return; }
+
+                let profileEfficiency = activeProfile.efficiency;
+                let standardizedEfficiency = profileEfficiency;
+                if (activeProfile.efficiencyUnits.dist === 'miles' && currentSettings.distanceUnit === 'km') standardizedEfficiency *= KM_PER_MILE; 
+                else if (activeProfile.efficiencyUnits.dist === 'km' && currentSettings.distanceUnit === 'miles') standardizedEfficiency /= KM_PER_MILE; 
+                if (activeProfile.efficiencyUnits.vol === 'gallons' && currentSettings.volumeUnit === 'liters') standardizedEfficiency /= LITERS_PER_GALLON; 
+                else if (activeProfile.efficiencyUnits.vol === 'liters' && currentSettings.volumeUnit === 'gallons') standardizedEfficiency *= LITERS_PER_GALLON; 
+                if (standardizedEfficiency <= 0) { showToast('Vehicle fuel efficiency is invalid or zero.', 'error'); return; }
+
+                const fuelRequiredForTrip = actualTravelDistance / standardizedEfficiency;
+                const distOnExistingFuel = existingFuel * standardizedEfficiency;
+                const additionalFuelRequired = Math.max(0, fuelRequiredForTrip - existingFuel);
+                const costOfAdditionalFuel = additionalFuelRequired * fuelCost;
+                const totalFuelCost = fuelRequiredForTrip * fuelCost;
+                const totalTripCost = totalFuelCost + tollCharges;
+                const costPerDist = (actualTravelDistance > 0) ? totalTripCost / actualTravelDistance : 0;
+                const tripDurationHours = (avgSpeed > 0) ? actualTravelDistance / avgSpeed : 0;
+                const costPerPerson = totalTripCost / numTravelers;
+
+                resTripName.textContent = tripName;
+                resFuelRequired.textContent = formatNumber(fuelRequiredForTrip);
+                resDistOnExisting.textContent = formatNumber(distOnExistingFuel);
+                resAdditionalFuelValue.textContent = formatNumber(additionalFuelRequired); 
+                resCostAdditionalFuelValue.textContent = currentSettings.currencySymbol + formatNumber(costOfAdditionalFuel); 
+                resTotalFuelCost.textContent = currentSettings.currencySymbol + formatNumber(totalFuelCost);
+                resTotalTripCost.textContent = currentSettings.currencySymbol + formatNumber(totalTripCost);
+                resCostPerDist.textContent = currentSettings.currencySymbol + formatNumber(costPerDist);
+                resCostPerPerson.textContent = currentSettings.currencySymbol + formatNumber(costPerPerson);
+                resTripDuration.textContent = formatDuration(tripDurationHours);
+
+                if (additionalFuelRequired > 0) {
+                    if(resAdditionalFuelItem) resAdditionalFuelItem.classList.add('fuel-alert');
+                    if(resCostAdditionalFuelItem) resCostAdditionalFuelItem.classList.add('fuel-alert');
+                }
+
+                let totalDistKm, totalDistMiles, totalFuelLiters, totalFuelGallons;
+                if (currentSettings.distanceUnit === 'km') { totalDistKm = actualTravelDistance; totalDistMiles = actualTravelDistance / KM_PER_MILE; } 
+                else { totalDistMiles = actualTravelDistance; totalDistKm = actualTravelDistance * KM_PER_MILE; }
+                if (currentSettings.volumeUnit === 'liters') { totalFuelLiters = fuelRequiredForTrip; totalFuelGallons = fuelRequiredForTrip / LITERS_PER_GALLON; } 
+                else { totalFuelGallons = fuelRequiredForTrip; totalFuelLiters = fuelRequiredForTrip * LITERS_PER_GALLON; }
+
+                resTotalDistKm.textContent = `Total Distance: ${formatNumber(totalDistKm)} Km`;
+                resTotalDistMiles.textContent = `Total Distance: ${formatNumber(totalDistMiles)} Miles`;
+                resTotalFuelLiters.textContent = `Total Fuel: ${formatNumber(totalFuelLiters)} Liters`;
+                resTotalFuelGallons.textContent = `Total Fuel: ${formatNumber(totalFuelGallons)} Gallons`;
+
+                currentTripResults = {
+                    tripName,
+                    inputs: { ...currentSettings, oneWayDistance, isReturnTrip, numTravelers, existingFuel, travelDistance: actualTravelDistance, fuelCost, tollCharges, avgSpeed, vehicleProfile: JSON.parse(JSON.stringify(activeProfile)) },
+                    outputs: { fuelRequiredForTrip, distOnExistingFuel, additionalFuelRequired, costOfAdditionalFuel, totalFuelCost, totalTripCost, costPerDist, costPerPerson, tripDurationHours, totalDistKm, totalDistMiles, totalFuelLiters, totalFuelGallons },
+                    timestamp: new Date().toISOString()
+                };
+                scrollToScreen(2); 
+            });
+
+
+            // --- Results Actions (Share, Print, Save - same) ---
+            shareResultsBtn.addEventListener('click', () => { /* ... same ... */ 
+                if (!currentTripResults) {
+                    showToast('No results to copy. Please calculate a trip first.', 'error');
+                    return;
+                }
+                const R = currentTripResults.outputs; const I = currentTripResults.inputs;
+                let summary = `Cruise Cost - ${currentTripResults.tripName}:\n` +
+                              `Total Distance: ${formatNumber(R.totalDistKm)} Km / ${formatNumber(R.totalDistMiles)} Miles (${I.isReturnTrip ? 'Return Trip' : 'One Way'})\n` +
+                              `Total Fuel: ${formatNumber(R.totalFuelLiters)} L / ${formatNumber(R.totalFuelGallons)} Gal\n` +
+                              `Total Cost: ${I.currencySymbol}${formatNumber(R.totalTripCost)}`;
+                if (I.numTravelers > 1) {
+                    summary += ` (Cost per Person: ${I.currencySymbol}${formatNumber(R.costPerPerson)})`;
+                }
+                summary += `\nDuration: ${formatDuration(R.tripDurationHours)}`;
+
+                manualCopyTextarea.value = summary;
+                openModal(manualCopyModal);
+                try {
+                    manualCopyTextarea.select();
+                    manualCopyTextarea.setSelectionRange(0, 99999); 
+                } catch (err) {
+                    console.warn("Could not auto-select text for copying:", err);
+                }
+                showToast("Text ready for manual copy.", "info", 4000);
+            });
+            printResultsBtn.addEventListener('click', () => {  /* ... same ... */ 
+                if (currentTripResults) {
+                     showToast('To print, please use your browser\'s print function (e.g., Ctrl+P or Cmd+P).', 'info', 5000);
+                } else {
+                    showToast('No results to print.', 'error');
+                }
+            });
+            saveTripBtn.addEventListener('click', () => {  /* ... same ... */ 
+                if (currentTripResults) {
+                    savedTrips.push(currentTripResults);
+                    localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+                    renderSavedTrips();
+                    showToast(`Trip "${currentTripResults.tripName}" saved!`, 'success');
+                    scrollToScreen(3); 
+                } else {
+                    showToast('No results to save. Please calculate a trip first.', 'error');
+                }
+            });
+
+
+            // --- Saved Trips Management (same logic, empty state handled by renderSavedTrips) ---
+            function renderSavedTrips() { /* ... same ... */  
+                savedTripsListDiv.innerHTML = ''; 
+                if (savedTrips.length === 0) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'empty-state-message';
+                    emptyDiv.innerHTML = `<p>No trips saved yet. 💾</p><p>Plan a trip and save the results to see them here!</p>`;
+                    savedTripsListDiv.appendChild(emptyDiv);
+                } else {
+                    const ul = document.createElement('ul');
+                    savedTrips.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)); 
+                    savedTrips.forEach((trip, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-item neumorphic';
+                        const tripDate = new Date(trip.timestamp).toLocaleDateString();
+                        li.innerHTML = `
+                            <span>${trip.tripName} (${tripDate}) - ${trip.inputs.currencySymbol}${formatNumber(trip.outputs.totalTripCost)}</span>
+                            <div>
+                                <button data-index="${index}" class="view-trip-btn btn neumorphic">View</button>
+                                <button data-index="${index}" class="delete-trip-btn btn neumorphic">X</button>
+                            </div> `;
+                        ul.appendChild(li);
+                    });
+                    savedTripsListDiv.appendChild(ul);
+                }
+            }
+            savedTripsListDiv.addEventListener('click', (e) => { /* ... same logic for view/delete ... */  
+                const targetButton = e.target.closest('button');
+                if (!targetButton) return;
+                const index = parseInt(targetButton.dataset.index, 10);
+                 if (isNaN(index) || index < 0 || index >= savedTrips.length) return;
+                const trip = savedTrips[index];
+                if(resAdditionalFuelItem) resAdditionalFuelItem.classList.remove('fuel-alert');
+                if(resCostAdditionalFuelItem) resCostAdditionalFuelItem.classList.remove('fuel-alert');
+                if (targetButton.classList.contains('view-trip-btn')) {
+                    document.getElementById('trip-name').value = trip.tripName;
+                    document.getElementById('travel-distance').value = trip.inputs.oneWayDistance || trip.inputs.travelDistance; 
+                    includeReturnTripCheckbox.checked = trip.inputs.isReturnTrip || false;
+                    numTravelersInput.value = trip.inputs.numTravelers || 1;
+                    document.getElementById('existing-fuel').value = trip.inputs.existingFuel;
+                    document.getElementById('fuel-cost').value = trip.inputs.fuelCost;
+                    document.getElementById('toll-charges').value = trip.inputs.tollCharges;
+                    document.getElementById('avg-speed').value = trip.inputs.avgSpeed;
+
+
+                    distanceUnitSelect.value = trip.inputs.distanceUnit;
+                    volumeUnitSelect.value = trip.inputs.volumeUnit;
+                    currencySymbolInput.value = trip.inputs.currencySymbol;
+                    updateLabels(); 
+
+                    resTripName.textContent = trip.tripName;
+                    resFuelRequired.textContent = formatNumber(trip.outputs.fuelRequiredForTrip);
+                    resDistOnExisting.textContent = formatNumber(trip.outputs.distOnExistingFuel);
+                    resAdditionalFuelValue.textContent = formatNumber(trip.outputs.additionalFuelRequired);
+                    resCostAdditionalFuelValue.textContent = trip.inputs.currencySymbol + formatNumber(trip.outputs.costOfAdditionalFuel);
+                    resTotalFuelCost.textContent = trip.inputs.currencySymbol + formatNumber(trip.outputs.totalFuelCost);
+                    resTotalTripCost.textContent = trip.inputs.currencySymbol + formatNumber(trip.outputs.totalTripCost);
+                    resCostPerDist.textContent = trip.inputs.currencySymbol + formatNumber(trip.outputs.costPerDist);
+                    resCostPerPerson.textContent = trip.inputs.currencySymbol + formatNumber(trip.outputs.costPerPerson || (trip.outputs.totalTripCost / (trip.inputs.numTravelers || 1)) );
+                    resTripDuration.textContent = formatDuration(trip.outputs.tripDurationHours);
+                    resTotalDistKm.textContent = `Total Distance: ${formatNumber(trip.outputs.totalDistKm)} Km`;
+                    resTotalDistMiles.textContent = `Total Distance: ${formatNumber(trip.outputs.totalDistMiles)} Miles`;
+                    resTotalFuelLiters.textContent = `Total Fuel: ${formatNumber(trip.outputs.totalFuelLiters)} Liters`;
+                    resTotalFuelGallons.textContent = `Total Fuel: ${formatNumber(trip.outputs.totalFuelGallons)} Gallons`;
+                    
+                    if (trip.outputs.additionalFuelRequired > 0) {
+                        if(resAdditionalFuelItem) resAdditionalFuelItem.classList.add('fuel-alert');
+                        if(resCostAdditionalFuelItem) resCostAdditionalFuelItem.classList.add('fuel-alert');
+                    }
+                    currentTripResults = trip; scrollToScreen(2); 
+                    showToast(`Displaying saved trip: ${trip.tripName}`, 'info');
+                }
+                if (targetButton.classList.contains('delete-trip-btn')) {
+                    showConfirm('Delete Trip', `Delete trip "${trip.tripName}"?`, (confirmed) => {
+                        if (confirmed) {
+                            savedTrips.splice(index, 1);
+                            localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+                            renderSavedTrips();
+                            showToast('Trip deleted.', 'success');
+                            if (currentTripResults && currentTripResults.timestamp === trip.timestamp) {
+                                 if(resAdditionalFuelItem) resAdditionalFuelItem.classList.remove('fuel-alert');
+                                 if(resCostAdditionalFuelItem) resCostAdditionalFuelItem.classList.remove('fuel-alert');
+                            }
+                        }
+                    });
+                }
+            });
+
+
+            // --- Initialization ---
+            function initApp() {
+                loadSettings(); 
+                renderVehicleProfiles(); 
+                loadActiveProfile(); 
+                renderSavedTrips(); 
+                updateNavDotsAndButtons();
+                setupInputClearButtons(); 
+                
+                if (vehicleProfiles.length === 0 && !getDefaultProfileId()) { 
+                    scrollToScreen(0);
+                } else if (!currentTripResults && !savedTrips.find(t => t.tripName === resTripName.textContent)) {
+                    scrollToScreen(1); 
+                }
+            }
+            initApp();
+        });
     </script>
 </body>
 </html>
