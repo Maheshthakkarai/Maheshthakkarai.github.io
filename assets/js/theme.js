@@ -1,43 +1,38 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("theme.js loaded and executing.");
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    console.log("themeToggleBtn element:", themeToggleBtn);
-
-    // Check if the button exists before trying to use it
-    if (themeToggleBtn) {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        let currentTheme = localStorage.getItem('color-theme');
-
-        // If no theme is stored, use system preference
-        if (!currentTheme) {
-            currentTheme = prefersDark ? 'dark' : 'light';
-        }
-
-        if (currentTheme === 'dark') {
+(function() {
+    // Function to apply the theme
+    function applyTheme(theme) {
+        if (theme === 'dark') {
             document.documentElement.classList.add('dark');
-            themeToggleBtn.checked = true;
-            console.log("Initial theme set to Dark.");
         } else {
             document.documentElement.classList.remove('dark');
-            themeToggleBtn.checked = false;
-            console.log("Initial theme set to Light.");
         }
-        localStorage.setItem('color-theme', currentTheme); // Ensure localStorage is set on initial load
-        console.log("Initial localStorage color-theme:", localStorage.getItem('color-theme'));
-
-        themeToggleBtn.addEventListener('change', function() {
-            console.log("Toggle changed. Checkbox checked state:", this.checked);
-            if (this.checked) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('color-theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('color-theme', 'light');
-            }
-            console.log("Theme toggled. Current HTML classList:", document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-            console.log("Current localStorage color-theme:", localStorage.getItem('color-theme'));
-        });
-    } else {
-        console.error("Error: Theme toggle button with ID 'theme-toggle' not found in the DOM.");
     }
-});
+
+    // Immediately apply the theme on initial load
+    let savedTheme = localStorage.getItem('color-theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyTheme('dark');
+        }
+    }
+
+    // Add listener after the DOM is loaded to handle the toggle button
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (themeToggleBtn) {
+            // Set the toggle's initial state based on the current theme
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleBtn.checked = true;
+            }
+
+            // Add event listener for the toggle
+            themeToggleBtn.addEventListener('change', function() {
+                const theme = this.checked ? 'dark' : 'light';
+                localStorage.setItem('color-theme', theme);
+                applyTheme(theme);
+            });
+        }
+    });
+})();
