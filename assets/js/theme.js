@@ -7,24 +7,21 @@ function applyTheme(theme) {
     }
 }
 
-// Immediately apply the theme on initial load
+// Get saved theme from localStorage or default to system preference
 let savedTheme = localStorage.getItem('color-theme');
-if (savedTheme) {
-    applyTheme(savedTheme);
-} else {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        applyTheme('dark');
-    }
+if (!savedTheme) {
+    savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
+
+// Apply the theme immediately
+applyTheme(savedTheme);
 
 // Add listener for the toggle button after the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('theme-toggle');
     if (themeToggleBtn) {
-        // Set the toggle's initial state based on the current theme
-        if (document.documentElement.classList.contains('dark')) {
-            themeToggleBtn.checked = true;
-        }
+        // Set the toggle's initial state based on the applied theme
+        themeToggleBtn.checked = document.documentElement.classList.contains('dark');
 
         // Add event listener for the toggle
         themeToggleBtn.addEventListener('change', function() {

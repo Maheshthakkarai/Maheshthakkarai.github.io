@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const categoryFilter = document.getElementById('category-filter');
 
+    // Access apps from the global window object
+    const apps = window.apps;
+
     if (appsGrid && typeof apps !== 'undefined') {
         // Populate categories
         const categories = [...new Set(apps.map(app => app.category))];

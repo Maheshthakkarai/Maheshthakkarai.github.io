@@ -1,4 +1,4 @@
-const apps = [
+window.apps = [
     
     {
         "title": "Fuel Calculator",
