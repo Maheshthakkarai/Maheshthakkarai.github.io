@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My WebApps</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <header class="container mx-auto px-4 py-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold"><a href="../index.html">MyPortfolio</a></h1>
+        <nav>
+            <a href="../index.html#about" class="mr-4">About</a>
+            <a href="index.html" class="mr-4">WebApps</a>
+            <a href="../index.html#contact">Contact</a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <section class="text-center my-12">
+            <h2 class="text-5xl font-bold">WebApp Gallery</h2>
+            <p class="mt-4 text-xl">A collection of my AI-generated web applications.</p>
+        </section>
+
+        <section id="apps-grid" class="my-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Apps will be dynamically inserted here -->
+        </section>
+    </main>
+
+    <footer class="text-center py-6">
+        <p>&copy; 2025 MyPortfolio. All rights reserved.</p>
+    </footer>
+
+    <script src="../assets/js/apps.js"></script>
+</body>
+</html>
