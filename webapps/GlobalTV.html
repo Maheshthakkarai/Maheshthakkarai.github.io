@@ -24,26 +24,32 @@
         body.light-theme {
             --primary-color: #3478c7; --secondary-color: #ffffff; --text-color: #2c3e50;
             --text-color-muted: rgba(44, 62, 80, 0.7); --bg-color: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.95); --card-hover-bg: #f5f5f5;
+            --card-bg: rgba(255, 255, 255, 0.8); --card-hover-bg: rgba(245, 245, 245, 1);
             --border-color: rgba(0, 0, 0, 0.15); --input-bg: #f9f9f9;
             --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); --progress-bar-bg: rgba(0, 0, 0, 0.1);
             --select-arrow-icon: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
         }
         html { box-sizing: border-box; font-size: 16px; scroll-behavior: smooth; }
         *, *:before, *:after { box-sizing: inherit; }
-        body { font-family: var(--font-family); line-height: 1.6; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-        .app-wrapper { position: relative; width: 100%; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        .main-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; transition: transform 0.3s ease-in-out; }
-        .player-view-active .main-view { transform: translateX(-100%); }
-        .container { max-width: 900px; margin: 0 auto; padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; width:100%; }
-        .desktop-view .container { border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); background: var(--secondary-color); margin: 1rem auto; padding: 1.5rem; }
-        .header { display: flex; justify-content: center; align-items: center; position: relative; padding: 0.5rem 0; flex-shrink: 0; }
+        body { font-family: var(--font-family); line-height: 1.6; background: linear-gradient(to bottom, var(--secondary-color), var(--bg-color)); color: var(--text-color); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+        .container { max-width: 900px; margin: 1rem auto; padding: 1.5rem; background-color: rgba(0,0,0,0.1); border-radius: var(--border-radius); box-shadow: var(--box-shadow); display: flex; flex-direction: column; flex: 1; overflow: hidden; border: 1px solid var(--border-color); }
+        .header { display: flex; justify-content: center; align-items: center; position: relative; }
         h1 { text-align: center; margin:0 auto; font-weight: 600; color: var(--primary-color); }
         .header-icons { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display:flex; gap: 1rem; color: var(--text-color-muted); }
         .header-icons i { cursor: pointer; font-size: 1.2rem; transition: color 0.2s; }
         .header-icons i:hover { color: var(--primary-color); }
-        .disclaimer { text-align: center; font-size: 0.85rem; color: var(--text-color-muted); margin-bottom: 1rem; padding: 0 1rem; flex-shrink: 0; }
-        .channel-list-container { flex-grow: 1; display: flex; flex-direction: column; min-height: 150px; overflow: hidden; }
+        #playlistSettings { background: var(--card-bg); border: 1px solid var(--border-color); padding: 1rem; margin-bottom: 1rem; border-radius: var(--border-radius); }
+        .playlist-buttons { display: flex; gap: 0.5rem; }
+        .playlist-buttons button { flex-grow: 1; padding: 0.5rem; border: none; border-radius: var(--border-radius); cursor: pointer; transition: background-color 0.2s; }
+        .playlist-buttons .load-btn { background-color: var(--primary-color); color: white; }
+        .playlist-buttons .default-btn { background-color: var(--input-bg); color: var(--text-color); }
+        .disclaimer { text-align: center; font-size: 0.85rem; color: var(--text-color-muted); margin-bottom: 1rem; }
+        .controls-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        select, input[type="text"] { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background-color: var(--input-bg); color: var(--text-color); font-size: 1rem; transition: border-color 0.2s ease, background-color 0.2s ease; }
+        select:focus, input[type="text"]:focus { outline: none; border-color: var(--primary-color); }
+        select { appearance: none; background-image: var(--select-arrow-icon); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; padding-right: 2.5em; }
+        select option { background: var(--secondary-color); color: var(--text-color); }
+        .channel-list-container { margin-bottom: 1.5rem; flex-shrink: 1; display: flex; flex-direction: column; min-height: 150px; max-height: 55vh; overflow: hidden; }
         #channelList { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
         #channelList.grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
         .channel-item { display: flex; align-items: center; background-color: var(--card-bg); border-radius: var(--border-radius); border-left: 4px solid transparent; cursor: pointer; transition: all 0.2s ease; overflow: hidden; animation: fadeIn 0.4s ease-out forwards; }
@@ -56,14 +62,14 @@
         #channelList.grid-view .channel-info { flex-direction: column; gap: 0.75rem; }
         .channel-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
         #channelList.grid-view .channel-name { white-space: normal; text-align: center; font-weight: 600; min-height: 2.4em; }
-        .channel-logo { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background-color: rgba(0,0,0,0.1); flex-shrink: 0; border: 1px solid var(--border-color); }
+        .channel-logo { width: 36px; height: 36px; object-fit: contain; border-radius: 4px; background-color: rgba(0,0,0,0.1); flex-shrink: 0; border: 1px solid var(--border-color); }
         #channelList.grid-view .channel-logo { width: 80px; height: 80px; margin: 0 auto; }
         .channel-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
         #channelList.grid-view .channel-actions { justify-content: space-around; padding-top: 0.5rem; }
-        .favorite-icon { font-size: 1.1em; color: var(--text-color-muted); cursor: pointer; transition: color 0.2s ease, transform 0.15s ease; padding: 0.5rem; }
+        .favorite-icon { font-size: 1.1em; color: var(--text-color-muted); cursor: pointer; transition: color 0.2s ease, transform 0.15s ease; }
         .favorite-icon:hover { transform: scale(1.2); }
         .channel-item.favorited .favorite-icon { color: var(--favorite-color); font-weight: 900; }
-        .play-icon { font-size: 1.3em; color: var(--primary-color); transition: color 0.2s ease; padding: 0.5rem; }
+        .play-icon { font-size: 1.3em; color: var(--primary-color); transition: color 0.2s ease; }
         .channel-item:not(.failed-channel):hover .play-icon { color: var(--text-color); }
         .channel-item.active-channel { border-color: var(--active-color); }
         .channel-item.failed-channel { border-color: var(--failed-color) !important; color: var(--failed-color); cursor: not-allowed; opacity: 0.7; }
@@ -72,165 +78,123 @@
         .epg-program { cursor: help; }
         .epg-progress-bar { height: 3px; background-color: var(--progress-bar-bg); border-radius: 2px; margin-top: 4px; overflow: hidden; }
         .epg-progress { height: 100%; background-color: var(--primary-color); width: 0%; transition: width 0.5s ease; }
+        .video-container { background-color: #000; border-radius: var(--border-radius); margin-top: auto; flex-shrink: 0; scroll-margin-top: 1rem; }
+        video { display: block; width: 100%; max-height: 60vh; min-height: 200px; border-radius: var(--border-radius); background-color: #000; }
+        .footer-container { padding: 0.6rem 1.5rem; background-color: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem; }
+        .footer-actions, .footer-right { display: flex; align-items: center; gap: 1rem; }
+        .footer-actions button, .footer-right button { background-color: transparent; color: var(--text-color); border: none; cursor: pointer; transition: all 0.2s; font-size: 1.2rem; padding: 0.4rem 0.6rem; border-radius: var(--border-radius); }
+        .footer-actions button:hover, .footer-right button:hover { background-color: var(--card-hover-bg); }
+        #stopButton { background-color: #e74c3c; color: white; padding: 0.5rem 1rem; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem; }
+        #stopButton:hover { background-color: #c0392b; }
+        #nowPlaying { flex-grow: 1; text-align: center; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color-muted); }
         .loading-indicator { text-align: center; padding: 2rem 0; color: var(--text-color-muted); }
         .spinner { border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 0.8rem; }
         #scroll-sentinel { height: 50px; width: 100%; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
-        .desktop-view .controls-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; flex-shrink: 0; }
-        select, input[type="text"] { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); background-color: var(--input-bg); color: var(--text-color); font-size: 1rem; transition: border-color 0.2s ease, background-color 0.2s ease; }
-        select:focus, input[type="text"]:focus { outline: none; border-color: var(--primary-color); }
-        select { appearance: none; background-image: var(--select-arrow-icon); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; padding-right: 2.5em; }
-        select option { background: var(--secondary-color); color: var(--text-color); }
-        .panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--secondary-color); z-index: 1000; padding: 1rem; transform: translateY(100%); transition: transform 0.3s ease-in-out; display: flex; flex-direction: column; }
-        .panel.active { transform: translateY(0); }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-shrink: 0;}
-        .panel-header h2 { margin: 0; }
-        .panel-header .close-btn { font-size: 1.5rem; cursor: pointer; }
-        .panel-content { flex-grow: 1; overflow-y: auto; }
-        .panel-content .filter-group { margin-bottom: 1.5rem; }
-        .mobile-view-controls { display: none; }
-        .mobile-view .mobile-view-controls { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; border-top: 1px solid var(--border-color); background: var(--secondary-color); flex-shrink: 0; }
-        .mobile-view-controls button { background: none; border: none; color: var(--text-color); font-size: 1.2rem; padding: 0.5rem; cursor: pointer; }
-        .mobile-view-controls button i { margin-right: 0.5rem; }
-        .player-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 500; transform: translateX(100%); transition: transform 0.3s ease-in-out; display: flex; flex-direction: column; }
-        .player-view-active .player-view { transform: translateX(0); }
-        .video-container { width: 100%; background: #000; position: relative; flex-shrink: 0; }
-        .desktop-view .video-container { border-radius: var(--border-radius); margin-top: 1rem; }
-        .desktop-view video { max-height: 60vh; min-height: 200px; border-radius: var(--border-radius); }
-        .mobile-view .video-container { flex-grow: 1; display:flex; align-items: center; justify-content: center; }
-        video { display: block; width: 100%; height: auto; background-color: #000; }
-        .player-controls { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex-shrink: 0; }
-        #mobileNowPlaying { font-size: 1.2rem; font-weight: 600; text-align: center; }
-        #mobileErrorMsg { color: #ff6b6b; text-align: center; font-size: 0.9rem; }
-        .mobile-player-buttons { display: flex; justify-content: space-around; align-items: center; }
-        .mobile-player-buttons button { background: none; border: 1px solid var(--border-color); color: var(--text-color); font-size: 1.2rem; padding: 0.75rem 1rem; cursor: pointer; border-radius: var(--border-radius); display: flex; align-items: center; gap: 0.5rem; }
-        .mobile-player-buttons button.stop-btn { border-color: #e74c3c; color: #e74c3c; }
+        .container, .channel-item, select, input, .footer-container, #playlistSettings { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
     </style>
 </head>
 <body>
-
-<div class="app-wrapper">
-    <!-- Main View (Channel List & Desktop Player) -->
-    <div class="main-view">
-        <div class="container">
-            <div class="header">
-                <h1><i class="fas fa-tv"></i> My Global TV</h1>
-                <div class="header-icons">
-                    <i id="layoutToggle" class="fas fa-th-large" title="Toggle Layout"></i>
-                </div>
-            </div>
-            <p class="disclaimer">Note: Playback depends on channel availability and your location.</p>
-            <div id="loading-indicator" class="loading-indicator hidden">
-                <div class="spinner"></div>
-                <span>Loading channels...</span>
-            </div>
-            <div class="controls-row" id="desktop-controls">
-                <div id="country-filter-container" class="hidden"><label for="countrySelect">Country:</label><select id="countrySelect"></select></div>
-                <div><label for="categorySelect">Category:</label><select id="categorySelect"></select></div>
-                <div><label for="channelSearch">Search:</label><input type="text" id="channelSearch" placeholder="Enter channel name..."></div>
-            </div>
-            <div class="channel-list-container">
-                <h3>Available Channels</h3>
-                <ul id="channelList" class="list-view"></ul>
-                <div id="scroll-sentinel"></div>
-            </div>
-            <div id="desktop-video-container" class="video-container hidden"><video id="videoPlayer" controls controlsList="nodownload"></video></div>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-tv"></i> My Global TV</h1>
+        <div class="header-icons">
+            <i id="layoutToggle" class="fas fa-th-large" title="Toggle Layout"></i>
+            <i id="settingsToggle" class="fas fa-cog" title="Playlist Settings"></i>
         </div>
-        <div class="mobile-view-controls">
-            <button id="mobileFilterBtn"><i class="fas fa-filter"></i> Filter & Search</button>
-            <button id="mobileSettingsBtn"><i class="fas fa-cog"></i> Settings</button>
-            <button id="themeToggle"><i class="fas fa-moon"></i></button>
+    </div>
+    
+    <div id="playlistSettings" class="hidden">
+        <label for="playlistUrlInput">Custom Playlist URL (.m3u)</label>
+        <input type="text" id="playlistUrlInput" placeholder="Enter .m3u playlist URL here...">
+        <div class="playlist-buttons">
+            <button id="loadCustomPlaylist" class="load-btn">Load</button>
+            <button id="loadDefaultPlaylist" class="default-btn">Load Default</button>
         </div>
     </div>
 
-    <!-- Mobile Player View -->
-    <div class="player-view">
-        <div class="video-container" id="mobile-video-container">
-             <video id="mobileVideoPlayer" playsinline controlsList="nodownload"></video>
-        </div>
-        <div class="player-controls">
-            <div id="mobileNowPlaying"></div>
-            <div id="mobileErrorMsg"></div>
-            <div class="mobile-player-buttons">
-                <button id="mobileBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
-                <button id="fullscreenBtn"><i class="fas fa-expand"></i> Fullscreen</button>
-                <button id="mobileStopBtn" class="stop-btn"><i class="fas fa-stop"></i> Stop</button>
-            </div>
-        </div>
+    <p class="disclaimer">Note: Playback depends on channel availability and your location.</p>
+
+    <div id="loading-indicator" class="loading-indicator hidden">
+        <div class="spinner"></div>
+        <span>Loading channels...</span>
     </div>
+
+    <div class="controls-row">
+        <div id="country-filter-container" class="hidden"><label for="countrySelect">Filter by Country:</label><select id="countrySelect"></select></div>
+        <div><label for="categorySelect">Filter by Category:</label><select id="categorySelect"></select></div>
+        <div><label for="channelSearch">Search Channels:</label><input type="text" id="channelSearch" placeholder="Enter channel name..."></div>
+    </div>
+
+    <div class="channel-list-container">
+        <h3>Available Channels</h3>
+        <ul id="channelList" class="list-view"></ul>
+        <div id="scroll-sentinel"></div>
+    </div>
+
+    <div id="videoContainer" class="video-container hidden"><video id="videoPlayer" controls controlsList="nodownload"></video></div>
 </div>
 
-<!-- Mobile Filter & Settings Panels -->
-<div id="filter-controls" class="panel">
-    <div class="panel-header"><h2>Filter & Search</h2><i class="fas fa-times close-btn"></i></div>
-    <div class="panel-content">
-        <div class="filter-group"><label for="mobileCountrySelect">Country:</label><select id="mobileCountrySelect"></select></div>
-        <div class="filter-group"><label for="mobileCategorySelect">Category:</label><select id="mobileCategorySelect"></select></div>
-        <div class="filter-group"><label for="mobileChannelSearch">Search:</label><input type="text" id="mobileChannelSearch" placeholder="Enter channel name..."></div>
+<footer class="footer-container">
+    <div class="footer-actions">
+        <button id="stopButton" title="Stop Playback"><i class="fas fa-stop"></i> Stop</button>
+        <button id="pipButton" class="hidden" title="Picture-in-Picture"><i class="fas fa-clone"></i></button>
     </div>
-</div>
-<div id="settings-panel" class="panel">
-    <div class="panel-header"><h2>Settings</h2><i class="fas fa-times close-btn"></i></div>
-    <div class="panel-content">
-        <div class="filter-group"><label for="playlistUrlInput">Custom Playlist URL (.m3u)</label><input type="text" id="playlistUrlInput" placeholder="Enter .m3u playlist URL here..."><div class="playlist-buttons"><button id="loadCustomPlaylist" class="load-btn">Load</button><button id="loadDefaultPlaylist" class="default-btn">Load Default</button></div></div>
+    <span id="nowPlaying"></span>
+    <div class="footer-right">
+        <div id="error-message"></div>
+        <button id="themeToggle" title="Toggle Theme"><i class="fas fa-moon"></i></button>
     </div>
-</div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
-    // --- App Constants and Global State ---
     const DEFAULT_PLAYLIST_URL = 'https://iptv-org.github.io/iptv/index.m3u';
     const CHANNELS_METADATA_URL = 'https://iptv-org.github.io/api/channels.json';
     const STORAGE_KEYS = { FAILED_CHANNELS: 'gtv_failed', FAVORITES: 'gtv_favorites', THEME: 'gtv_theme', CUSTOM_URL: 'gtv_custom_url', LAYOUT: 'gtv_layout' };
-    const SEARCH_DEBOUNCE_MS = 300, UNKNOWN_VALUE = 'Uncategorized', FAVORITES_CATEGORY_VALUE = 'FAV', CHUNK_SIZE = 40;
-    const COUNTRY_CODES = {"AF":"Afghanistan","AX":"Åland Islands","AL":"Albania","DZ":"Algeria","AS":"American Samoa","AD":"Andorra","AO":"Angola","AI":"Anguilla","AQ":"Antarctica","AG":"Antigua and Barbuda","AR":"Argentina","AM":"Armenia","AW":"Aruba","AU":"Australia","AT":"Austria","AZ":"Azerbaijan","BS":"Bahamas","BH":"Bahrain","BD":"Bangladesh","BB":"Barbados","BY":"Belarus","BE":"Belgium","BZ":"Belize","BJ":"Benin","BM":"Bermuda","BT":"Bhutan","BO":"Bolivia","BA":"Bosnia and Herzegovina","BW":"Botswana","BR":"Brazil","IO":"British Indian Ocean Territory","BN":"Brunei","BG":"Bulgaria","BF":"Burkina Faso","BI":"Burundi","CV":"Cabo Verde","KH":"Cambodia","CM":"Cameroon","CA":"Canada","KY":"Cayman Islands","CF":"Central African Republic","TD":"Chad","CL":"Chile","CN":"China","CO":"Colombia","KM":"Comoros","CG":"Congo","CK":"Cook Islands","CR":"Costa Rica","CI":"Côte d'Ivoire","HR":"Croatia","CU":"Cuba","CW":"Curaçao","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","DJ":"Djibouti","DM":"Dominica","DO":"Dominican Republic","EC":"Ecuador","EG":"Egypt","SV":"El Salvador","GQ":"Equatorial Guinea","ER":"Eritrea","EE":"Estonia","SZ":"Eswatini","ET":"Ethiopia","FK":"Falkland Islands","FO":"Faroe Islands","FJ":"Fiji","FI":"Finland","FR":"France","GF":"French Guiana","PF":"French Polynesia","GA":"Gabon","GM":"Gambia","GE":"Georgia","DE":"Germany","GH":"Ghana","GI":"Gibraltar","GR":"Greece","GL":"Greenland","GD":"Grenada","GP":"Guadeloupe","GU":"Guam","GT":"Guatemala","GG":"Guernsey","GN":"Guinea","GW":"Guinea-Bissau","GY":"Guyana","HT":"Haiti","VA":"Holy See","HN":"Honduras","HK":"Hong Kong","HU":"Hungary","IS":"Iceland","IN":"India","ID":"Indonesia","IR":"Iran","IQ":"Iraq","IE":"Ireland","IM":"Isle of Man","IL":"Israel","IT":"Italy","JM":"Jamaica","JP":"Japan","JE":"Jersey","JO":"Jordan","KZ":"Kazakhstan","KE":"Kenya","KI":"Kiribati","KP":"North Korea","KR":"South Korea","KW":"Kuwait","KG":"Kyrgyzstan","LA":"Laos","LV":"Latvia","LB":"Lebanon","LS":"Lesotho","LR":"Liberia","LY":"Libya","LI":"Liechtenstein","LT":"Lithuania","LU":"Luxembourg","MO":"Macao","MG":"Madagascar","MW":"Malawi","MY":"Malaysia","MV":"Maldives","ML":"Mali","MT":"Malta","MH":"Marshall Islands","MQ":"Martinique","MR":"Mauritania","MU":"Mauritius","YT":"Mayotte","MX":"Mexico","FM":"Micronesia","MD":"Moldova","MC":"Monaco","MN":"Mongolia","ME":"Montenegro","MS":"Montserrat","MA":"Morocco","MZ":"Mozambique","MM":"Myanmar","NA":"Namibia","NR":"Nauru","NP":"Nepal","NL":"Netherlands","NC":"New Caledonia","NZ":"New Zealand","NI":"Nicaragua","NE":"Niger","NG":"Nigeria","NU":"Niue","NF":"Norfolk Island","MK":"North Macedonia","MP":"Northern Mariana Islands","NO":"Norway","OM":"Oman","PK":"Pakistan","PW":"Palau","PS":"Palestine","PA":"Panama","PG":"Papua New Guinea","PY":"Paraguay","PE":"Peru","PH":"Philippines","PN":"Pitcairn","PL":"Poland","PT":"Portugal","PR":"Puerto Rico","QA":"Qatar","RE":"Réunion","RO":"Romania","RU":"Russia","RW":"Rwanda","BL":"Saint Barthélemy","SH":"Saint Helena","KN":"Saint Kitts and Nevis","LC":"Saint Lucia","MF":"Saint Martin","PM":"Saint Pierre and Miquelon","VC":"Saint Vincent and the Grenadines","WS":"Samoa","SM":"San Marino","ST":"Sao Tome and Principe","SA":"Saudi Arabia","SN":"Senegal","RS":"Serbia","SC":"Seychelles","SL":"Sierra Leone","SG":"Singapore","SX":"Sint Maarten","SK":"Slovakia","SI":"Slovenia","SB":"Solomon Islands","SO":"Somalia","ZA":"South Africa","GS":"South Georgia","SS":"South Sudan","ES":"Spain","LK":"Sri Lanka","SD":"Sudan","SR":"Suriname","SE":"Sweden","CH":"Switzerland","SY":"Syria","TW":"Taiwan","TJ":"Tajikistan","TZ":"Tanzania","TH":"Thailand","TL":"Timor-Leste","TG":"Togo","TK":"Tokelau","TO":"Tonga","TT":"Trinidad and Tobago","TN":"Tunisia","TR":"Turkey","TM":"Turkmenistan","TC":"Turks and Caicos Islands","TV":"Tuvalu","UG":"Uganda","UA":"Ukraine","AE":"United Arab Emirates","GB":"United Kingdom","US":"United States","UY":"Uruguay","UZ":"Uzbekistan","VU":"Vanuatu","VE":"Venezuela","VN":"Viet Nam","VG":"Virgin Islands (British)","VI":"Virgin Islands (U.S.)","WF":"Wallis and Futuna","YE":"Yemen","ZM":"Zambia","ZW":"Zimbabwe"};
+    const SEARCH_DEBOUNCE_MS = 300;
+    const UNKNOWN_VALUE = 'Uncategorized';
+    const FAVORITES_CATEGORY_VALUE = 'FAV';
+    const CHUNK_SIZE = 40;
+    const COUNTRY_CODES = {"AF":"Afghanistan","AX":"Åland Islands","AL":"Albania","DZ":"Algeria","AS":"American Samoa","AD":"Andorra","AO":"Angola","AI":"Anguilla","AQ":"Antarctica","AG":"Antigua and Barbuda","AR":"Argentina","AM":"Armenia","AW":"Aruba","AU":"Australia","AT":"Austria","AZ":"Azerbaijan","BS":"Bahamas","BH":"Bahrain","BD":"Bangladesh","BB":"Barbados","BY":"Belarus","BE":"Belgium","BZ":"Belize","BJ":"Benin","BM":"Bermuda","BT":"Bhutan","BO":"Bolivia","BQ":"Bonaire, Sint Eustatius and Saba","BA":"Bosnia and Herzegovina","BW":"Botswana","BV":"Bouvet Island","BR":"Brazil","IO":"British Indian Ocean Territory","BN":"Brunei Darussalam","BG":"Bulgaria","BF":"Burkina Faso","BI":"Burundi","CV":"Cabo Verde","KH":"Cambodia","CM":"Cameroon","CA":"Canada","KY":"Cayman Islands","CF":"Central African Republic","TD":"Chad","CL":"Chile","CN":"China","CX":"Christmas Island","CC":"Cocos (Keeling) Islands","CO":"Colombia","KM":"Comoros","CG":"Congo","CD":"Congo, the Democratic Republic of the","CK":"Cook Islands","CR":"Costa Rica","CI":"Côte d'Ivoire","HR":"Croatia","CU":"Cuba","CW":"Curaçao","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","DJ":"Djibouti","DM":"Dominica","DO":"Dominican Republic","EC":"Ecuador","EG":"Egypt","SV":"El Salvador","GQ":"Equatorial Guinea","ER":"Eritrea","EE":"Estonia","SZ":"Eswatini","ET":"Ethiopia","FK":"Falkland Islands (Malvinas)","FO":"Faroe Islands","FJ":"Fiji","FI":"Finland","FR":"France","GF":"French Guiana","PF":"French Polynesia","TF":"French Southern Territories","GA":"Gabon","GM":"Gambia","GE":"Georgia","DE":"Germany","GH":"Ghana","GI":"Gibraltar","GR":"Greece","GL":"Greenland","GD":"Grenada","GP":"Guadeloupe","GU":"Guam","GT":"Guatemala","GG":"Guernsey","GN":"Guinea","GW":"Guinea-Bissau","GY":"Guyana","HT":"Haiti","HM":"Heard Island and McDonald Islands","VA":"Holy See","HN":"Honduras","HK":"Hong Kong","HU":"Hungary","IS":"Iceland","IN":"India","ID":"Indonesia","IR":"Iran","IQ":"Iraq","IE":"Ireland","IM":"Isle of Man","IL":"Israel","IT":"Italy","JM":"Jamaica","JP":"Japan","JE":"Jersey","JO":"Jordan","KZ":"Kazakhstan","KE":"Kenya","KI":"Kiribati","KP":"North Korea","KR":"South Korea","KW":"Kuwait","KG":"Kyrgyzstan","LA":"Lao People's Democratic Republic","LV":"Latvia","LB":"Lebanon","LS":"Lesotho","LR":"Liberia","LY":"Libya","LI":"Liechtenstein","LT":"Lithuania","LU":"Luxembourg","MO":"Macao","MG":"Madagascar","MW":"Malawi","MY":"Malaysia","MV":"Maldives","ML":"Mali","MT":"Malta","MH":"Marshall Islands","MQ":"Martinique","MR":"Mauritania","MU":"Mauritius","YT":"Mayotte","MX":"Mexico","FM":"Micronesia","MD":"Moldova","MC":"Monaco","MN":"Mongolia","ME":"Montenegro","MS":"Montserrat","MA":"Morocco","MZ":"Mozambique","MM":"Myanmar","NA":"Namibia","NR":"Nauru","NP":"Nepal","NL":"Netherlands","NC":"New Caledonia","NZ":"New Zealand","NI":"Nicaragua","NE":"Niger","NG":"Nigeria","NU":"Niue","NF":"Norfolk Island","MK":"North Macedonia","MP":"Northern Mariana Islands","NO":"Norway","OM":"Oman","PK":"Pakistan","PW":"Palau","PS":"Palestine, State of","PA":"Panama","PG":"Papua New Guinea","PY":"Paraguay","PE":"Peru","PH":"Philippines","PN":"Pitcairn","PL":"Poland","PT":"Portugal","PR":"Puerto Rico","QA":"Qatar","RE":"Réunion","RO":"Romania","RU":"Russia","RW":"Rwanda","BL":"Saint Barthélemy","SH":"Saint Helena, Ascension and Tristan da Cunha","KN":"Saint Kitts and Nevis","LC":"Saint Lucia","MF":"Saint Martin (French part)","PM":"Saint Pierre and Miquelon","VC":"Saint Vincent and the Grenadines","WS":"Samoa","SM":"San Marino","ST":"Sao Tome and Principe","SA":"Saudi Arabia","SN":"Senegal","RS":"Serbia","SC":"Seychelles","SL":"Sierra Leone","SG":"Singapore","SX":"Sint Maarten (Dutch part)","SK":"Slovakia","SI":"Slovenia","SB":"Solomon Islands","SO":"Somalia","ZA":"South Africa","GS":"South Georgia and the South Sandwich Islands","SS":"South Sudan","ES":"Spain","LK":"Sri Lanka","SD":"Sudan","SR":"Suriname","SJ":"Svalbard and Jan Mayen","SE":"Sweden","CH":"Switzerland","SY":"Syrian Arab Republic","TW":"Taiwan","TJ":"Tajikistan","TZ":"Tanzania","TH":"Thailand","TL":"Timor-Leste","TG":"Togo","TK":"Tokelau","TO":"Tonga","TT":"Trinidad and Tobago","TN":"Tunisia","TR":"Turkey","TM":"Turkmenistan","TC":"Turks and Caicos Islands","TV":"Tuvalu","UG":"Uganda","UA":"Ukraine","AE":"United Arab Emirates","GB":"United Kingdom","UM":"United States Minor Outlying Islands","US":"United States","UY":"Uruguay","UZ":"Uzbekistan","VU":"Vanuatu","VE":"Venezuela","VN":"Viet Nam","VG":"Virgin Islands, British","VI":"Virgin Islands, U.S.","WF":"Wallis and Futuna","EH":"Western Sahara","YE":"Yemen","ZM":"Zambia","ZW":"Zimbabwe"};
 
     const el = {
-        body: document.body, appWrapper: document.querySelector('.app-wrapper'), channelList: document.getElementById('channelList'),
-        videoPlayer: document.getElementById('videoPlayer'), mobileVideoPlayer: document.getElementById('mobileVideoPlayer'),
-        loadingIndicator: document.getElementById('loading-indicator'), sentinel: document.getElementById('scroll-sentinel'),
-        desktop: {
-            countrySelect: document.getElementById('countrySelect'), categorySelect: document.getElementById('categorySelect'),
-            channelSearch: document.getElementById('channelSearch'), videoContainer: document.getElementById('desktop-video-container'),
-            countryFilterContainer: document.getElementById('country-filter-container')
-        },
-        mobile: {
-            filterBtn: document.getElementById('mobileFilterBtn'), settingsBtn: document.getElementById('mobileSettingsBtn'),
-            filterPanel: document.getElementById('filter-controls'), settingsPanel: document.getElementById('settings-panel'),
-            countrySelect: document.getElementById('mobileCountrySelect'), categorySelect: document.getElementById('mobileCategorySelect'),
-            channelSearch: document.getElementById('mobileChannelSearch'), nowPlaying: document.getElementById('mobileNowPlaying'),
-            errorMsg: document.getElementById('mobileErrorMsg'), backBtn: document.getElementById('mobileBackBtn'),
-            fullscreenBtn: document.getElementById('fullscreenBtn'), stopBtn: document.getElementById('mobileStopBtn')
-        },
-        themeToggle: document.getElementById('themeToggle'), layoutToggle: document.getElementById('layoutToggle'),
-        playlistUrlInput: document.getElementById('playlistUrlInput'), loadCustomBtn: document.getElementById('loadCustomPlaylist'),
-        loadDefaultBtn: document.getElementById('loadDefaultPlaylist')
+        body: document.body, categorySelect: document.getElementById('categorySelect'), channelList: document.getElementById('channelList'),
+        channelSearch: document.getElementById('channelSearch'), videoPlayer: document.getElementById('videoPlayer'), videoContainer: document.getElementById('videoContainer'),
+        stopButton: document.getElementById('stopButton'), nowPlaying: document.getElementById('nowPlaying'), errorMsg: document.getElementById('error-message'),
+        loadingIndicator: document.getElementById('loading-indicator'), themeToggle: document.getElementById('themeToggle'), pipButton: document.getElementById('pipButton'),
+        settingsToggle: document.getElementById('settingsToggle'), playlistSettings: document.getElementById('playlistSettings'), playlistUrlInput: document.getElementById('playlistUrlInput'),
+        loadCustomBtn: document.getElementById('loadCustomPlaylist'), loadDefaultBtn: document.getElementById('loadDefaultPlaylist'), layoutToggle: document.getElementById('layoutToggle'),
+        sentinel: document.getElementById('scroll-sentinel'), countrySelect: document.getElementById('countrySelect'), countryFilterContainer: document.getElementById('country-filter-container')
     };
 
     let allChannels = [], epgData = new Map(), countryData = new Map(), currentHlsInstance = null, currentPlayingUrl = null;
     let failedChannelUrls = new Set(), favoriteChannelUrls = new Set(), epgUpdateInterval = null;
-    let currentlyDisplayedChannels = [], renderIndex = 0, virtualScrollObserver, isMobileView = false;
+    let currentlyDisplayedChannels = [], renderIndex = 0, virtualScrollObserver;
 
-    const displayError = (msg, isMobile = false) => { const errEl = isMobile ? el.mobile.errorMsg : null; if(errEl) { errEl.textContent = msg; setTimeout(() => errEl.textContent = '', 7000); } else { console.error("Error display element not found for view"); } };
+    const displayError = (msg) => { el.errorMsg.textContent = msg; setTimeout(() => el.errorMsg.textContent = '', 7000); };
     const debounce = (fn, wait) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), wait); }; };
     const loadFromStorage = (key, def) => { const s = localStorage.getItem(key); try { return s ? JSON.parse(s) : def; } catch (e) { return def; } };
     const saveToStorage = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { console.error('Failed to save to storage', e); } };
+
     const applyTheme = (theme) => { el.body.classList.toggle('light-theme', theme === 'light'); el.themeToggle.innerHTML = `<i class="fas fa-${theme === 'light' ? 'sun' : 'moon'}"></i>`; };
     const toggleTheme = () => { const newTheme = el.body.classList.contains('light-theme') ? 'dark' : 'light'; saveToStorage(STORAGE_KEYS.THEME, newTheme); applyTheme(newTheme); };
     const initTheme = () => applyTheme(loadFromStorage(STORAGE_KEYS.THEME, window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
     const applyLayout = (layout) => { el.channelList.className = `${layout}-view`; el.layoutToggle.className = `fas fa-${layout === 'grid' ? 'list' : 'th-large'}`; };
     const toggleLayout = () => { const newLayout = el.channelList.classList.contains('list-view') ? 'grid' : 'list'; saveToStorage(STORAGE_KEYS.LAYOUT, newLayout); applyLayout(newLayout); };
     const initLayout = () => applyLayout(loadFromStorage(STORAGE_KEYS.LAYOUT, 'list'));
+
     const showLoading = (msg) => { el.loadingIndicator.querySelector('span').textContent = msg; el.loadingIndicator.classList.remove('hidden'); };
     const hideLoading = () => el.loadingIndicator.classList.add('hidden');
-    
+
     const fetchIPTVData = async () => {
         clearInterval(epgUpdateInterval);
         const playlistUrl = loadFromStorage(STORAGE_KEYS.CUSTOM_URL, DEFAULT_PLAYLIST_URL);
         el.playlistUrlInput.value = playlistUrl;
-        showLoading(`Loading channels...`);
+        showLoading(`Loading channels from ${new URL(playlistUrl).hostname}...`);
         try {
             await fetchCountryData();
             const response = await fetch(playlistUrl);
@@ -238,8 +202,10 @@
             const playlistText = await response.text();
             const { channels, epgUrl } = parseM3UPlaylist(playlistText);
             allChannels = channels;
+            
             populateFilters();
             filterAndDisplayChannels();
+
             if (epgUrl) {
                 showLoading(`Loading EPG data...`);
                 await fetchEPGData(epgUrl);
@@ -248,6 +214,7 @@
             }
         } catch (error) { displayError(`Load failed: ${error.message}`); allChannels = []; filterAndDisplayChannels(); } finally { hideLoading(); }
     };
+    
     const fetchCountryData = async () => {
         try {
             const response = await fetch(CHANNELS_METADATA_URL);
@@ -255,8 +222,12 @@
             const data = await response.json();
             countryData.clear();
             data.forEach(ch => { if (ch.id && ch.country) countryData.set(ch.id, ch.country) });
-        } catch(e) { console.error("Could not load country data:", e); el.desktop.countryFilterContainer.classList.add('hidden'); }
+        } catch(e) {
+            console.error("Could not load country data:", e);
+            el.countryFilterContainer.classList.add('hidden');
+        }
     };
+
     const parseM3UPlaylist = (txt) => {
         let channels = [], epgUrl = '', cur = {};
         const epgMatch = txt.match(/x-tvg-url="([^"]+)"/);
@@ -264,7 +235,8 @@
         txt.split('\n').forEach(line => {
             line = line.trim();
             if (line.startsWith('#EXTINF:')) {
-                const info = line.match(/#EXTINF:-1([^,]*),(.*)/); if (!info) return;
+                const info = line.match(/#EXTINF:-1([^,]*),(.*)/);
+                if (!info) return;
                 cur = { name: info[2].trim(), category: UNKNOWN_VALUE, url: '', logo: '', tvgId: '', country: '' };
                 const attrs = info[1];
                 cur.tvgId = (attrs.match(/tvg-id="([^"]+)"/i) || [])[1] || '';
@@ -279,22 +251,25 @@
         });
         return { channels: channels.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())), epgUrl };
     };
+
     const fetchEPGData = async (url) => {
         const xmlText = await (await fetch(url)).text();
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, "application/xml");
         epgData.clear();
         xmlDoc.querySelectorAll('programme').forEach(p => {
-            const id = p.getAttribute('channel'); if (!id) return;
+            const id = p.getAttribute('channel');
+            if (!id) return;
             if (!epgData.has(id)) epgData.set(id, []);
-            const startStr = p.getAttribute('start'), endStr = p.getAttribute('stop'); if (!startStr || !endStr) return;
+            const startStr = p.getAttribute('start'), endStr = p.getAttribute('stop');
+            if (!startStr || !endStr) return;
             const start = new Date(startStr.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\s([+-]\d{4})/, '$1-$2-$3T$4:$5:$6$7'));
             const end = new Date(endStr.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\s([+-]\d{4})/, '$1-$2-$3T$4:$5:$6$7'));
             if (end > new Date()) epgData.get(id).push({ title: p.querySelector('title')?.textContent||'No Title', desc: p.querySelector('desc')?.textContent||'', start, end });
         });
     };
 
-    const findCurrentProgram = (tvgId) => { const p = epgData.get(tvgId); return p ? p.find(prog => new Date() >= prog.start && new Date() < prog.end) : null; };
+    const findCurrentProgram = (tvgId) => { const programs = epgData.get(tvgId); if (!programs) return null; const now = new Date(); return programs.find(p => now >= p.start && now < p.end); };
     const renderChannelChunk = (channels) => {
         const fragment = document.createDocumentFragment();
         const isLightTheme = el.body.classList.contains("light-theme");
@@ -315,153 +290,121 @@
         el.channelList.appendChild(fragment);
         updateChannelListVisuals();
     };
+    
     const renderMoreChannels = () => {
         const chunk = currentlyDisplayedChannels.slice(renderIndex, renderIndex + CHUNK_SIZE);
         renderChannelChunk(chunk);
         renderIndex += CHUNK_SIZE;
         if (renderIndex >= currentlyDisplayedChannels.length) { if (virtualScrollObserver) virtualScrollObserver.disconnect(); el.sentinel.classList.add('hidden'); }
     };
+    
     const filterAndDisplayChannels = () => {
-        const country = (isMobileView ? el.mobile.countrySelect : el.desktop.countrySelect).value;
-        const category = (isMobileView ? el.mobile.categorySelect : el.desktop.categorySelect).value;
-        const term = (isMobileView ? el.mobile.channelSearch : el.desktop.channelSearch).value.toLowerCase();
+        const country = el.countrySelect.value; const category = el.categorySelect.value; const term = el.channelSearch.value.toLowerCase();
         let filtered = allChannels;
         if (country !== 'All') filtered = filtered.filter(c => c.country === country);
         if (category === FAVORITES_CATEGORY_VALUE) filtered = filtered.filter(c => favoriteChannelUrls.has(c.url));
         else if (category !== 'All') filtered = filtered.filter(c => c.category === category);
         if (term) filtered = filtered.filter(c => c.name.toLowerCase().includes(term));
+        
         currentlyDisplayedChannels = filtered;
         el.channelList.innerHTML = ''; renderIndex = 0;
+        
         if (virtualScrollObserver) virtualScrollObserver.disconnect();
         if (currentlyDisplayedChannels.length > 0) {
             el.sentinel.classList.remove('hidden');
             renderMoreChannels();
             virtualScrollObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) renderMoreChannels(); }, { root: el.channelList });
             virtualScrollObserver.observe(el.sentinel);
-        } else { el.channelList.innerHTML = '<li class="channel-item" style="justify-content: center; cursor: default; border:none; grid-column: 1 / -1;">No channels match criteria.</li>'; }
+        } else {
+            el.channelList.innerHTML = '<li class="channel-item" style="justify-content: center; cursor: default; border:none; grid-column: 1 / -1;">No channels match criteria.</li>';
+        }
     };
-    const debouncedFilter = debounce(filterAndDisplayChannels, 300);
+    const debouncedFilter = debounce(filterAndDisplayChannels, SEARCH_DEBOUNCE_MS);
     const updateEPGProgress = () => document.querySelectorAll('.channel-item').forEach(item => { const prog = findCurrentProgram(item.dataset.tvgId); if (prog) { const p = item.querySelector('.epg-progress'); if (p) p.style.width = `${(new Date() - prog.start) / (prog.end - prog.start) * 100}%`; } });
+
     const populateFilters = () => {
-        const countries = [...new Set(allChannels.map(c => c.country).filter(c => c))].sort((a,b) => (COUNTRY_CODES[a] || a).localeCompare(COUNTRY_CODES[b] || b));
-        const categories = [...new Set(allChannels.map(c => c.category))];
-        const countrySelects = [el.desktop.countrySelect, el.mobile.countrySelect];
-        const categorySelects = [el.desktop.categorySelect, el.mobile.categorySelect];
-        
+        const countries = [...new Set(allChannels.map(c => c.country).filter(c => c))].sort();
         if (countries.length > 0) {
-            countrySelects.forEach(sel => {
-                const currentVal = sel.value;
-                sel.innerHTML = '<option value="All">All Countries</option>';
-                countries.forEach(c => sel.add(new Option(COUNTRY_CODES[c] || c, c)));
-                sel.value = currentVal;
-            });
-            el.desktop.countryFilterContainer.classList.remove('hidden');
-        } else { el.desktop.countryFilterContainer.classList.add('hidden'); }
-        
-        categorySelects.forEach(sel => {
-            const currentVal = sel.value;
-            sel.innerHTML = '';
-            if (favoriteChannelUrls.size > 0) sel.add(new Option('Favorites ⭐', FAVORITES_CATEGORY_VALUE));
-            sel.add(new Option('All Categories', 'All'));
-            categories.filter(c => c && c !== UNKNOWN_VALUE).sort().forEach(c => sel.add(new Option(c, c)));
-            if (categories.includes(UNKNOWN_VALUE)) sel.add(new Option(UNKNOWN_VALUE, UNKNOWN_VALUE));
-            sel.value = [...sel.options].some(o => o.value === currentVal) ? currentVal : 'All';
-        });
+            const currentCountry = el.countrySelect.value;
+            el.countrySelect.innerHTML = '<option value="All">All Countries</option>';
+            countries.forEach(c => el.countrySelect.add(new Option(COUNTRY_CODES[c] || c, c)));
+            el.countrySelect.value = currentCountry;
+            el.countryFilterContainer.classList.remove('hidden');
+        } else {
+            el.countryFilterContainer.classList.add('hidden');
+        }
+
+        const categories = [...new Set(allChannels.map(c => c.category))];
+        const currentCat = el.categorySelect.value;
+        el.categorySelect.innerHTML = '';
+        if (favoriteChannelUrls.size > 0) el.categorySelect.add(new Option('Favorites ⭐', FAVORITES_CATEGORY_VALUE));
+        el.categorySelect.add(new Option('All Categories', 'All'));
+        categories.filter(c => c && c !== UNKNOWN_VALUE).sort().forEach(c => el.categorySelect.add(new Option(c, c)));
+        if (categories.includes(UNKNOWN_VALUE)) el.categorySelect.add(new Option(UNKNOWN_VALUE, UNKNOWN_VALUE));
+        el.categorySelect.value = [...el.categorySelect.options].some(o => o.value === currentCat) ? currentCat : 'All';
     };
+
     const updateChannelListVisuals = () => el.channelList.querySelectorAll('.channel-item').forEach(item => { const url = item.dataset.channelUrl; item.classList.toggle('active-channel', url === currentPlayingUrl); item.classList.toggle('failed-channel', failedChannelUrls.has(url)); item.classList.toggle('favorited', favoriteChannelUrls.has(url)); });
     
     const playChannel = (url, name) => {
         if (currentHlsInstance) currentHlsInstance.destroy();
-        currentPlayingUrl = url;
-        const player = isMobileView ? el.mobileVideoPlayer : el.videoPlayer;
-        if (isMobileView) {
-            el.mobile.nowPlaying.textContent = `Loading: ${name}...`;
-            el.mobile.errorMsg.textContent = '';
-            el.appWrapper.classList.add('player-view-active');
-        } else {
-            el.desktop.videoContainer.classList.remove('hidden');
-        }
+        el.nowPlaying.textContent = `Loading: ${name}...`; currentPlayingUrl = url;
+        updateChannelListVisuals(); el.videoContainer.classList.remove('hidden'); el.pipButton.classList.add('hidden');
+        el.videoContainer.scrollIntoView();
         
-        const onPlaySuccess = () => { if (isMobileView) el.mobile.nowPlaying.textContent = name; };
+        const onPlaySuccess = () => { el.nowPlaying.textContent = `Now Playing: ${name}`; if (document.pictureInPictureEnabled) el.pipButton.classList.remove('hidden'); };
         const onPlayError = (details = 'Playback failed') => {
-            console.error(`Playback Error for ${name}:`, details);
-            displayError(`Failed: ${name}`, isMobileView);
+            console.error(`Playback Error for ${name}:`, details); displayError(`Failed: ${name}`);
             failedChannelUrls.add(url); saveToStorage(STORAGE_KEYS.FAILED_CHANNELS, [...failedChannelUrls]);
-            if(currentPlayingUrl === url) stopPlayback(); else updateChannelListVisuals();
+            if(currentPlayingUrl === url) stopPlayback();
+            else updateChannelListVisuals();
         };
 
         if (url.toLowerCase().includes('.m3u8')) {
             if (Hls.isSupported()) {
                 currentHlsInstance = new Hls();
-                currentHlsInstance.loadSource(url); currentHlsInstance.attachMedia(player);
-                currentHlsInstance.on(Hls.Events.MANIFEST_PARSED, () => player.play().then(onPlaySuccess).catch(e => onPlayError(e.message)));
+                currentHlsInstance.loadSource(url); currentHlsInstance.attachMedia(el.videoPlayer);
+                currentHlsInstance.on(Hls.Events.MANIFEST_PARSED, () => el.videoPlayer.play().then(onPlaySuccess).catch(e => onPlayError(e.message)));
                 currentHlsInstance.on(Hls.Events.ERROR, (evt, data) => { if (data.fatal) onPlayError(data.details); });
-            } else if (player.canPlayType('application/vnd.apple.mpegurl')) { player.src = url; player.play().then(onPlaySuccess).catch(e => onPlayError(e.message));
+            } else if (el.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) { el.videoPlayer.src = url; el.videoPlayer.play().then(onPlaySuccess).catch(e => onPlayError(e.message));
             } else { onPlayError('HLS not supported'); }
-        } else { player.src = url; player.play().then(onPlaySuccess).catch(e => onPlayError(e.message)); }
-    };
-    const stopPlayback = () => {
-        if (currentHlsInstance) { currentHlsInstance.destroy(); currentHlsInstance = null; }
-        [el.videoPlayer, el.mobileVideoPlayer].forEach(p => { p.pause(); p.removeAttribute('src'); p.load(); });
-        if(isMobileView) el.appWrapper.classList.remove('player-view-active');
-        else el.desktop.videoContainer.classList.add('hidden');
-        currentPlayingUrl = null;
-        updateChannelListVisuals();
-        if (document.fullscreenElement) document.exitFullscreen();
-        if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+        } else { el.videoPlayer.src = url; el.videoPlayer.play().then(onPlaySuccess).catch(e => onPlayError(e.message)); }
     };
 
-    const handleResize = () => {
-        const wasMobile = isMobileView;
-        isMobileView = window.innerWidth < 700;
-        el.body.classList.toggle('mobile-view', isMobileView);
-        el.body.classList.toggle('desktop-view', !isMobileView);
-        if (wasMobile !== isMobileView) {
-            if (isMobileView) {
-                el.mobile.countrySelect.value = el.desktop.countrySelect.value;
-                el.mobile.categorySelect.value = el.desktop.categorySelect.value;
-                el.mobile.channelSearch.value = el.desktop.channelSearch.value;
-            } else {
-                el.desktop.countrySelect.value = el.mobile.countrySelect.value;
-                el.desktop.categorySelect.value = el.mobile.categorySelect.value;
-                el.desktop.channelSearch.value = el.mobile.channelSearch.value;
-            }
-            filterAndDisplayChannels();
-        }
+    const stopPlayback = () => {
+        if (currentHlsInstance) { currentHlsInstance.destroy(); currentHlsInstance = null; }
+        el.videoPlayer.pause(); el.videoPlayer.removeAttribute('src'); el.videoPlayer.load();
+        el.videoContainer.classList.add('hidden'); el.pipButton.classList.add('hidden'); el.nowPlaying.textContent = ''; currentPlayingUrl = null;
+        updateChannelListVisuals(); if (document.pictureInPictureElement) document.exitPictureInPicture();
     };
+
     const setupListeners = () => {
-        [el.desktop.countrySelect, el.desktop.categorySelect, el.mobile.countrySelect, el.mobile.categorySelect].forEach(sel => sel.addEventListener('change', filterAndDisplayChannels));
-        [el.desktop.channelSearch, el.mobile.channelSearch].forEach(s => s.addEventListener('input', debouncedFilter));
+        [el.countrySelect, el.categorySelect].forEach(sel => sel.addEventListener('change', filterAndDisplayChannels));
+        el.channelSearch.addEventListener('input', debouncedFilter);
         el.themeToggle.addEventListener('click', toggleTheme);
         el.layoutToggle.addEventListener('click', toggleLayout);
-        el.mobile.filterBtn.addEventListener('click', () => el.mobile.filterPanel.classList.add('active'));
-        el.mobile.settingsBtn.addEventListener('click', () => el.mobile.settingsPanel.classList.add('active'));
-        document.querySelectorAll('.panel .close-btn').forEach(btn => btn.addEventListener('click', () => btn.closest('.panel').classList.remove('active')));
-        [el.loadCustomBtn, el.loadDefaultBtn].forEach(btn => btn.addEventListener('click', () => document.querySelectorAll('.panel.active').forEach(p => p.classList.remove('active'))));
-        el.loadCustomBtn.addEventListener('click', () => { const url = el.playlistUrlInput.value.trim(); if(url){ saveToStorage(STORAGE_KEYS.CUSTOM_URL, url); fetchIPTVData(); }});
-        el.loadDefaultBtn.addEventListener('click', () => { localStorage.removeItem(STORAGE_KEYS.CUSTOM_URL); fetchIPTVData(); });
-        el.mobile.stopBtn.addEventListener('click', stopPlayback);
-        el.mobile.backBtn.addEventListener('click', () => { stopPlayback(); el.appWrapper.classList.remove('player-view-active'); });
-        el.mobile.fullscreenBtn.addEventListener('click', async () => { try { if (document.fullscreenElement) { await document.exitFullscreen(); } else { await el.mobileVideoPlayer.requestFullscreen(); if(screen.orientation && typeof screen.orientation.lock === 'function') screen.orientation.lock('landscape'); } } catch(e) { displayError('Fullscreen not supported', true); } });
-        document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && screen.orientation && typeof screen.orientation.unlock === 'function') screen.orientation.unlock(); });
+        el.settingsToggle.addEventListener('click', () => el.playlistSettings.classList.toggle('hidden'));
+        el.loadCustomBtn.addEventListener('click', () => { const url = el.playlistUrlInput.value.trim(); if(url){ saveToStorage(STORAGE_KEYS.CUSTOM_URL, url); el.playlistSettings.classList.add('hidden'); fetchIPTVData(); }});
+        el.loadDefaultBtn.addEventListener('click', () => { localStorage.removeItem(STORAGE_KEYS.CUSTOM_URL); el.playlistSettings.classList.add('hidden'); fetchIPTVData(); });
+        el.stopButton.addEventListener('click', stopPlayback);
+        el.pipButton.addEventListener('click', async () => { try { if (document.pictureInPictureElement) await document.exitPictureInPicture(); else await el.videoPlayer.requestPictureInPicture(); } catch(e) { displayError("PiP failed."); }});
         el.channelList.addEventListener('click', e => {
-            const item = e.target.closest('.channel-item'); if (!item || item.classList.contains('failed-channel')) return;
+            const item = e.target.closest('.channel-item');
+            if (!item || item.classList.contains('failed-channel')) return;
             const url = item.dataset.channelUrl, name = item.dataset.channelName;
             if (e.target.closest('.favorite-icon')) {
                 e.stopPropagation();
                 if (favoriteChannelUrls.has(url)) favoriteChannelUrls.delete(url); else favoriteChannelUrls.add(url);
                 saveToStorage(STORAGE_KEYS.FAVORITES, [...favoriteChannelUrls]);
                 populateFilters();
-                if ((isMobileView ? el.mobile.categorySelect : el.desktop.categorySelect).value === FAVORITES_CATEGORY_VALUE) filterAndDisplayChannels(); else updateChannelListVisuals();
+                if (el.categorySelect.value === FAVORITES_CATEGORY_VALUE) filterAndDisplayChannels(); else updateChannelListVisuals();
             } else if (url !== currentPlayingUrl) playChannel(url, name);
         });
-        window.addEventListener('resize', debounce(handleResize, 100));
     };
 
     const init = () => {
         initTheme();
         initLayout();
-        handleResize();
         failedChannelUrls = new Set(loadFromStorage(STORAGE_KEYS.FAILED_CHANNELS, []));
         favoriteChannelUrls = new Set(loadFromStorage(STORAGE_KEYS.FAVORITES, []));
         setupListeners();
