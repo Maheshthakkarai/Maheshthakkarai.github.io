@@ -42,7 +42,7 @@ window.apps = [
     },
    {
         "title": "Hats",
-        "description": "Hat Measurements",
+        "description": "How to measure hat",
         "category": "Fashion and Style",
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Hats.png",
