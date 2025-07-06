@@ -127,6 +127,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/WorkoutTracker.png",
         "url": "/webapps/WorkoutTracker.html"
+    },
+{
+        "title": "Cricket Score",
+        "description": "Track the score and match",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Cricket.jpg",
+        "url": "/webapps/Cricket.html"
     }
 
 ];
