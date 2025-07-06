@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/theme.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <header class="container mx-auto px-4 py-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold"><a href="index.html">MyPortfolio</a></h1>
+        
+        <div class="flex items-center">
+            <!-- Desktop Menu -->
+            <nav class="hidden md:flex space-x-4 mr-4">
+                <a href="index.html#about" class="font-bold">About</a>
+                <a href="apps/index.html" class="font-bold">WebApps</a>
+                <a href="blog.html" class="font-bold">Blog</a>
+                <a href="index.html#contact" class="font-bold">Contact</a>
+            </nav>
+
+            <label class="relative inline-flex items-center cursor-pointer mr-4">
+                <input type="checkbox" value="" id="theme-toggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-900 dark:text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="menu" class="hidden md:hidden">
+        <nav class="flex flex-col items-center space-y-4 py-4">
+            <a href="index.html#about" class="font-bold">About</a>
+            <a href="apps/index.html" class="font-bold">WebApps</a>
+            <a href="blog.html" class="font-bold">Blog</a>
+            <a href="index.html#contact" class="font-bold">Contact</a>
+        </nav>
+    </div>
+
+    <main class="container mx-auto px-4 py-6">
+        <section class="text-center my-12">
+            <h2 class="text-5xl font-bold">My Blog</h2>
+            <p class="mt-4 text-xl">Welcome to my blog! Here I'll be sharing my thoughts and experiences.</p>
+        </section>
+
+        <section id="blog-posts" class="my-12">
+            <!-- Blog posts will be dynamically inserted here -->
+        </section>
+    </main>
+
+    <footer class="text-center py-6">
+        <p>&copy; 2025 MyPortfolio. All rights reserved.</p>
+    </footer>
+
+    <script src="assets/js/nav.js"></script>
+</body>
+</html>
