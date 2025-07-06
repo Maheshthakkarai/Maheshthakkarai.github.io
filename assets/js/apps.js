@@ -31,6 +31,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/MortgageCalculator.png",
         "url": "/webapps/MortgageCalculator.html"
+    },
+    {
+        "title": "Sun Glass",
+        "description": "Handy tool to select frame",
+        "category": "Fashion and Style",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Sunglass.png",
+        "url": "/webapps/SunGlass.html"
     }
 
 ];
