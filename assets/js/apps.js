@@ -135,6 +135,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Cricket.jpg",
         "url": "/webapps/Cricket.html"
+    },
+{
+        "title": "AI Basics",
+        "description": "A short crash course for AI",
+        "category": "Science",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/AIBasics.png",
+        "url": "/webapps/AIBasics.html.html"
     }
 
 ];

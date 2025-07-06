@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Basics Course</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #F0F4F8; /* Light gray-blue */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure body covers the whole viewport */
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+            border-radius: 10px; /* Rounded corners */
+            flex: 1; /* Allow container to grow and take available space */
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+            color: #663399; /* Purple */
+            text-align: center;
+        }
+        h1 {
+          font-size: 2.5em;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #29ABE2; /* Light blue */
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease; /* Smooth transition on hover */
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #1e8bb5; /* Darker shade of blue */
+        }
+
+        #flashcard-container {
+            margin-bottom: 20px;
+        }
+
+        #flashcard-container .flashcard {
+            border: none; /* Remove the border */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        #flashcard-container .flashcard h2 {
+            margin-top: 0;
+        }
+
+        #flashcard-container .flashcard p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        #quiz-container, #results {
+            margin-top: 20px;
+        }
+
+        #results p {
+            margin: 10px 0;
+        }
+
+        #quiz-container input[type="radio"] {
+            margin-right: 5px; /* Slightly less margin */
+        }
+
+        .answer-option {
+            margin-bottom: 8px;
+        }
+
+        #progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden; /* Hide overflowing content (to prevent rounded corners issue) */
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #29ABE2;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            background-color: #f0f0f0;
+            font-size: 0.8em;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px auto;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        /* Certificate Styles */
+        #certificate-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #663399;
+            border-radius: 10px;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        #certificate-container h2 {
+            color: #663399;
+            margin-bottom: 10px;
+        }
+
+        #certificate-container p {
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        #certificate-actions {
+            margin-top: 20px;
+        }
+
+        #certificate-actions button {
+            display: inline-block;
+            width: auto;
+            margin: 0 10px;
+        }
+
+        #name-input-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #name-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 70%;
+            max-width: 300px;
+            margin-bottom: 10px;
+        }
+        #name-input:focus {
+            outline: none;
+            border-color: #29ABE2;
+        }
+         #certificate-canvas {
+            display: none; /* Hidden by default */
+            border: 1px solid #000; /* For debugging */
+         }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Basics Course</h1>
+        </header>
+
+        <main>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+
+            <div id="name-input-container">
+                <input type="text" id="name-input" placeholder="Enter Your Name">
+            </div>
+
+            <div id="flashcard-container">
+                <!-- Flashcards will be dynamically generated here -->
+            </div>
+
+            <button id="start-learning" disabled>Start Learning</button>
+            <button id="next-card" style="display: none;">Next Card</button>
+            <button id="quiz" style="display: none;">Take Quiz</button>
+
+            <div id="quiz-container" style="display: none;">
+                <h2>Quiz</h2>
+                <form id="quiz-form">
+                    <!-- Quiz questions will be dynamically generated here -->
+                </form>
+                <button id="submit-quiz" type="button" disabled>Submit</button>
+            </div>
+
+            <div id="results" style="display: none;">
+                <h2>Results</h2>
+                <p id="score"></p>
+                <p id="correct-answers"></p>
+                <p id="wrong-answers"></p>
+                <button id="restart">Restart Course</button>
+            </div>
+
+            <canvas id="certificate-canvas" width="600" height="400"></canvas>
+
+            <div id="certificate-container" style="display: none;">
+              <h2>Certificate of Completion</h2>
+              <p>This certificate is awarded to</p>
+              <p id="certificate-name">[Student Name]</p>
+              <p>for successfully completing the AI Basics course.</p>
+              <p>Date: [Date of Completion]</p>
+              <div id="certificate-actions">
+                  <!-- Changed the download function -->
+                  <button onclick="downloadCertificate()">Download as JPEG</button>
+              </div>
+          </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2025 AI Learning App-MT</p>
+    </footer>
+
+    <script>
+        const topics = [
+            { title: "What is AI?", content: "AI stands for Artificial Intelligence, which is the simulation of human intelligence processes by computer systems." },
+            { title: "Types of AI", content: "There are two main types of AI: Narrow AI (which is designed to perform a narrow task) and General AI (which could perform any intellectual task that a human being can)." },
+            { title: "Machine Learning", content: "Machine Learning is a subset of AI that involves algorithms that can learn from and make predictions on data." },
+            { title: "Deep Learning", content: "Deep Learning is a subset of Machine Learning that uses neural networks with many layers to model and solve complex problems." },
+            { title: "Neural Networks", content: "Neural Networks are computational models inspired by the human brain, consisting of layers of interconnected nodes." },
+            { title: "Supervised Learning", content: "Supervised Learning is a type of machine learning where the model is trained on labeled data." },
+            { title: "Unsupervised Learning", content: "Unsupervised Learning is a type of machine learning where the model is trained on unlabeled data." },
+            { title: "Reinforcement Learning", content: "Reinforcement Learning is a type of machine learning where an agent learns to make decisions by performing actions in an environment to maximize a reward." },
+            { title: "Natural Language Processing (NLP)", content: "NLP is a field of AI that focuses on the interaction between humans and computers using natural language." },
+            { title: "Computer Vision?", content: "Computer Vision is a field of AI that enables computers to interpret and understand visual information from the world." }
+        ];
+
+        const quizQuestions = [
+            { question: "What is AI?", options: ["Artificial Intelligence", "Automated Intelligence", "Artistic Intelligence"], correct: "Artificial Intelligence" },
+            { question: "What is the difference between Narrow AI and General AI?", options: ["Narrow AI can perform any task, while General AI can only perform a single task.", "Narrow AI can only perform a single task, while General AI can perform any task."], correct: "Narrow AI can only perform a single task, while General AI can perform any task." },
+            { question: "What is Machine Learning?", options: ["A type of AI that involves algorithms that can learn from and make predictions on data.", "A type of AI that involves algorithms that can only make predictions on data."], correct: "A type of AI that involves algorithms that can learn from and make predictions on data." },
+            { question: "What is Deep Learning?", options: ["A subset of Machine Learning that uses neural networks with many layers to model and solve complex problems.", "A subset of Machine Learning that uses neural networks with few layers to model and solve complex problems."], correct: "A subset of Machine Learning that uses neural networks with many layers to model and solve complex problems." },
+            { question: "What is a Neural Network?", options: ["A computational model inspired by the human brain, consisting of layers of interconnected nodes.", "A computational model inspired by the human heart, consisting of layers of interconnected nodes."], correct: "A computational model inspired by the human brain, consisting of layers of interconnected nodes." },
+            { question: "What is Supervised Learning?", options: ["A type of machine learning where the model is trained on labeled data.", "A type of machine learning where the model is trained on unlabeled data."], correct: "A type of machine learning where the model is trained on labeled data." },
+            { question: "What is Unsupervised Learning?", options: ["A type of machine learning where the model is trained on unlabeled data.", "A type of machine learning where the model is trained on labeled data."], correct: "A type of machine learning where the model is trained on unlabeled data." },
+            { question: "What is Reinforcement Learning?", options: ["A type of machine learning where an agent learns to make decisions by performing actions in an environment to maximize a reward.", "A type of machine learning where an agent learns to make decisions by performing actions in an environment to minimize a reward."], correct: "A type of machine learning where an agent learns to make decisions by performing actions in an environment to maximize a reward." },
+            { question: "What is Natural Language Processing (NLP)?", options: ["A field of AI that focuses on the interaction between humans and computers using natural language.", "A field of AI that focuses on the interaction between humans and computers using artificial language."], correct: "A field of AI that focuses on the interaction between humans and computers using natural language." },
+            { question: "What is Computer Vision?", options: ["A field of AI that enables computers to interpret and understand visual information from the world.", "A field of AI that focuses on the interaction between humans and computers using auditory information from the world."], correct: "A field of AI that enables computers to interpret and understand visual information from the world." }
+        ];
+
+        let currentCardIndex = 0;
+        let score = 0;
+        let quizAnswered = false;
+        let allCorrect = false;
+        let studentName = "";
+
+        // Load stored name from local storage
+        if (localStorage.getItem('studentName')) {
+            studentName = localStorage.getItem('studentName');
+            document.getElementById('name-input').value = studentName;
+            document.getElementById('start-learning').disabled = false; // Enable if name is already stored
+        }
+
+        function createFlashcard(topic) {
+            const flashcardContainer = document.getElementById('flashcard-container');
+            const flashcard = document.createElement('div');
+            flashcard.classList.add('flashcard');
+            flashcard.innerHTML = `
+                <h2>${topic.title}</h2>
+                <p>${topic.content}</p>
+            `;
+            flashcardContainer.appendChild(flashcard);
+        }
+
+        function createQuiz() {
+            const quizForm = document.getElementById('quiz-form');
+            quizQuestions.forEach((question, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <h3>${question.question}</h3>
+                    ${question.options.map(option => `
+                      <div class="answer-option">
+                        <input type="radio" id="q${index}-${option.replace(/[^a-zA-Z0-9]/g, '')}" name="q${index}" value="${option}" onchange="checkQuizCompletion()">
+                        <label for="q${index}-${option.replace(/[^a-zA-Z0-9]/g, '')}">${option}</label>
+                      </div>
+                    `).join('')}
+                `;
+                quizForm.appendChild(div);
+            });
+        }
+
+        function checkAnswers() {
+            const quizForm = document.getElementById('quiz-form');
+            const formData = new FormData(quizForm);
+            let correctAnswers = '';
+            let wrongAnswers = '';
+            score = 0; // Reset score before checking
+            allCorrect = true;
+
+            quizQuestions.forEach((question, index) => {
+                const answer = formData.get(`q${index}`);
+                if (answer === question.correct) {
+                    score++;
+                    correctAnswers += `${question.question}: ${answer}\n`;
+                } else {
+                    allCorrect = false;
+                    wrongAnswers += `${question.question}: ${answer || 'No answer provided'} (Correct: ${question.correct})\n`;
+                }
+            });
+
+            document.getElementById('score').innerText = `Score: ${score}/${quizQuestions.length}`;
+            document.getElementById('correct-answers').innerText = `Correct Answers:\n${correctAnswers}`;
+            document.getElementById('wrong-answers').innerText = `Wrong Answers:\n${wrongAnswers}`;
+
+            if (allCorrect) {
+                showCertificate();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = (currentCardIndex / topics.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        function checkQuizCompletion() {
+            const quizForm = document.getElementById('quiz-form');
+            let allAnswered = true;
+            for (let i = 0; i < quizQuestions.length; i++) {
+                if (!quizForm.querySelector(`input[name="q${i}"]:checked`)) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+            document.getElementById('submit-quiz').disabled = !allAnswered;
+            quizAnswered = allAnswered;
+        }
+
+        function showGreetingFlashcard() {
+            const flashcardContainer = document.getElementById('flashcard-container');
+            // Clear previous flashcard
+            flashcardContainer.innerHTML = '';
+            const greeting = document.createElement('div');
+            greeting.classList.add('flashcard');
+            greeting.innerHTML = `
+                <h2>Congratulations!</h2>
+                <p>You've completed all the flashcards!</p>
+                <p>Now it's time to test your knowledge with the quiz!</p>
+            `;
+            flashcardContainer.appendChild(greeting);
+        }
+
+       function showCertificate() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('certificate-container').style.display = 'block';
+
+            // Set the Student Name and Date
+            const certName = document.getElementById('certificate-name');
+            if (certName) {
+                certName.innerText = studentName;
+            }
+
+            // Get the current date
+            const today = new Date();
+            const date = today.toLocaleDateString(); // Or format it as desired
+
+            // Target the certificate date paragraph more precisely
+            const dateParagraph = document.getElementById('certificate-container').querySelector('p:last-of-type');
+            if (dateParagraph) {
+                dateParagraph.innerText = `Date: ${date}`;
+            }
+        }
+        function downloadCertificate() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 600; // Set the desired width
+            canvas.height = 400; // Set the desired height
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#fff"; // Set white background
+            ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas with white
+
+            // Simulate the look of the certificate (Customize as needed)
+            ctx.font = "24px 'Open Sans', sans-serif"; // Font for heading
+            ctx.fillStyle = "#663399"; // Color for heading
+            ctx.textAlign = "center";
+            ctx.fillText("Certificate of Completion", canvas.width / 2, 50);
+
+            ctx.font = "16px 'Roboto', sans-serif"; // Font for other text
+            ctx.fillStyle = "#333"; // Color for text
+            ctx.fillText("This certificate is awarded to", canvas.width / 2, 120);
+            ctx.font = "bold 20px 'Roboto', sans-serif";
+            ctx.fillText(studentName, canvas.width / 2, 160);
+            ctx.font = "16px 'Roboto', sans-serif";
+            ctx.fillText("for successfully completing the AI Basics course.", canvas.width / 2, 200);
+
+            const today = new Date();
+            const date = today.toLocaleDateString();
+            ctx.fillText(`Date: ${date}`, canvas.width / 2, 240);
+
+            // Create a download link
+            const dataURL = canvas.toDataURL("image/jpeg");
+            const link = document.createElement("a");
+            link.href = dataURL;
+            link.download = "AI_Basics_Certificate.jpeg";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+
+        // Event listener for name input
+        document.getElementById('name-input').addEventListener('input', function() {
+            studentName = this.value.trim(); // Store name as entered
+
+            if (studentName !== "") {
+                localStorage.setItem('studentName', studentName); // Store in local storage
+                document.getElementById('start-learning').disabled = false; // Enable the start button
+            } else {
+                localStorage.removeItem('studentName'); // Clear stored name if input is empty
+                document.getElementById('start-learning').disabled = true; // Disable the start button
+            }
+        });
+
+        document.getElementById('start-learning').addEventListener('click', () => {
+            document.getElementById('start-learning').style.display = 'none';
+            document.getElementById('name-input-container').style.display = 'none'; // Hide the name input
+            document.getElementById('next-card').style.display = 'block';
+            updateProgressBar();
+        });
+
+        document.getElementById('next-card').addEventListener('click', () => {
+            if (currentCardIndex < topics.length) {
+                const flashcardContainer = document.getElementById('flashcard-container');
+                // Clear previous flashcard
+                flashcardContainer.innerHTML = '';
+                createFlashcard(topics[currentCardIndex]);
+                currentCardIndex++;
+                updateProgressBar();
+                 if (currentCardIndex === topics.length) {
+                    document.getElementById('next-card').style.display = 'none';
+                    showGreetingFlashcard(); // Show greeting
+                    document.getElementById('quiz').style.display = 'block'; //Show the quiz button
+                }
+            }
+        });
+
+        document.getElementById('quiz').addEventListener('click', () => {
+            document.getElementById('flashcard-container').style.display = 'none';
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            createQuiz();
+        });
+
+        // Corrected event listener for the submit button
+        document.getElementById('submit-quiz').addEventListener('click', () => {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            checkAnswers();
+        });
+
+        document.getElementById('restart').addEventListener('click', () => {
+            resetState(); // Call the reset function instead of location.reload()
+        });
+
+         function resetState() {
+            // Reset variables
+            currentCardIndex = 0;
+            score = 0;
+            quizAnswered = false;
+            allCorrect = false;
+
+            // Reset UI elements
+            const flashcardContainer = document.getElementById('flashcard-container');
+            flashcardContainer.innerHTML = '';
+
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('certificate-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('start-learning').style.display = 'block';
+            document.getElementById('name-input-container').style.display = 'block';
+            document.getElementById('next-card').style.display = 'none';
+            document.getElementById('quiz').style.display = 'none';
+
+            //Clear radio buttons on the form
+            const quizForm = document.getElementById('quiz-form');
+            quizForm.innerHTML = '';
+
+            // Reset progress bar
+            updateProgressBar(); // Ensure progress bar resets to 0
+
+            // Ensure start button is correctly enabled/disabled based on name
+            if (studentName !== "") {
+                document.getElementById('start-learning').disabled = false;
+            } else {
+                document.getElementById('start-learning').disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>
