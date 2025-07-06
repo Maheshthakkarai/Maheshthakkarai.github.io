@@ -122,7 +122,7 @@ window.apps = [
     },
 {
         "title": "Workout Tracker",
-        "description": "Select a sport and learn the rules",
+        "description": "Simple tool to track your workouts",
         "category": "Health",
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/WorkoutTracker.png",
