@@ -136,7 +136,7 @@ window.apps = [
         "image": "/assets/images/Cricket.jpg",
         "url": "/webapps/Cricket.html"
     },
-{
+    {
         "title": "AI Basics",
         "description": "A short crash course for AI",
         "category": "Science",
