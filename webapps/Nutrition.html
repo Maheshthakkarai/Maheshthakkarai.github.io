@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nutrition Analyst</title>
+  <style>
+    /* Base Reset & Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f8f8;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+    header, footer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1, h2, h3, h4 {
+      margin-bottom: 10px;
+    }
+    /* Form & Section Styles */
+    section {
+      background: #fff;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: inline-block;
+      margin-right: 10px;
+    }
+    select, input[type="number"], input[type="range"], input[type="text"] {
+      padding: 5px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    button {
+      padding: 7px 15px;
+      border: none;
+      background: #007BFF;
+      color: #fff;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    .disclaimer {
+      font-size: 0.9em;
+      color: #777;
+    }
+    /* Legend styling for charts */
+    .legend {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .legend-item {
+      display: inline-block;
+      margin-right: 15px;
+    }
+    .color-box {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    /* Edit Section Styling */
+    #editSection {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-top: 20px;
+      background: #f0f0f0;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      table, th, td {
+        font-size: 0.9em;
+      }
+      button {
+        margin-bottom: 5px;
+      }
+    }
+    /* Dark Mode */
+    body.dark-mode {
+      background: #333;
+      color: #ddd;
+    }
+    body.dark-mode .container {
+      background: #444;
+    }
+    body.dark-mode section {
+      background: #555;
+      box-shadow: none;
+    }
+    body.dark-mode table, body.dark-mode th, body.dark-mode td {
+      border: 1px solid #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Nutrition Analyst</h1>
+      <!-- Dark Mode Toggle -->
+      <button id="darkModeToggle">Toggle Dark Mode</button>
+    </header>
+
+    <!-- Diet & Food Selection -->
+    <section id="diet-selection">
+      <h2>Select Your Diet</h2>
+      <label for="dietType">Diet Type:</label>
+      <select id="dietType">
+        <option value="vegetarian">Vegetarian</option>
+        <option value="nonvegetarian">Non-Vegetarian</option>
+        <option value="vegan">Vegan</option>
+        <option value="glutenfree">Gluten-Free</option>
+        <option value="dairyfree">Dairy-Free</option>
+      </select>
+    </section>
+
+    <section id="food-selection">
+      <h2>Choose Food & Quantity</h2>
+      <label for="foodItem">Food Item:</label>
+      <select id="foodItem">
+        <!-- Options dynamically loaded based on diet -->
+      </select>
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" placeholder="Enter quantity" min="0" step="any" />
+      <span id="unitLabel"></span>
+      <button id="addFood">Add Food</button>
+      <button id="favBtn">Mark as Favorite</button>
+    </section>
+
+    <!-- Favorite Foods (Quick Access) -->
+    <section id="favorites">
+      <h3>Favorite Foods</h3>
+      <ul id="favoriteList">
+        <!-- Favorite food items will appear here -->
+      </ul>
+    </section>
+
+    <!-- Nutrition Information, Daily Comparison & Charts -->
+    <section id="results">
+      <h2>Nutrition Information</h2>
+      <table id="nutritionTable">
+        <thead>
+          <tr>
+            <th>Diet</th>
+            <th>Food Item</th>
+            <th>Quantity</th>
+            <th>Calories</th>
+            <th>Protein</th>
+            <th>Carbs</th>
+            <th>Fats</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Grouped rows with totals will be inserted here -->
+        </tbody>
+      </table>
+      <!-- Daily Nutritional Goals Comparison -->
+      <div id="dailyComparison">
+        <!-- Comparison details will appear here -->
+      </div>
+      <!-- Dynamic Charts Container for each diet type -->
+      <div id="chartsContainer">
+        <h3>Nutrient Breakdown by Diet</h3>
+      </div>
+      <!-- Serving Size Customization -->
+      <div id="servingSize">
+        <label for="servingSlider">Adjust Serving Size:</label>
+        <input type="range" id="servingSlider" min="0.5" max="2" step="0.1" value="1" />
+        <span id="servingValue">1</span>
+      </div>
+      <!-- Action Buttons -->
+      <div id="actions">
+        <button id="saveBtn">Save</button>
+        <button id="printBtn">Print</button>
+        <button id="emailBtn">Email</button>
+      </div>
+    </section>
+
+    <!-- Add New Food Item Section (Moved to bottom) -->
+    <section id="new-food">
+      <h2>Add New Food Item</h2>
+      <label for="newDietType">Diet Type:</label>
+      <select id="newDietType">
+        <option value="vegetarian">Vegetarian</option>
+        <option value="nonvegetarian">Non-Vegetarian</option>
+        <option value="vegan">Vegan</option>
+        <option value="glutenfree">Gluten-Free</option>
+        <option value="dairyfree">Dairy-Free</option>
+      </select>
+      <br/><br/>
+      <label for="newFoodName">Food Name:</label>
+      <input type="text" id="newFoodName" placeholder="Enter food name" />
+      <label for="newUnit">Unit:</label>
+      <input type="text" id="newUnit" placeholder="e.g., grams" />
+      <br/><br/>
+      <label for="newCalories">Calories:</label>
+      <input type="number" id="newCalories" placeholder="Calories per unit" step="any" />
+      <label for="newProtein">Protein:</label>
+      <input type="number" id="newProtein" placeholder="Protein per unit" step="any" />
+      <label for="newCarbs">Carbs:</label>
+      <input type="number" id="newCarbs" placeholder="Carbs per unit" step="any" />
+      <label for="newFats">Fats:</label>
+      <input type="number" id="newFats" placeholder="Fats per unit" step="any" />
+      <br/><br/>
+      <label for="newVitaminC">Vitamin C:</label>
+      <input type="number" id="newVitaminC" placeholder="Vitamin C per unit (optional)" step="any" />
+      <label for="newCalcium">Calcium:</label>
+      <input type="number" id="newCalcium" placeholder="Calcium per unit (optional)" step="any" />
+      <label for="newIron">Iron:</label>
+      <input type="number" id="newIron" placeholder="Iron per unit (optional)" step="any" />
+      <br/><br/>
+      <button id="addNewFoodBtn">Add New Food Item</button>
+    </section>
+
+    <!-- Edit Custom Food Item Section (Hidden by Default) -->
+    <section id="editSection" style="display: none;">
+      <h2>Edit Custom Food Item</h2>
+      <p id="editFoodLabel"></p>
+      <label for="editCalories">Calories:</label>
+      <input type="number" id="editCalories" step="any" /><br/>
+      <label for="editProtein">Protein:</label>
+      <input type="number" id="editProtein" step="any" /><br/>
+      <label for="editCarbs">Carbs:</label>
+      <input type="number" id="editCarbs" step="any" /><br/>
+      <label for="editFats">Fats:</label>
+      <input type="number" id="editFats" step="any" /><br/>
+      <label for="editVitaminC">Vitamin C:</label>
+      <input type="number" id="editVitaminC" step="any" /><br/>
+      <label for="editCalcium">Calcium:</label>
+      <input type="number" id="editCalcium" step="any" /><br/>
+      <label for="editIron">Iron:</label>
+      <input type="number" id="editIron" step="any" /><br/><br/>
+      <button id="updateFoodBtn">Update</button>
+      <button id="cancelEditBtn">Cancel</button>
+    </section>
+
+    <footer>
+      <p class="disclaimer">
+        Nutritional values are calculated based on user-input data and may not be 100% accurate.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    /* Comprehensive Food Data for Each Diet (25 items each) */
+    const foodData = {
+      vegetarian: [
+        { name: 'Oats', unit: 'grams', nutrition: { calories: 3.89, protein: 0.169, carbs: 0.66, fats: 0.069 } },
+        { name: 'Milk', unit: 'milliliters', nutrition: { calories: 0.42, protein: 0.034, carbs: 0.05, fats: 0.01 } },
+        { name: 'Yogurt', unit: 'grams', nutrition: { calories: 0.59, protein: 0.1, carbs: 0.07, fats: 0.03 } },
+        { name: 'Cheese', unit: 'grams', nutrition: { calories: 4.00, protein: 0.25, carbs: 0.01, fats: 0.33 } },
+        { name: 'Paneer', unit: 'grams', nutrition: { calories: 2.65, protein: 0.18, carbs: 0.04, fats: 0.21 } },
+        { name: 'Tofu', unit: 'grams', nutrition: { calories: 0.76, protein: 0.08, carbs: 0.02, fats: 0.04 } },
+        { name: 'Chickpeas', unit: 'grams', nutrition: { calories: 1.64, protein: 0.09, carbs: 0.27, fats: 0.03 } },
+        { name: 'Lentils', unit: 'grams', nutrition: { calories: 1.16, protein: 0.09, carbs: 0.20, fats: 0.004 } },
+        { name: 'Kidney Beans', unit: 'grams', nutrition: { calories: 1.27, protein: 0.09, carbs: 0.22, fats: 0.005 } },
+        { name: 'Black Beans', unit: 'grams', nutrition: { calories: 1.27, protein: 0.09, carbs: 0.23, fats: 0.005 } },
+        { name: 'Quinoa', unit: 'grams', nutrition: { calories: 3.68, protein: 0.14, carbs: 0.64, fats: 0.06 } },
+        { name: 'Brown Rice', unit: 'grams', nutrition: { calories: 1.11, protein: 0.026, carbs: 0.23, fats: 0.009 } },
+        { name: 'Almonds', unit: 'grams', nutrition: { calories: 5.76, protein: 0.21, carbs: 0.22, fats: 0.50 } },
+        { name: 'Walnuts', unit: 'grams', nutrition: { calories: 6.54, protein: 0.15, carbs: 0.14, fats: 0.65 } },
+        { name: 'Spinach', unit: 'grams', nutrition: { calories: 0.23, protein: 0.03, carbs: 0.04, fats: 0.004 } },
+        { name: 'Broccoli', unit: 'grams', nutrition: { calories: 0.34, protein: 0.028, carbs: 0.07, fats: 0.003 } },
+        { name: 'Carrots', unit: 'grams', nutrition: { calories: 0.41, protein: 0.009, carbs: 0.10, fats: 0.002 } },
+        { name: 'Tomatoes', unit: 'grams', nutrition: { calories: 0.18, protein: 0.009, carbs: 0.04, fats: 0.002 } },
+        { name: 'Bell Peppers', unit: 'grams', nutrition: { calories: 0.31, protein: 0.01, carbs: 0.06, fats: 0.003 } },
+        { name: 'Apples', unit: 'grams', nutrition: { calories: 0.52, protein: 0.003, carbs: 0.14, fats: 0.002 } },
+        { name: 'Bananas', unit: 'grams', nutrition: { calories: 0.89, protein: 0.011, carbs: 0.23, fats: 0.003 } },
+        { name: 'Oranges', unit: 'grams', nutrition: { calories: 0.47, protein: 0.009, carbs: 0.12, fats: 0.005 } },
+        { name: 'Whole Wheat Bread', unit: 'grams', nutrition: { calories: 2.65, protein: 0.09, carbs: 0.49, fats: 0.03 } },
+        { name: 'Pasta', unit: 'grams', nutrition: { calories: 1.31, protein: 0.06, carbs: 0.27, fats: 0.01 } },
+        { name: 'Olive Oil', unit: 'milliliters', nutrition: { calories: 8.84, protein: 0, carbs: 0, fats: 1 } }
+      ],
+      nonvegetarian: [
+        { name: 'Egg', unit: 'pieces', nutrition: { calories: 155, protein: 13, carbs: 1.1, fats: 11 } },
+        { name: 'Chicken Breast', unit: 'grams', nutrition: { calories: 1.65, protein: 0.31, carbs: 0, fats: 0.036 } },
+        { name: 'Salmon', unit: 'grams', nutrition: { calories: 2.08, protein: 0.20, carbs: 0, fats: 0.13 } },
+        { name: 'Lean Beef', unit: 'grams', nutrition: { calories: 2.50, protein: 0.26, carbs: 0, fats: 0.15 } },
+        { name: 'Turkey', unit: 'grams', nutrition: { calories: 1.76, protein: 0.29, carbs: 0, fats: 0.034 } },
+        { name: 'Pork Loin', unit: 'grams', nutrition: { calories: 1.97, protein: 0.27, carbs: 0, fats: 0.07 } },
+        { name: 'Tuna', unit: 'grams', nutrition: { calories: 1.32, protein: 0.28, carbs: 0, fats: 0.01 } },
+        { name: 'Shrimp', unit: 'grams', nutrition: { calories: 1.00, protein: 0.24, carbs: 0, fats: 0.003 } },
+        { name: 'Cod', unit: 'grams', nutrition: { calories: 0.82, protein: 0.18, carbs: 0, fats: 0.005 } },
+        { name: 'Lamb', unit: 'grams', nutrition: { calories: 2.70, protein: 0.25, carbs: 0, fats: 0.21 } },
+        { name: 'Venison', unit: 'grams', nutrition: { calories: 1.80, protein: 0.30, carbs: 0, fats: 0.04 } },
+        { name: 'Sardines', unit: 'grams', nutrition: { calories: 2.08, protein: 0.25, carbs: 0, fats: 0.11 } },
+        { name: 'Mackerel', unit: 'grams', nutrition: { calories: 2.05, protein: 0.21, carbs: 0, fats: 0.14 } },
+        { name: 'Duck', unit: 'grams', nutrition: { calories: 2.28, protein: 0.19, carbs: 0, fats: 0.20 } },
+        { name: 'Quail', unit: 'grams', nutrition: { calories: 1.95, protein: 0.28, carbs: 0, fats: 0.05 } },
+        { name: 'Ham', unit: 'grams', nutrition: { calories: 1.95, protein: 0.22, carbs: 0, fats: 0.10 } },
+        { name: 'Bacon', unit: 'grams', nutrition: { calories: 5.40, protein: 0.37, carbs: 0, fats: 0.42 } },
+        { name: 'Ground Beef', unit: 'grams', nutrition: { calories: 2.50, protein: 0.26, carbs: 0, fats: 0.20 } },
+        { name: 'Rabbit', unit: 'grams', nutrition: { calories: 1.76, protein: 0.30, carbs: 0, fats: 0.04 } },
+        { name: 'Prawns', unit: 'grams', nutrition: { calories: 1.00, protein: 0.24, carbs: 0, fats: 0.003 } },
+        { name: 'Clams', unit: 'grams', nutrition: { calories: 1.43, protein: 0.15, carbs: 0, fats: 0.01 } },
+        { name: 'Mussels', unit: 'grams', nutrition: { calories: 1.53, protein: 0.18, carbs: 0, fats: 0.03 } },
+        { name: 'Octopus', unit: 'grams', nutrition: { calories: 1.06, protein: 0.18, carbs: 0, fats: 0.01 } },
+        { name: 'Crab', unit: 'grams', nutrition: { calories: 0.97, protein: 0.20, carbs: 0, fats: 0.01 } },
+        { name: 'Lobster', unit: 'grams', nutrition: { calories: 1.25, protein: 0.23, carbs: 0, fats: 0.02 } }
+      ],
+      vegan: [
+        { name: 'Oats', unit: 'grams', nutrition: { calories: 3.89, protein: 0.169, carbs: 0.66, fats: 0.069 } },
+        { name: 'Almond Milk', unit: 'milliliters', nutrition: { calories: 0.15, protein: 0.006, carbs: 0.02, fats: 0.005 } },
+        { name: 'Soy Milk', unit: 'milliliters', nutrition: { calories: 0.33, protein: 0.03, carbs: 0.03, fats: 0.02 } },
+        { name: 'Tofu', unit: 'grams', nutrition: { calories: 0.76, protein: 0.08, carbs: 0.02, fats: 0.04 } },
+        { name: 'Tempeh', unit: 'grams', nutrition: { calories: 1.90, protein: 0.20, carbs: 0.10, fats: 0.10 } },
+        { name: 'Chickpeas', unit: 'grams', nutrition: { calories: 1.64, protein: 0.09, carbs: 0.27, fats: 0.03 } },
+        { name: 'Lentils', unit: 'grams', nutrition: { calories: 1.16, protein: 0.09, carbs: 0.20, fats: 0.004 } },
+        { name: 'Black Beans', unit: 'grams', nutrition: { calories: 1.27, protein: 0.09, carbs: 0.23, fats: 0.005 } },
+        { name: 'Kidney Beans', unit: 'grams', nutrition: { calories: 1.27, protein: 0.09, carbs: 0.22, fats: 0.005 } },
+        { name: 'Quinoa', unit: 'grams', nutrition: { calories: 3.68, protein: 0.14, carbs: 0.64, fats: 0.06 } },
+        { name: 'Brown Rice', unit: 'grams', nutrition: { calories: 1.11, protein: 0.026, carbs: 0.23, fats: 0.009 } },
+        { name: 'Spinach', unit: 'grams', nutrition: { calories: 0.23, protein: 0.03, carbs: 0.04, fats: 0.004 } },
+        { name: 'Broccoli', unit: 'grams', nutrition: { calories: 0.34, protein: 0.028, carbs: 0.07, fats: 0.003 } },
+        { name: 'Kale', unit: 'grams', nutrition: { calories: 0.49, protein: 0.044, carbs: 0.09, fats: 0.006 } },
+        { name: 'Sweet Potato', unit: 'grams', nutrition: { calories: 0.86, protein: 0.016, carbs: 0.20, fats: 0.0 } },
+        { name: 'Avocado', unit: 'grams', nutrition: { calories: 1.6, protein: 0.02, carbs: 0.09, fats: 0.15 } },
+        { name: 'Tomatoes', unit: 'grams', nutrition: { calories: 0.18, protein: 0.009, carbs: 0.04, fats: 0.002 } },
+        { name: 'Bell Peppers', unit: 'grams', nutrition: { calories: 0.31, protein: 0.01, carbs: 0.06, fats: 0.003 } },
+        { name: 'Apples', unit: 'grams', nutrition: { calories: 0.52, protein: 0.003, carbs: 0.14, fats: 0.002 } },
+        { name: 'Bananas', unit: 'grams', nutrition: { calories: 0.89, protein: 0.011, carbs: 0.23, fats: 0.003 } },
+        { name: 'Oranges', unit: 'grams', nutrition: { calories: 0.47, protein: 0.009, carbs: 0.12, fats: 0.005 } },
+        { name: 'Chia Seeds', unit: 'grams', nutrition: { calories: 4.86, protein: 0.17, carbs: 0.42, fats: 0.31 } },
+        { name: 'Flax Seeds', unit: 'grams', nutrition: { calories: 5.30, protein: 0.18, carbs: 0.29, fats: 0.42 } },
+        { name: 'Hemp Seeds', unit: 'grams', nutrition: { calories: 5.67, protein: 0.32, carbs: 0.11, fats: 0.49 } },
+        { name: 'Coconut Water', unit: 'milliliters', nutrition: { calories: 0.19, protein: 0.01, carbs: 0.045, fats: 0.002 } }
+      ]
+    };
+
+    // Add dummy micronutrient values if not provided
+    for (let diet in foodData) {
+      foodData[diet].forEach(item => {
+        if (!item.micros) {
+          item.micros = {
+            "Vitamin C": parseFloat((item.nutrition.calories * 0.1).toFixed(2)),
+            "Calcium": parseFloat((item.nutrition.protein * 10).toFixed(2)),
+            "Iron": parseFloat((item.nutrition.carbs * 5).toFixed(2))
+          };
+        }
+      });
+    }
+
+    // Global arrays for selected foods and favorites.
+    // Each selected food: { diet, name, quantity, unit, nutrition, micros, isCustom }
+    const selectedFoods = [];
+    const favorites = [];
+
+    let servingMultiplier = parseFloat(document.getElementById("servingSlider").value);
+    let currentEditIndex = null;
+
+    // DOM Elements
+    const dietTypeSelect = document.getElementById("dietType");
+    const foodItemSelect = document.getElementById("foodItem");
+    const quantityInput = document.getElementById("quantity");
+    const unitLabel = document.getElementById("unitLabel");
+    const addFoodBtn = document.getElementById("addFood");
+    const favBtn = document.getElementById("favBtn");
+    const nutritionTableBody = document.querySelector("#nutritionTable tbody");
+    const servingSlider = document.getElementById("servingSlider");
+    const servingValue = document.getElementById("servingValue");
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const favoriteList = document.getElementById("favoriteList");
+    const chartsContainer = document.getElementById("chartsContainer");
+
+    // New Food Item DOM Elements
+    const newDietType = document.getElementById("newDietType");
+    const newFoodName = document.getElementById("newFoodName");
+    const newUnit = document.getElementById("newUnit");
+    const newCalories = document.getElementById("newCalories");
+    const newProtein = document.getElementById("newProtein");
+    const newCarbs = document.getElementById("newCarbs");
+    const newFats = document.getElementById("newFats");
+    const newVitaminC = document.getElementById("newVitaminC");
+    const newCalcium = document.getElementById("newCalcium");
+    const newIron = document.getElementById("newIron");
+    const addNewFoodBtn = document.getElementById("addNewFoodBtn");
+
+    // Edit Section DOM Elements
+    const editSection = document.getElementById("editSection");
+    const editFoodLabel = document.getElementById("editFoodLabel");
+    const editCalories = document.getElementById("editCalories");
+    const editProtein = document.getElementById("editProtein");
+    const editCarbs = document.getElementById("editCarbs");
+    const editFats = document.getElementById("editFats");
+    const editVitaminC = document.getElementById("editVitaminC");
+    const editCalcium = document.getElementById("editCalcium");
+    const editIron = document.getElementById("editIron");
+    const updateFoodBtn = document.getElementById("updateFoodBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+    function populateFoodItems() {
+      const diet = dietTypeSelect.value;
+      foodItemSelect.innerHTML = "";
+      if (foodData[diet]) {
+        foodData[diet].forEach((item, index) => {
+          const option = document.createElement("option");
+          option.value = index;
+          option.textContent = item.name;
+          foodItemSelect.appendChild(option);
+        });
+        updateUnitLabel();
+      }
+    }
+
+    function updateUnitLabel() {
+      const diet = dietTypeSelect.value;
+      const selectedIndex = foodItemSelect.value;
+      if (foodData[diet] && foodData[diet][selectedIndex]) {
+        unitLabel.textContent = foodData[diet][selectedIndex].unit;
+      } else {
+        unitLabel.textContent = "";
+      }
+    }
+
+    function findSelectedFood(diet, name) {
+      return selectedFoods.findIndex(item => item.diet === diet && item.name.toLowerCase() === name.toLowerCase());
+    }
+
+    function addFood() {
+      const diet = dietTypeSelect.value;
+      const selectedIndex = foodItemSelect.value;
+      const quantity = parseFloat(quantityInput.value);
+      if (!isNaN(quantity) && foodData[diet] && foodData[diet][selectedIndex]) {
+        const foodItem = foodData[diet][selectedIndex];
+        const existingIndex = findSelectedFood(diet, foodItem.name);
+        if (existingIndex > -1) {
+          selectedFoods[existingIndex].quantity = quantity;
+        } else {
+          selectedFoods.push({
+            diet: diet,
+            name: foodItem.name,
+            quantity: quantity,
+            unit: foodItem.unit,
+            nutrition: foodItem.nutrition,
+            micros: foodItem.micros,
+            isCustom: foodItem.isCustom || false
+          });
+        }
+        updateNutritionTable();
+      }
+    }
+
+    function addFavorite() {
+      const diet = dietTypeSelect.value;
+      const selectedIndex = foodItemSelect.value;
+      if (foodData[diet] && foodData[diet][selectedIndex]) {
+        const foodItem = foodData[diet][selectedIndex];
+        if (!favorites.some(fav => fav.diet === diet && fav.name.toLowerCase() === foodItem.name.toLowerCase())) {
+          favorites.push({ diet, name: foodItem.name });
+          updateFavoriteList();
+        }
+      }
+    }
+
+    function updateFavoriteList() {
+      favoriteList.innerHTML = "";
+      favorites.forEach(fav => {
+        const li = document.createElement("li");
+        li.textContent = `${fav.name} (${fav.diet})`;
+        li.style.cursor = "pointer";
+        li.addEventListener("click", () => {
+          const diet = fav.diet;
+          dietTypeSelect.value = diet;
+          populateFoodItems();
+          const index = foodData[diet].findIndex(item => item.name.toLowerCase() === fav.name.toLowerCase());
+          if (index > -1) {
+            foodItemSelect.value = index;
+            quantityInput.value = 1;
+            addFood();
+          }
+        });
+        favoriteList.appendChild(li);
+      });
+    }
+
+    function updateNutritionTable() {
+      nutritionTableBody.innerHTML = "";
+      const grouped = {};
+      selectedFoods.forEach(item => {
+        if (!grouped[item.diet]) {
+          grouped[item.diet] = [];
+        }
+        grouped[item.diet].push(item);
+      });
+      for (const diet in grouped) {
+        const headerRow = document.createElement("tr");
+        headerRow.style.background = "#e0e0e0";
+        headerRow.innerHTML = `<td colspan="8" style="font-weight:bold;">Diet: ${diet}</td>`;
+        nutritionTableBody.appendChild(headerRow);
+        
+        // Initialize totals for this diet group
+        let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
+        
+        grouped[diet].forEach(food => {
+          const row = document.createElement("tr");
+          const foodIndex = selectedFoods.findIndex(item => item === food);
+          let actionCell = "";
+          if (food.isCustom) {
+            actionCell = `<button onclick="editFood(${foodIndex})">Edit</button>`;
+          } else {
+            actionCell = "N/A";
+          }
+          row.innerHTML = `
+            <td>${food.diet}</td>
+            <td>${food.name}</td>
+            <td>${(food.quantity * servingMultiplier).toFixed(2)} ${food.unit}</td>
+            <td>${(food.nutrition.calories * food.quantity * servingMultiplier).toFixed(2)}</td>
+            <td>${(food.nutrition.protein * food.quantity * servingMultiplier).toFixed(2)}</td>
+            <td>${(food.nutrition.carbs * food.quantity * servingMultiplier).toFixed(2)}</td>
+            <td>${(food.nutrition.fats * food.quantity * servingMultiplier).toFixed(2)}</td>
+            <td>${actionCell}</td>
+          `;
+          nutritionTableBody.appendChild(row);
+          totalCalories += food.nutrition.calories * food.quantity * servingMultiplier;
+          totalProtein += food.nutrition.protein * food.quantity * servingMultiplier;
+          totalCarbs += food.nutrition.carbs * food.quantity * servingMultiplier;
+          totalFats += food.nutrition.fats * food.quantity * servingMultiplier;
+        });
+        
+        // Add Total Row for the diet group
+        const totalRow = document.createElement("tr");
+        totalRow.style.fontWeight = "bold";
+        totalRow.innerHTML = `
+          <td colspan="3">Total</td>
+          <td>${totalCalories.toFixed(2)}</td>
+          <td>${totalProtein.toFixed(2)}</td>
+          <td>${totalCarbs.toFixed(2)}</td>
+          <td>${totalFats.toFixed(2)}</td>
+          <td>N/A</td>
+        `;
+        nutritionTableBody.appendChild(totalRow);
+      }
+      updateDailyComparison();
+      updateCharts();
+    }
+
+    function updateDailyComparison() {
+      const recommended = { calories: 2000, protein: 50, carbs: 275, fats: 70 };
+      let total = { calories: 0, protein: 0, carbs: 0, fats: 0 };
+      selectedFoods.forEach(food => {
+        total.calories += food.nutrition.calories * food.quantity * servingMultiplier;
+        total.protein += food.nutrition.protein * food.quantity * servingMultiplier;
+        total.carbs += food.nutrition.carbs * food.quantity * servingMultiplier;
+        total.fats += food.nutrition.fats * food.quantity * servingMultiplier;
+      });
+      const comparison = document.getElementById("dailyComparison");
+      comparison.innerHTML = `
+        <p>Calories: ${(total.calories / recommended.calories * 100).toFixed(1)}% of daily intake</p>
+        <p>Protein: ${(total.protein / recommended.protein * 100).toFixed(1)}% of daily intake</p>
+        <p>Carbs: ${(total.carbs / recommended.carbs * 100).toFixed(1)}% of daily intake</p>
+        <p>Fats: ${(total.fats / recommended.fats * 100).toFixed(1)}% of daily intake</p>
+      `;
+    }
+
+    function updateCharts() {
+      chartsContainer.innerHTML = "<h3>Nutrient Breakdown by Diet</h3>";
+      let grouped = {};
+      selectedFoods.forEach(food => {
+        if (!grouped[food.diet]) {
+          grouped[food.diet] = [];
+        }
+        grouped[food.diet].push(food);
+      });
+      for (const diet in grouped) {
+        const dietFoods = grouped[diet];
+        const dietContainer = document.createElement("div");
+        dietContainer.style.marginBottom = "30px";
+        const dietHeading = document.createElement("h4");
+        dietHeading.textContent = "Diet: " + diet;
+        dietContainer.appendChild(dietHeading);
+        
+        // Macro Chart
+        const macroCanvas = document.createElement("canvas");
+        macroCanvas.width = 300;
+        macroCanvas.height = 200;
+        macroCanvas.style.border = "1px solid #ccc";
+        dietContainer.appendChild(macroCanvas);
+        let totalMacros = { protein: 0, carbs: 0, fats: 0 };
+        dietFoods.forEach(food => {
+          totalMacros.protein += food.nutrition.protein * food.quantity * servingMultiplier;
+          totalMacros.carbs += food.nutrition.carbs * food.quantity * servingMultiplier;
+          totalMacros.fats += food.nutrition.fats * food.quantity * servingMultiplier;
+        });
+        const macroSum = totalMacros.protein + totalMacros.carbs + totalMacros.fats;
+        const macroSegments = [
+          { label: "Protein", value: totalMacros.protein, color: "#FF6384" },
+          { label: "Carbs", value: totalMacros.carbs, color: "#36A2EB" },
+          { label: "Fats", value: totalMacros.fats, color: "#FFCE56" }
+        ];
+        const macroCtx = macroCanvas.getContext("2d");
+        macroCtx.clearRect(0, 0, macroCanvas.width, macroCanvas.height);
+        if (macroSum === 0) {
+          macroCtx.font = "16px Arial";
+          macroCtx.fillStyle = "#333";
+          macroCtx.fillText("No data", macroCanvas.width/2 - 30, macroCanvas.height/2);
+        } else {
+          let startAngle = 0;
+          macroSegments.forEach(segment => {
+            const sliceAngle = 2 * Math.PI * (segment.value / macroSum);
+            macroCtx.fillStyle = segment.color;
+            macroCtx.beginPath();
+            macroCtx.moveTo(macroCanvas.width/2, macroCanvas.height/2);
+            macroCtx.arc(macroCanvas.width/2, macroCanvas.height/2, Math.min(macroCanvas.width, macroCanvas.height)/2 - 10, startAngle, startAngle + sliceAngle);
+            macroCtx.closePath();
+            macroCtx.fill();
+            startAngle += sliceAngle;
+          });
+        }
+        const macroLegend = document.createElement("div");
+        macroLegend.className = "legend";
+        macroSegments.forEach(segment => {
+          const percentage = macroSum ? ((segment.value / macroSum) * 100).toFixed(1) : 0;
+          const legendItem = document.createElement("div");
+          legendItem.className = "legend-item";
+          legendItem.innerHTML = `<span class="color-box" style="background:${segment.color};"></span>${segment.label}: ${segment.value.toFixed(2)} (${percentage}%)`;
+          macroLegend.appendChild(legendItem);
+        });
+        dietContainer.appendChild(macroLegend);
+        
+        // Micro Chart
+        const microCanvas = document.createElement("canvas");
+        microCanvas.width = 300;
+        microCanvas.height = 200;
+        microCanvas.style.border = "1px solid #ccc";
+        microCanvas.style.marginTop = "20px";
+        dietContainer.appendChild(microCanvas);
+        let totalMicros = { "Vitamin C": 0, Calcium: 0, Iron: 0 };
+        dietFoods.forEach(food => {
+          totalMicros["Vitamin C"] += food.micros["Vitamin C"] * food.quantity * servingMultiplier;
+          totalMicros["Calcium"] += food.micros["Calcium"] * food.quantity * servingMultiplier;
+          totalMicros["Iron"] += food.micros["Iron"] * food.quantity * servingMultiplier;
+        });
+        const microSum = totalMicros["Vitamin C"] + totalMicros["Calcium"] + totalMicros["Iron"];
+        const microSegments = [
+          { label: "Vitamin C", value: totalMicros["Vitamin C"], color: "#8e44ad" },
+          { label: "Calcium", value: totalMicros["Calcium"], color: "#27ae60" },
+          { label: "Iron", value: totalMicros["Iron"], color: "#e67e22" }
+        ];
+        const microCtx = microCanvas.getContext("2d");
+        microCtx.clearRect(0, 0, microCanvas.width, microCanvas.height);
+        if (microSum === 0) {
+          microCtx.font = "16px Arial";
+          microCtx.fillStyle = "#333";
+          microCtx.fillText("No micro data", microCanvas.width/2 - 40, microCanvas.height/2);
+        } else {
+          let startAngle = 0;
+          microSegments.forEach(segment => {
+            const sliceAngle = 2 * Math.PI * (segment.value / microSum);
+            microCtx.fillStyle = segment.color;
+            microCtx.beginPath();
+            microCtx.moveTo(microCanvas.width/2, microCanvas.height/2);
+            microCtx.arc(microCanvas.width/2, microCanvas.height/2, Math.min(microCanvas.width, microCanvas.height)/2 - 10, startAngle, startAngle + sliceAngle);
+            microCtx.closePath();
+            microCtx.fill();
+            startAngle += sliceAngle;
+          });
+        }
+        const microLegend = document.createElement("div");
+        microLegend.className = "legend";
+        microSegments.forEach(segment => {
+          const percentage = microSum ? ((segment.value / microSum) * 100).toFixed(1) : 0;
+          const legendItem = document.createElement("div");
+          legendItem.className = "legend-item";
+          legendItem.innerHTML = `<span class="color-box" style="background:${segment.color};"></span>${segment.label}: ${segment.value.toFixed(2)} (${percentage}%)`;
+          microLegend.appendChild(legendItem);
+        });
+        dietContainer.appendChild(microLegend);
+        
+        chartsContainer.appendChild(dietContainer);
+      }
+      if (Object.keys(grouped).length === 0) {
+        chartsContainer.innerHTML = "<p>No nutrient breakdown data available.</p>";
+      }
+    }
+
+    function addNewFood() {
+      const diet = newDietType.value;
+      const name = newFoodName.value.trim();
+      const unit = newUnit.value.trim();
+      const calories = parseFloat(newCalories.value);
+      const protein = parseFloat(newProtein.value);
+      const carbs = parseFloat(newCarbs.value);
+      const fats = parseFloat(newFats.value);
+      const vitaminC = newVitaminC.value ? parseFloat(newVitaminC.value) : null;
+      const calcium = newCalcium.value ? parseFloat(newCalcium.value) : null;
+      const iron = newIron.value ? parseFloat(newIron.value) : null;
+      
+      if (!name || !unit || isNaN(calories) || isNaN(protein) || isNaN(carbs) || isNaN(fats)) {
+        alert("Please fill in all required fields (Food Name, Unit, Calories, Protein, Carbs, Fats).");
+        return;
+      }
+      
+      const exists = foodData[diet].some(item => item.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        alert("This food item already exists for the selected diet type.");
+        return;
+      }
+      
+      const newFood = {
+        name: name,
+        unit: unit,
+        nutrition: {
+          calories: calories,
+          protein: protein,
+          carbs: carbs,
+          fats: fats
+        },
+        micros: {
+          "Vitamin C": vitaminC !== null ? vitaminC : parseFloat((calories * 0.1).toFixed(2)),
+          "Calcium": calcium !== null ? calcium : parseFloat((protein * 10).toFixed(2)),
+          "Iron": iron !== null ? iron : parseFloat((carbs * 5).toFixed(2))
+        },
+        isCustom: true
+      };
+      
+      foodData[diet].push(newFood);
+      alert("New food item added successfully.");
+      
+      if (dietTypeSelect.value === diet) {
+        populateFoodItems();
+      }
+      
+      newFoodName.value = "";
+      newUnit.value = "";
+      newCalories.value = "";
+      newProtein.value = "";
+      newCarbs.value = "";
+      newFats.value = "";
+      newVitaminC.value = "";
+      newCalcium.value = "";
+      newIron.value = "";
+    }
+
+    function editFood(index) {
+      currentEditIndex = index;
+      const food = selectedFoods[index];
+      if (!food.isCustom) {
+        alert("Only custom food items can be edited.");
+        return;
+      }
+      editFoodLabel.textContent = `Editing: ${food.name} (${food.diet})`;
+      editCalories.value = food.nutrition.calories;
+      editProtein.value = food.nutrition.protein;
+      editCarbs.value = food.nutrition.carbs;
+      editFats.value = food.nutrition.fats;
+      editVitaminC.value = food.micros["Vitamin C"];
+      editCalcium.value = food.micros["Calcium"];
+      editIron.value = food.micros["Iron"];
+      editSection.style.display = "block";
+    }
+
+    updateFoodBtn.addEventListener("click", () => {
+      if (currentEditIndex === null) return;
+      const food = selectedFoods[currentEditIndex];
+      const newCal = parseFloat(editCalories.value);
+      const newProt = parseFloat(editProtein.value);
+      const newCarb = parseFloat(editCarbs.value);
+      const newFat = parseFloat(editFats.value);
+      const newVitC = parseFloat(editVitaminC.value);
+      const newCalcium = parseFloat(editCalcium.value);
+      const newIron = parseFloat(editIron.value);
+      if (isNaN(newCal) || isNaN(newProt) || isNaN(newCarb) || isNaN(newFat)) {
+        alert("Please provide valid numeric values for Calories, Protein, Carbs, and Fats.");
+        return;
+      }
+      food.nutrition.calories = newCal;
+      food.nutrition.protein = newProt;
+      food.nutrition.carbs = newCarb;
+      food.nutrition.fats = newFat;
+      food.micros["Vitamin C"] = isNaN(newVitC) ? food.micros["Vitamin C"] : newVitC;
+      food.micros["Calcium"] = isNaN(newCalcium) ? food.micros["Calcium"] : newCalcium;
+      food.micros["Iron"] = isNaN(newIron) ? food.micros["Iron"] : newIron;
+      
+      const diet = food.diet;
+      const foodIndex = foodData[diet].findIndex(item => item.name.toLowerCase() === food.name.toLowerCase() && item.isCustom);
+      if (foodIndex > -1) {
+        foodData[diet][foodIndex].nutrition = { ...food.nutrition };
+        foodData[diet][foodIndex].micros = { ...food.micros };
+      }
+      
+      updateNutritionTable();
+      editSection.style.display = "none";
+      currentEditIndex = null;
+    });
+
+    cancelEditBtn.addEventListener("click", () => {
+      editSection.style.display = "none";
+      currentEditIndex = null;
+    });
+
+    darkModeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    servingSlider.addEventListener("input", () => {
+      servingMultiplier = parseFloat(servingSlider.value);
+      servingValue.textContent = servingSlider.value;
+      updateNutritionTable();
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      let data = "Nutrition Summary\n";
+      selectedFoods.forEach(food => {
+        data += `${food.diet} - ${food.name}: ${food.quantity * servingMultiplier} ${food.unit}, Calories: ${(food.nutrition.calories * food.quantity * servingMultiplier).toFixed(2)}\n`;
+      });
+      const blob = new Blob([data], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "nutrition_summary.txt";
+      a.click();
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => {
+      window.print();
+    });
+
+    document.getElementById("emailBtn").addEventListener("click", () => {
+      let subject = "Nutrition Summary";
+      let body = "Nutrition Summary\n";
+      selectedFoods.forEach(food => {
+        body += `${food.diet} - ${food.name}: ${food.quantity * servingMultiplier} ${food.unit}, Calories: ${(food.nutrition.calories * food.quantity * servingMultiplier).toFixed(2)}\n`;
+      });
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+
+    dietTypeSelect.addEventListener("change", populateFoodItems);
+    foodItemSelect.addEventListener("change", updateUnitLabel);
+    addFoodBtn.addEventListener("click", addFood);
+    favBtn.addEventListener("click", addFavorite);
+    addNewFoodBtn.addEventListener("click", addNewFood);
+
+    populateFoodItems();
+
+    window.editFood = editFood;
+  </script>
+</body>
+</html>

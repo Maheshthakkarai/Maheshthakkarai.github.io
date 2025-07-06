@@ -95,6 +95,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/LungPower.png",
         "url": "/webapps/LungPower.html"
+    },
+{
+        "title": "Nutrition Analyst",
+        "description": "Find Nutrion value of your meal",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Nutrion.png",
+        "url": "/webapps/Nutrition.html"
     }
 
 ];
