@@ -87,6 +87,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/IdealWeight.png",
         "url": "/webapps/IdealWeight.html"
+    },
+{
+        "title": "Lung Power",
+        "description": "Find how healthy and strong your lungs are",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/LungPower.png",
+        "url": "/webapps/LungPower.html"
     }
 
 ];

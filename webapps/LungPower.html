@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lungs Power (v2.2 - Restored HTML)</title>
+
+    <!-- Alpine.js via CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Font Awesome Free via CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* CSS from v2.1 (Stable) */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; --transition-speed: 0.3s; --border-radius: 12px;
+            --bg-color: #f4f7fc; --text-color: #333; --text-color-secondary: #555; --primary-accent: #007aff; --secondary-accent: #e0e0e0; --glass-bg: rgba(255, 255, 255, 0.6); --shadow-color: rgba(0, 0, 0, 0.1); --card-bg: #ffffff; --success-color: #28a745; --warning-color: #ffc107; --danger-color: #dc3545; --gauge-bg: #e9ecef; --pacer-color: var(--primary-accent); --icon-color: #555; --border-color: rgba(0, 0, 0, 0.1); --modal-overlay-bg: rgba(0, 0, 0, 0.4); --badge-icon-color: var(--icon-color); --btn-secondary-text-color: var(--text-color);
+        }
+        body.dark-theme {
+             --bg-color: #1a1d24; --text-color: #e0e0e0; --text-color-secondary: #aaa; --primary-accent: #0af; --secondary-accent: #444; --glass-bg: rgba(40, 43, 54, 0.7); --shadow-color: rgba(0, 0, 0, 0.4); --card-bg: #2a2d35; --success-color: #30d158; --warning-color: #ffd60a; --danger-color: #ff453a; --gauge-bg: #555; --pacer-color: var(--primary-accent); --icon-color: #aaa; --border-color: rgba(255, 255, 255, 0.15); --modal-overlay-bg: rgba(0, 0, 0, 0.6); --badge-icon-color: var(--primary-accent); --btn-secondary-text-color: var(--text-color);
+        }
+        /* --- Rest of CSS --- */
+        html, body { height: 100%; } body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; transition: background-color var(--transition-speed), color var(--transition-speed); overscroll-behavior-y: contain; } #app { max-width: 1000px; margin: 0 auto; padding: clamp(15px, 4vw, 30px); min-height: 100vh; display: flex; flex-direction: column; } main { flex-grow: 1; }
+        .hidden { display: none !important; } .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .text-center { text-align: center; } .mb-1 { margin-bottom: 0.5rem; } .mb-2 { margin-bottom: 1rem; } .mb-3 { margin-bottom: 1.5rem; } .mt-1 { margin-top: 0.5rem; } .mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; } .mr-1 { margin-right: 0.5rem; }
+        .card { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: clamp(15px, 3vw, 25px); box-shadow: 0 4px 15px var(--shadow-color); transition: background var(--transition-speed), border var(--transition-speed), box-shadow var(--transition-speed); overflow: hidden; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; font-size: clamp(0.9rem, 2vw, 1rem); font-weight: 600; padding: 0.7em 1.5em; border: none; border-radius: var(--border-radius); cursor: pointer; transition: all var(--transition-speed) ease; text-align: center; text-decoration: none; position: relative; overflow: hidden; min-height: 44px; } .btn i { margin-right: 0.4em; } .btn-sm { padding: 0.5em 1em; font-size: 0.85rem; min-height: 36px; } .btn-lg { padding: 0.8em 1.8em; font-size: 1.1rem; min-height: 50px; }
+        .btn-primary { background-color: var(--primary-accent); color: #fff; box-shadow: 0 2px 5px color-mix(in srgb, var(--primary-accent) 40%, transparent); } .btn-primary:hover { background-color: color-mix(in srgb, var(--primary-accent), #000 10%); box-shadow: 0 4px 10px color-mix(in srgb, var(--primary-accent) 50%, transparent); transform: translateY(-2px); }
+        .btn-secondary { background-color: var(--secondary-accent); color: var(--btn-secondary-text-color); box-shadow: 0 2px 5px var(--shadow-color); } .btn-secondary:hover { background-color: color-mix(in srgb, var(--secondary-accent), #000 10%); box-shadow: 0 4px 10px var(--shadow-color); transform: translateY(-2px); }
+        .btn-danger { background-color: var(--danger-color); color: #fff; box-shadow: 0 2px 5px color-mix(in srgb, var(--danger-color) 40%, transparent); } .btn-danger:hover { background-color: color-mix(in srgb, var(--danger-color), #000 10%); box-shadow: 0 4px 10px color-mix(in srgb, var(--danger-color) 50%, transparent); transform: translateY(-2px); }
+        .btn-success { background-color: var(--success-color); color: #fff; box-shadow: 0 2px 5px color-mix(in srgb, var(--success-color) 40%, transparent); } .btn-success:hover { background-color: color-mix(in srgb, var(--success-color), #000 10%); box-shadow: 0 4px 10px color-mix(in srgb, var(--success-color) 50%, transparent); transform: translateY(-2px); }
+        .btn-icon { background: none; border: none; color: var(--icon-color); font-size: 1.3rem; padding: 0.5rem; cursor: pointer; transition: color var(--transition-speed); min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; } .btn-icon:hover { color: var(--primary-accent); }
+        header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: clamp(20px, 5vw, 40px); } header h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); color: var(--primary-accent); font-weight: 700; display: flex; align-items: center; flex-shrink: 0; } header h1 i { margin-right: 10px; font-size: 1.1em; } .controls { display: flex; gap: 5px; align-items: center; margin-left: auto; }
+        @media (max-width: 480px) { header { justify-content: center; } .controls { margin-left: 0; width: 100%; justify-content: center; } header h1 { width: 100%; justify-content: center; margin-bottom: 10px; font-size: clamp(1.5rem, 6vw, 1.8rem); } }
+        .theme-switch { position: relative; display: inline-block; width: 46px; height: 24px; } .theme-switch input { display: none; } .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--secondary-accent); transition: var(--transition-speed); border-radius: 24px; } .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: var(--transition-speed); border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); } input:checked + .slider { background-color: var(--primary-accent); } input:checked + .slider:before { transform: translateX(22px); }
+        .pacer-section { margin-bottom: 2rem; } .pacer-section p { color: var(--text-color-secondary); } .pacer-visual { width: 100px; height: 100px; background-color: var(--pacer-color); border-radius: 50%; margin: 1rem auto; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; text-align: center; transition: transform 1.5s ease-in-out; } .pacer-visual span { font-size: 0.8em; }
+        .timer-section p { color: var(--text-color-secondary); } .timer-display { font-size: clamp(3rem, 10vw, 5rem); font-weight: 300; margin-bottom: 1.5rem; color: var(--primary-accent); text-align: center; font-variant-numeric: tabular-nums; letter-spacing: -1px; } .timer-controls { display: flex; justify-content: center; gap: 1rem; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; } .result-item { text-align: center; padding: 1rem 0.5rem; background-color: color-mix(in srgb, var(--card-bg), var(--bg-color) 50%); border-radius: var(--border-radius); border: 1px solid var(--border-color); } .result-item .value { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600; color: var(--primary-accent); margin-bottom: 0.25rem; } .result-item .label { font-size: 0.8rem; color: var(--icon-color); text-transform: uppercase; }
+        .assessment-scale { width: 100%; height: 20px; background: linear-gradient(to right, var(--danger-color), var(--warning-color), var(--success-color)); border-radius: 10px; margin-top: 0.5rem; position: relative; overflow: hidden; } .scale-marker { position: absolute; top: -4px; bottom: -4px; width: 4px; background-color: var(--text-color); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 5px rgba(0,0,0,0.5); transition: left var(--transition-speed) ease-out; } body.dark-theme .scale-marker { background-color: #fff; }
+        .recommendations ul { list-style: none; padding-left: 0; } .recommendations li { background-color: color-mix(in srgb, var(--card-bg), var(--bg-color) 50%); padding: 0.8rem 1rem; margin-bottom: 0.5rem; border-radius: calc(var(--border-radius) / 1.5); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; } .recommendations li i { color: var(--primary-accent); width: 1.2em; text-align: center; } .recommendations p { color: var(--text-color-secondary); }
+        .progress-section h3, .gamification-section h3, .recommendations h3 { margin-bottom: 1rem; font-weight: 600; color: var(--primary-accent); display: flex; align-items: center; } .progress-section h3 i, .gamification-section h3 i, .recommendations h3 i { margin-right: 0.5rem; font-size: 0.9em; }
+         .chart-controls { margin-top: 1rem; margin-bottom: 1rem;}
+         #historyList { list-style: none; padding-left: 0; max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: calc(var(--border-radius) / 1.5); padding: 0.5rem; background-color: color-mix(in srgb, var(--card-bg) 50%, var(--bg-color) 50%); } #historyList li { padding: 0.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 0.9rem; } #historyList li:last-child { border-bottom: none; } .history-item span:first-child { color: var(--icon-color); font-size: 0.8em; white-space: nowrap;} .history-item span:nth-child(2) { font-weight: 600; white-space: nowrap;} .history-note { font-style: italic; color: var(--icon-color); font-size: 0.85em; margin-left: 1em; flex-basis: 100%; text-align: right; margin-top: -5px; }
+        .note-input { width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: calc(var(--border-radius) / 2); background-color: var(--card-bg); color: var(--text-color); margin-top: 0.5rem; font-size: 0.9rem; }
+        .gamification-section { margin-top: 1.5rem; } .badge-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 1.5rem 1rem; } .badge { text-align: center; opacity: 0.4; transition: opacity var(--transition-speed), transform var(--transition-speed); } .badge.achieved { opacity: 1; transform: scale(1.05); } .badge i { font-size: 2.5rem; color: var(--badge-icon-color); margin-bottom: 0.25rem; display: block; transition: color var(--transition-speed); } .badge span { font-size: 0.75rem; display: block; color: var(--icon-color); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; visibility: hidden; transition: opacity var(--transition-speed), visibility var(--transition-speed); padding: 15px; } .modal-overlay.active { opacity: 1; visibility: visible; } .modal-content { background-color: var(--card-bg); padding: clamp(20px, 5vw, 40px); border-radius: var(--border-radius); box-shadow: 0 10px 30px var(--shadow-color); max-width: 90%; width: 600px; max-height: 85vh; overflow-y: auto; position: relative; transform: scale(0.95); transition: transform var(--transition-speed) ease-out; } .modal-overlay.active .modal-content { transform: scale(1); } .modal-close-btn { position: absolute; top: 10px; right: 10px; font-size: 1.8rem; }
+        .modal-content h2, .modal-content h3 { color: var(--primary-accent); } .modal-content p, .modal-content ul, .modal-content ol { margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-color); } .modal-content ul, .modal-content ol { padding-left: 25px;} .modal-content code { background-color: var(--secondary-accent); padding: 2px 5px; border-radius: 4px; font-size: 0.9em;} .modal-content h2 i { margin-right: 0.5rem; font-size: 0.9em;}
+        @media (min-width:768px){.main-content-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(15px,4vw,30px);align-items:start}.timer-section{grid-column:1/-1}.progress-section{grid-column:1/-1} }
+         input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: calc(var(--border-radius) / 2); background-color: var(--card-bg); color: var(--text-color); font-size: 1rem; transition: border-color var(--transition-speed), background-color var(--transition-speed); } input[type="text"]:focus, input[type="number"]:focus, textarea:focus { outline:0; border-color: var(--primary-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent), transparent 70%); } textarea { min-height: 60px; resize: vertical; }
+    </style>
+</head>
+<body x-data="lungsPowerApp()" x-init="init()" :class="{ 'dark-theme': theme === 'dark' }">
+
+    <div id="app">
+        <!-- Header -->
+        <header> <h1><i class="fas fa-lungs"></i>Lungs Power</h1> <div class="controls"> <button @click="toggleBadges()" class="btn-icon" title="Show Badges"><i class="fas fa-trophy"></i></button> <button @click="toggleReadme()" class="btn-icon" title="Info & How to Use"><i class="fas fa-info-circle"></i></button> <label class="theme-switch" title="Toggle Theme"><input type="checkbox" :checked="theme === 'dark'" @change="toggleTheme()"><span class="slider"></span></label> </div> </header>
+
+        <main>
+            <!-- Pacer Section -->
+             <section class="pacer-section card mb-3" x-show="!timerRunning && !showResults" x-transition:enter.duration.300ms x-transition:leave.duration.200ms>
+                 <h3 class="text-center mb-1">Prepare & Relax</h3>
+                 <p class="text-center" style="font-size: 0.9em;">Optional: Use the pacer below to calm your breathing before the test.</p>
+                 <div x-show="pacerActive" class="pacer-visual" :style="`transform: scale(${pacerVisual.scale})`"><span x-text="pacerVisual.text">Ready?</span></div>
+                 <div class="text-center mt-2">
+                     <button class="btn btn-secondary" @click="startPacer()" x-show="!pacerActive"><i class="fas fa-play"></i> Start Pacer</button>
+                     <button class="btn btn-secondary" @click="stopPacer()" x-show="pacerActive"><i class="fas fa-stop"></i> Stop Pacer</button>
+                 </div>
+             </section>
+
+            <!-- Timer Section -->
+             <section class="timer-section card mb-3">
+                 <h2 class="text-center visually-hidden">Breath Hold Test</h2>
+                 <div class="timer-display" x-text="displayTime">00:00:000</div>
+                 <p class="text-center mb-2">Inhale deeply, hold your breath comfortably, then press Start. Press Stop when you need to exhale.</p>
+                 <div class="timer-controls">
+                     <button class="btn btn-success btn-lg" @click="startTimer()" x-show="!timerRunning && !showResults" :disabled="pacerActive"><i class="fas fa-play"></i> Start</button>
+                     <button class="btn btn-danger btn-lg" @click="stopTimer()" x-show="timerRunning"><i class="fas fa-stop"></i> Stop</button>
+                     <button class="btn btn-secondary btn-lg" @click="resetTest()" x-show="showResults"><i class="fas fa-redo"></i> Test Again</button>
+                 </div>
+             </section>
+
+            <!-- Layout Grid -->
+             <div class="main-content-grid" x-show="showResults"> <!-- Added x-show here -->
+                <!-- Results Section -->
+                 <section class="results-section card mb-3" x-show="showResults"> <!-- Redundant x-show, keep or remove -->
+                     <h3>Your Results</h3>
+                     <div class="results-grid">
+                         <div class="result-item"><div class="value" x-text="formatDuration(results.duration)">--</div><div class="label">Duration</div></div>
+                         <div class="result-item"><div class="value" x-text="results.percentile + '%'">--</div><div class="label">Scale Position</div></div>
+                         <div class="result-item"><div class="value" x-text="results.efficiency">--</div><div class="label">Lung Efficiency</div></div>
+                         <div class="result-item"><div class="value" x-text="results.tolerance">--</div><div class="label">CO2 Tolerance</div></div>
+                     </div>
+                     <label for="scale" class="label mb-1" style="font-size:0.8rem; color: var(--icon-color); text-transform: uppercase;">Performance Scale (0-120s)</label>
+                     <div class="assessment-scale" id="scale"><div class="scale-marker" :style="{ left: results.percentile + '%' }"></div></div>
+                     <div class="mt-3">
+                         <label for="sessionNote" class="label" style="font-size:0.9rem; color: var(--icon-color);">Add a note (optional):</label>
+                         <textarea id="sessionNote" class="note-input" x-model="currentNote" placeholder="e.g., Feeling great, Post-workout, Morning test..." maxlength="100"></textarea>
+                         <button class="btn btn-secondary btn-sm mt-1" @click="saveNoteToLastSession()" :disabled="!lastSessionId || currentNote.trim() === ''">Save Note</button>
+                     </div>
+                 </section>
+                <!-- Recommendations Section -->
+                 <section class="recommendations-section card mb-3" x-show="showResults"> <!-- Redundant x-show, keep or remove -->
+                     <h3><i class="fas fa-lightbulb"></i>Recommendations</h3>
+                     <p style="font-size: 0.9em;">Based on your result, consider these general wellness exercises:</p>
+                     <ul x-html="recommendations"></ul>
+                     <p style="font-size: 0.8em; margin-top: 1rem; color: var(--text-color-secondary);"><i class="fas fa-exclamation-triangle"></i> Disclaimer: These are general suggestions...</p>
+                 </section>
+             </div> <!-- End main-content-grid -->
+
+            <!-- Progress Section (No Chart) -->
+             <section class="progress-section card mt-3 mb-3">
+                 <h3><i class="fas fa-history"></i>Your Progress</h3>
+                 <div class="text-center chart-controls">
+                    <button class="btn btn-secondary btn-sm" @click="toggleHistoryListVisibility()" x-show="history.length > 0">
+                        <i :class="showHistoryList ? 'fas fa-list-alt' : 'fas fa-list'"></i>
+                        <span x-text="showHistoryList ? ' Hide List' : ' Show History'"></span>
+                    </button>
+                     <button class="btn btn-danger btn-sm" @click="confirmClearHistory()" :disabled="history.length === 0">
+                         <i class="fas fa-trash"></i> Clear History
+                     </button>
+                 </div>
+                 <ul id="historyList" x-show="showHistoryList && history.length > 0" x-transition:enter.duration.300ms x-transition:leave.duration.200ms>
+                     <template x-for="item in getSortedHistory()" :key="item.id">
+                         <li class="history-item">
+                             <span><i class="far fa-calendar-alt mr-1"></i><span x-text="new Date(item.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })"></span></span>
+                             <span x-text="formatDuration(item.duration)"></span>
+                             <span class="history-note" x-show="item.note" x-text="item.note"></span>
+                         </li>
+                     </template>
+                     <li x-show="history.length === 0 && showHistoryList"> <!-- Show message only if list is toggled open and empty -->
+                        <p class="text-center" style="width: 100%; color: var(--text-color-secondary);">No history yet.</p>
+                    </li>
+                 </ul>
+                 <p x-show="history.length === 0 && !showHistoryList" class="text-center mt-2" style="color: var(--text-color-secondary);">No history yet. Take a test to see your progress!</p> <!-- Show different message if list closed -->
+             </section>
+
+             <!-- Modals (Ensure full content) -->
+             <div class="modal-overlay" :class="{'active': showBadges}" @click.self="toggleBadges()">
+                 <div class="modal-content gamification-section"> <button @click="toggleBadges()" class="btn-icon modal-close-btn" title="Close Badges"><i class="fas fa-times"></i></button> <h3><i class="fas fa-trophy"></i> Your Badges</h3> <div class="badge-list"> <template x-for="badge in badges" :key="badge.id"> <div class="badge" :class="{'achieved': badge.achieved}" :title="badge.name + (badge.achieved ? ' (Achieved!)' : ' (Not achieved yet)')"> <i :class="badge.icon"></i> <span x-text="badge.name"></span> </div> </template> </div> <p x-show="badges.every(b => !b.achieved)" class="text-center mt-3" style="color: var(--text-color-secondary);">Keep testing to unlock badges!</p> </div>
+             </div>
+            <div class="modal-overlay" :class="{'active': showReadme}" @click.self="toggleReadme()">
+                 <div class="modal-content"> <button @click="toggleReadme()" class="btn-icon modal-close-btn" title="Close Info"><i class="fas fa-times"></i></button> <h2><i class="fas fa-info-circle"></i> About Lungs Power</h2> <p>This app helps you measure your comfortable breath-holding time as a simple indicator of respiratory fitness for general wellness.</p> <h3>How to Use:</h3> <ol> <li>Find a comfortable, relaxed position (sitting or standing).</li> <li>(Optional) Use the "Start Pacer" button and follow the visual guide for 1-2 minutes to calm your breathing.</li> <li>Take a deep, natural inhale to fill your lungs comfortably.</li> <li>Hold your breath and immediately press the "Start" button.</li> <li>Hold your breath only as long as it feels comfortable. Do not strain.</li> <li>When you feel the need to exhale, press the "Stop" button.</li> <li>Your results (Duration, Scale Position, Labels) will be displayed.</li> <li>(Optional) Add a brief note about your session using the text box below the results and click "Save Note".</li> <li>View personalized general exercise recommendations based on your duration.</li> <li>Track your progress in the history list (click "Show History").</li> <li>Check your unlocked achievements in the "Your Badges" section (trophy icon).</li> </ol> <h3>Understanding the Results:</h3> <ul> <li><strong>Duration:</strong> The time you held your breath (M m SS s).</li> <li><strong>Scale Position:</strong> Where your duration falls on a simple 0-120 second visual scale (higher % is longer). This is relative to the scale, not population data.</li> <li><strong>Lung Efficiency / CO2 Tolerance Labels:</strong> These are *general qualitative labels* based on common breath-hold duration categories discussed in wellness (e.g., Beginner: 0-30s, Improving: 31-60s, Good: 61-90s, Advanced: 91-120s, Excellent: 120s+). They offer a simple interpretation but are not medical assessments.</li> </ul> <h3>Progress & Badges:</h3> <p>Your sessions (including notes) are saved locally in your browser's `localStorage`. Click "Show History" to view past sessions. Badges are awarded for achievements like reaching time milestones or consistent use. Clearing history will also reset progress-related badges.</p> <h3>Important Disclaimer:</h3> <p><strong>This app is for general wellness and informational purposes ONLY. It is NOT a medical device and does not provide medical advice, diagnosis, or treatment.</strong> The breath-hold test here is a simple measure and should not replace professional medical evaluation (like spirometry). Consult a healthcare professional for any health concerns or before starting new exercise programs, especially if you have respiratory conditions.</p> <h3>Technical Notes:</h3> <p>Uses Alpine.js, Font Awesome (via CDN), and browser `localStorage`. Version 2.2 (No Chart)</p> </div>
+             </div>
+        </main>
+    </div> <!-- End #app -->
+
+    <script>
+        // JavaScript from previous "No Chart - Stable" version (v2.1)
+        // ... (Including init, core logic, storage, theme, gamification, modals) ...
+         function lungsPowerApp() {
+             return {
+                 timerRunning: false, pacerActive: false, startTime: null, stopTime: null, elapsedTime: 0, pacerInterval: null, pacerCycleTime: 5000, pacerInhaleRatio: 0.4, pacerVisual: { scale: 1, text: 'Ready?' }, displayTime: '00:00:000', results: { duration: 0, percentile: 0, efficiency: 'N/A', tolerance: 'N/A' }, history: [], currentNote: '', lastSessionId: null, recommendations: '', theme: 'light', showResults: false, showReadme: false, showBadges: false, showHistoryList: false, badges: [ { id: 'first_test', name: 'First Test', achieved: false, icon: 'fas fa-flag-checkered' }, { id: 'reach_30', name: '30 Seconds', achieved: false, icon: 'fas fa-stopwatch' }, { id: 'reach_60', name: '60 Seconds', achieved: false, icon: 'fas fa-stopwatch-20' }, { id: 'reach_90', name: '90 Seconds', achieved: false, icon: 'fas fa-hourglass-half' }, { id: 'reach_120', name: '120 Seconds', achieved: false, icon: 'fas fa-hourglass-end' }, { id: 'log_5', name: '5 Tests Logged', achieved: false, icon: 'fas fa-clipboard-list' }, { id: 'pacer_3', name: 'Used Pacer 3x', achieved: false, icon: 'fas fa-lungs' }, { id: 'steady_hand', name: 'Saved a Note', achieved: false, icon: 'fas fa-pencil-alt' }, ], pacerUseCount: 0,
+                 init() { console.log('Init start (v2.2)'); this.loadTheme(); this.loadHistory(); this.loadBadges(); this.loadPacerCount(); this.checkBadges(); window.addEventListener('keydown', (e) => { const aE=document.activeElement; const iF=aE&&(aE.tagName==='TEXTAREA'||aE.tagName==='INPUT'); const bF=aE&&aE.tagName==='BUTTON'; if(e.code==='Space'&&!iF){e.preventDefault();if(!this.timerRunning&&!this.showResults&&!this.pacerActive&&!bF){this.startTimer();}else if(this.timerRunning&&!bF){this.stopTimer();}} if(e.key==='Escape'){if(this.showReadme)this.toggleReadme();if(this.showBadges)this.toggleBadges();}}); console.log('Init end (v2.2)'); },
+                 startTimer() { if(this.timerRunning||this.pacerActive)return; this.resetStateBeforeStart(); this.startTime=Date.now(); this.timerRunning=true; this.showResults=false; let rId; const uD=()=>{if(!this.timerRunning){cancelAnimationFrame(rId);return;}this.elapsedTime=Date.now()-this.startTime;this.displayTime=this.formatTime(this.elapsedTime); rId=requestAnimationFrame(uD);}; rId=requestAnimationFrame(uD); },
+                 stopTimer() { if(!this.timerRunning)return; this.timerRunning=false; this.stopTime=Date.now(); this.elapsedTime=this.stopTime-this.startTime; this.displayTime=this.formatTime(this.elapsedTime); this.showResults=true; this.calculateResults(); this.generateRecommendations(); this.saveSession(); this.checkBadges(); },
+                 resetTest() { this.resetStateBeforeStart(); this.showResults=false; this.currentNote=''; this.lastSessionId=null; },
+                 resetStateBeforeStart() { this.stopPacer(); this.elapsedTime=0; this.displayTime='00:00:000'; this.startTime=null; this.stopTime=null; this.results={duration:0,percentile:0,efficiency:'N/A',tolerance:'N/A'}; this.recommendations=''; this.timerRunning=false; },
+                 startPacer() { if(this.pacerActive||this.timerRunning)return; this.pacerActive=true; this.pacerUseCount++; this.savePacerCount(); this.updatePacer(); this.pacerInterval=setInterval(this.updatePacer.bind(this),50); this.checkBadges(); },
+                 stopPacer() { if(!this.pacerActive)return; clearInterval(this.pacerInterval); this.pacerInterval=null; this.pacerActive=false; this.pacerVisual={scale:1,text:'Ready?'}; },
+                 updatePacer() { const cP=(Date.now()%this.pacerCycleTime)/this.pacerCycleTime; const iD=this.pacerCycleTime*this.pacerInhaleRatio; const cT=Date.now()%this.pacerCycleTime; let s=1; let t='Hold'; if(cT<iD){t='Inhale'; s=1+0.3*(cT/iD);}else{t='Exhale'; s=1.3-0.3*((cT-iD)/(this.pacerCycleTime-iD));} this.pacerVisual={scale:Math.max(1,s),text:t}; },
+                 formatTime(ms) { const tS=Math.floor(ms/1000); const m=String(Math.floor(tS/60)).padStart(2,'0'); const s=String(tS%60).padStart(2,'0'); const mmm=String(ms%1000).padStart(3,'0'); return `${m}:${s}:${mmm}`; },
+                 formatDuration(ms) { if(!ms&&ms!==0)return'--'; const tS=Math.round(ms/1000); if(tS<60){return`${tS}s`;} const m=Math.floor(tS/60); const s=tS%60; return`${m}m ${s}s`; },
+                 calculateResults() { const dS=this.elapsedTime/1000; let p=Math.min(100,Math.max(0,(dS/120)*100)); let e='Beginner'; let t='Low'; if(dS>120){e='Excellent';t='Very High';}else if(dS>90){e='Advanced';t='High';}else if(dS>60){e='Good';t='Good';}else if(dS>30){e='Improving';t='Moderate';} this.results={duration:this.elapsedTime,percentile:Math.round(p),efficiency:e,tolerance:t}; },
+                 generateRecommendations() { const l=this.results.efficiency; let r='<ul>'; if(l==='Beginner'){r+=`<li><i class="fas fa-wind"></i> Diaphragmatic breathing: 5 min daily.</li><li><i class="fas fa-walking"></i> Short walks: 15-20 min, 3x weekly.</li><li><i class="fas fa-stopwatch"></i> Short breath holds (5-10s).</li>`;}else if(l==='Improving'){r+=`<li><i class="fas fa-exchange-alt"></i> Alternate nostril breathing: 5 min daily.</li><li><i class="fas fa-running"></i> Light cardio: 20-30 min, 3-4x weekly.</li><li><i class="fas fa-chart-line"></i> Gradual hold increase.</li>`;}else if(l==='Good'){r+=`<li><i class="fas fa-vector-square"></i> Box Breathing (4-4-4-4): 5 min daily.</li><li><i class="fas fa-heartbeat"></i> Moderate cardio: 30 min, 3x weekly.</li><li><i class="fas fa-feather-alt"></i> Pursed Lip Breathing recovery.</li>`;}else{r+=`<li><i class="fas fa-layer-group"></i> Gradual breath-holding patterns (~+5s).</li><li><i class="fas fa-dumbbell"></i> Consider HIIT 1-2x weekly.</li><li><i class="fas fa-sync-alt"></i> Explore Wim Hof method (carefully).</li>`;} r+='</ul>'; this.recommendations=r; },
+                 saveSession() { const sId=`s_${Date.now()}`; this.history.push({ timestamp: this.stopTime||Date.now(), duration: this.elapsedTime, note: null, id: sId }); this.lastSessionId = sId; this.saveHistory(); this.currentNote = ''; },
+                 saveNoteToLastSession() { if (!this.lastSessionId || this.currentNote.trim() === '') return; const idx = this.history.findIndex(s => s.id === this.lastSessionId); if (idx !== -1) { this.history[idx].note = this.currentNote.trim(); this.saveHistory(); this.checkBadges(); alert('Note saved!'); this.currentNote = ''; } else { alert('Error saving note.');} },
+                 loadHistory() { try { const saved = localStorage.getItem('lungsPowerHistory'); this.history = saved ? JSON.parse(saved).map(s => ({ timestamp: s.timestamp || Date.now(), duration: s.duration || 0, note: s.note || null, id: s.id || `s_${s.timestamp||Date.now()}` })) : []; console.log(`Loaded ${this.history.length} history items.`); } catch (e) { console.error("History Load Error:", e); this.history = []; } },
+                 saveHistory() { try { localStorage.setItem('lungsPowerHistory', JSON.stringify(this.history)); } catch (e) { /*...*/ } },
+                 confirmClearHistory() { if (confirm("Clear history & related badges?")) { this.clearHistory(); } },
+                 clearHistory() { this.history = []; this.lastSessionId = null; this.currentNote = ''; localStorage.removeItem('lungsPowerHistory'); this.resetBadgesProgress(); this.checkBadges(); alert("History cleared."); },
+                 toggleHistoryListVisibility() { this.showHistoryList = !this.showHistoryList; },
+                 getSortedHistory() { return [...this.history].sort((a, b) => b.timestamp - a.timestamp); },
+                 toggleTheme() { this.theme = (this.theme === 'light') ? 'dark' : 'light'; this.saveTheme(); },
+                 saveTheme() { try { localStorage.setItem('lungsPowerTheme', this.theme); } catch (e) { /* ... */ } },
+                 loadTheme() { try { const saved = localStorage.getItem('lungsPowerTheme'); this.theme = saved ? saved : (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch (e) { this.theme = 'light'; } },
+                 checkBadges() { const hC=this.history.length; const mD=this.history.reduce((m,i)=>Math.max(m,i.duration||0),0); const hSN=this.history.some(i=>i.note&&i.note.trim()!==''); this.updateBadge('first_test',hC>0); this.updateBadge('reach_30',mD>=30000); this.updateBadge('reach_60',mD>=60000); this.updateBadge('reach_90',mD>=90000); this.updateBadge('reach_120',mD>=120000); this.updateBadge('log_5',hC>=5); this.updateBadge('pacer_3',this.pacerUseCount>=3); this.updateBadge('steady_hand',hSN); this.saveBadges(); },
+                 updateBadge(id, achieved) { const b=this.badges.find(b=>b.id===id); if(b&&achieved&&!b.achieved){b.achieved=true;} },
+                 resetBadgesProgress() { this.badges.forEach(b=>{if(['first_test','reach_30','reach_60','reach_90','reach_120','log_5','steady_hand'].includes(b.id)){if(b.achieved){b.achieved=false;}}}); this.saveBadges(); },
+                 saveBadges() { try{const aB=this.badges.filter(b=>b.achieved).map(b=>b.id); localStorage.setItem('lungsPowerAchievedBadges',JSON.stringify(aB));}catch(e){} },
+                 loadBadges() { try{const sB=localStorage.getItem('lungsPowerAchievedBadges'); if(sB){const aI=JSON.parse(sB); this.badges.forEach(b=>{b.achieved=aI.includes(b.id);});}}catch(e){} },
+                 savePacerCount() { try{localStorage.setItem('lungsPowerPacerCount', this.pacerUseCount.toString());}catch(e){} },
+                 loadPacerCount() { try{const c=localStorage.getItem('lungsPowerPacerCount'); this.pacerUseCount=c?parseInt(c,10):0;}catch(e){this.pacerUseCount=0;} },
+                 toggleReadme() { this.showReadme = !this.showReadme; },
+                 toggleBadges() { this.showBadges = !this.showBadges; },
+             };
+         }
+    </script>
+
+</body>
+</html>
