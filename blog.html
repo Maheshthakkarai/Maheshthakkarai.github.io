@@ -59,12 +59,53 @@
         <section id="blog-posts" class="my-12">
             <!-- Blog posts will be dynamically inserted here -->
         </section>
+
+        <section id="auth-section" class="my-12">
+            <div id="login-form" class="hidden">
+                <h3 class="text-3xl font-bold text-center mb-8">Login</h3>
+                <form class="w-full max-w-sm mx-auto">
+                    <div class="mb-4">
+                        <label for="login-email" class="block text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="login-email" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                    </div>
+                    <div class="mb-4">
+                        <label for="login-password" class="block text-sm font-bold mb-2">Password</label>
+                        <input type="password" id="login-password" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                    </div>
+                    <button type="button" id="login-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</button>
+                </form>
+            </div>
+
+            <div id="signup-form" class="hidden">
+                <h3 class="text-3xl font-bold text-center mb-8">Sign Up</h3>
+                <form class="w-full max-w-sm mx-auto">
+                    <div class="mb-4">
+                        <label for="signup-email" class="block text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="signup-email" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                    </div>
+                    <div class="mb-4">
+                        <label for="signup-password" class="block text-sm font-bold mb-2">Password</label>
+                        <input type="password" id="signup-password" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                    </div>
+                    <button type="button" id="signup-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Sign Up</button>
+                </form>
+            </div>
+
+            <div id="user-info" class="hidden text-center">
+                <p>Welcome, <span id="user-email"></span></p>
+                <button id="logout-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Logout</button>
+            </div>
+        </section>
     </main>
 
     <footer class="text-center py-6">
         <p>&copy; 2025 MyPortfolio. All rights reserved.</p>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/auth.js"></script>
     <script src="assets/js/nav.js"></script>
 </body>
 </html>
