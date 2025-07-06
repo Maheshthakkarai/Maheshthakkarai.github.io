@@ -119,7 +119,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/SportsGuide.png",
         "url": "/webapps/SportsGuide.html"
+    },
+{
+        "title": "Workout Tracker",
+        "description": "Select a sport and learn the rules",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/WorkoutTracker.png",
+        "url": "/webapps/WorkoutTracker.html"
     }
-
 
 ];
