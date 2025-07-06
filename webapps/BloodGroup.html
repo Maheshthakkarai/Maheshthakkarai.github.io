@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Groups - Compatibility Checker</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
+
+    <style>
+        /*------------------------------------*\
+          #ROOT & THEME VARIABLES
+        \*------------------------------------*/
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg-color: rgba(255, 255, 255, 0.6);
+            --modal-bg-color: rgba(255, 255, 255, 0.97);
+            --text-color: #1c1c1e;
+            --heading-color: #000000;
+            --subtle-text-color: #6a6a6e;
+            --accent-color: #007aff;
+            --accent-glow: rgba(0, 122, 255, 0.5);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #34c759;
+            --error-color: #ff3b30;
+            --warning-color: #ff9500;
+            --success-bg-tint: rgba(52, 199, 89, 0.1);
+            --error-bg-tint: rgba(255, 59, 48, 0.1);
+            --bg-gradient: radial-gradient(circle at 100% 0%, #dbeafe 0%, #ffffff 50%, #f0f2f5 100%);
+            --select-arrow-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a6a6e' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            --rbc-glow-color: rgba(255, 59, 48, 0.7);
+            --rbc-text-color: #ff4d4d;
+            --plasma-glow-color: rgba(255, 214, 10, 0.8);
+            --plasma-text-color: #ffd60a;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg-color: rgba(30, 30, 30, 0.7);
+            --modal-bg-color: rgba(44, 44, 46, 0.97);
+            --text-color: #e5e5e7;
+            --heading-color: #ffffff;
+            --subtle-text-color: #8e8e93;
+            --accent-color: #0a84ff;
+            --accent-glow: rgba(10, 132, 255, 0.6);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --success-color: #30d158;
+            --error-color: #ff453a;
+            --warning-color: #ff9f0a;
+            --success-bg-tint: rgba(48, 209, 88, 0.15);
+            --error-bg-tint: rgba(255, 69, 58, 0.15);
+            --bg-gradient: radial-gradient(circle at 0% 100%, #1a202c 0%, #121212 50%, #000000 100%);
+            --select-arrow-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238e8e93' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        }
+
+        /* Basic Styles... */
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); background-image: var(--bg-gradient); color: var(--text-color); line-height: 1.6; transition: background-color 0.3s ease, color 0.3s ease; }
+        .container { max-width: 1200px; margin: 0 auto; padding: clamp(1rem, 5vw, 2rem); }
+        main { display: grid; gap: 2rem; }
+        .card { background-color: var(--card-bg-color); border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 8px 32px 0 var(--shadow-color); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.3s ease; }
+        h1 { font-size: clamp(2rem, 5vw, 2.5rem); } h2 { font-size: clamp(1.5rem, 4vw, 1.75rem); margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        .input-group { display: flex; align-items: center; gap: 0.5rem; }
+        select { width: 100%; padding: 0.75rem 2.5rem 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); font-size: 1rem; appearance: none; cursor: pointer; transition: all 0.2s ease; background-image: var(--select-arrow-svg); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
+        .btn { display: inline-block; width: 100%; padding: 0.85rem 1.5rem; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.2s ease-in-out; }
+        .btn-primary { background-color: var(--accent-color); color: white; box-shadow: 0 4px 15px -5px var(--accent-glow); }
+        .icon-btn { background: none; border: none; color: var(--subtle-text-color); font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .star-btn.saved { color: var(--warning-color); }
+        
+        .checker-grid { display: flex; flex-direction: column; gap: 2rem; }
+        @media (min-width: 768px) { .checker-grid { display: grid; grid-template-columns: 1fr 1fr; } }
+        
+        /* ILLUMINATED GLASS TOGGLE */
+        .toggle-group { display: flex; background-color: rgba(0,0,0,0.05); border-radius: 12px; padding: 5px; margin-bottom: 1.5rem; border: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .toggle-btn { flex: 1; text-align: center; padding: 0.5rem; border: none; background-color: transparent; color: var(--subtle-text-color); font-weight: 600; border-radius: 9px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .toggle-btn.active { background-color: var(--card-bg-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .toggle-btn.rbc-btn.active { color: var(--rbc-text-color); box-shadow: 0 0 18px var(--rbc-glow-color), 0 4px 10px rgba(0,0,0,0.1); }
+        .toggle-btn.plasma-btn.active { color: var(--plasma-text-color); box-shadow: 0 0 18px var(--plasma-glow-color), 0 4px 10px rgba(0,0,0,0.1); }
+        [data-theme="dark"] .toggle-btn.rbc-btn.active { color: #ff8a8a; }
+        /* FIX: Override Plasma button text color ONLY in light theme for readability */
+        [data-theme="light"] .toggle-btn.plasma-btn.active { color: #a17400; }
+        [data-theme="dark"] .toggle-btn.plasma-btn.active { color: #ffeb85; }
+
+        /* RESULTS & ALERTS STYLING */
+        .display-panel { min-height: 250px; }
+        .result-box { border-radius: 16px; padding: 1.5rem; text-align: center; transition: background-color 0.3s ease; }
+        .result-box.is-compatible { background-color: var(--success-bg-tint); }
+        .result-box.is-incompatible { background-color: var(--error-bg-tint); }
+        .result-box .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .result-box h3 { font-size: 1.75rem; margin-bottom: 0.75rem; }
+        .is-compatible .icon, .is-compatible h3 { color: var(--success-color); }
+        .is-incompatible .icon, .is-incompatible h3 { color: var(--error-color); }
+        .warning-panel, .info-panel { border-radius: 12px; padding: 1rem; margin-top: 1rem; text-align: left; display: flex; align-items: flex-start; gap: 1rem; }
+        .warning-panel { background-color: rgba(255, 149, 0, 0.1); color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .info-panel { background-color: rgba(0, 122, 255, 0.1); color: var(--accent-color); border-color: transparent; }
+        .rarity-info { text-align: center; color: var(--subtle-text-color); font-size: 0.9rem; height: 1.2rem; margin-top: 0.5rem; }
+
+        /* CHECKLIST STYLING FIX */
+        .checklist-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .checklist-item .toggle-group { flex-shrink: 0; width: 100px; padding: 3px; }
+        .checklist-item .toggle-btn.active { color: var(--heading-color) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; }
+        .checklist-result { padding: 1rem; border-radius: 12px; margin-top: 1rem; text-align: center; }
+        .checklist-success { background-color: var(--success-bg-tint); }
+        .checklist-fail { background-color: var(--error-bg-tint); }
+
+        /* Other styles... */
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .blood-type-title { font-size: 2rem; }
+        .compatibility-list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .compatibility-list li { background-color: var(--border-color); color: var(--text-color); padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+        .donor-list li { background-color: rgba(52, 199, 89, 0.15); color: var(--success-color); }
+        .recipient-list li { background-color: rgba(0, 122, 255, 0.15); color: var(--accent-color); }
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-content { max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; background-color: var(--modal-bg-color); }
+        footer { text-align: center; padding: 2rem 1rem 1rem; color: var(--subtle-text-color); font-size: 0.8rem; }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body x-data="bloodGroupApp()" x-init="init()" :data-theme="theme">
+
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 class="logo">Blood Groups</h1>
+            <div class="header-controls" style="display:flex; gap:0.5rem;">
+                <button class="icon-btn" @click="isModalOpen = true" aria-label="Information"><i class="bi bi-info-circle-fill"></i></button>
+                <button class="icon-btn" @click="toggleTheme()" aria-label="Toggle Theme"><i class="bi" :class="theme === 'light' ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i></button>
+            </div>
+        </header>
+
+        <main>
+            <section class="checker-section">
+                <div class="checker-grid">
+                    <!-- Left side: Form -->
+                    <div class="checker-form card">
+                        <h2>Personalized Checker</h2>
+                        <div class="toggle-group">
+                            <button @click="setCompatibilityMode('RBC')" :class="['toggle-btn', 'rbc-btn', compatibilityMode === 'RBC' && 'active']">Red Blood Cells</button>
+                            <button @click="setCompatibilityMode('Plasma')" :class="['toggle-btn', 'plasma-btn', compatibilityMode === 'Plasma' && 'active']">Plasma</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="donor-blood-type">Donor Blood Type <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <select id="donor-blood-type" x-model="donorBloodType" @change="handleDonorSelect()"></select>
+                                <button class="icon-btn star-btn" @click="saveMyType(donorBloodType)" :class="{ 'saved': mySavedType === donorBloodType }" aria-label="Save as my type" :disabled="!donorBloodType"><i class="bi" :class="mySavedType === donorBloodType ? 'bi-star-fill' : 'bi-star'"></i></button>
+                            </div>
+                            <div class="rarity-info" x-text="donorRarity" :style="{ opacity: donorRarity ? 1 : 0 }"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-blood-type">Recipient Blood Type <span class="required-mark">*</span></label>
+                             <div class="input-group">
+                                <select id="recipient-blood-type" x-model="recipientBloodType" @change="handleRecipientSelect()"></select>
+                                <button class="icon-btn star-btn" @click="saveMyType(recipientBloodType)" :class="{ 'saved': mySavedType === recipientBloodType }" aria-label="Save as my type" :disabled="!recipientBloodType"><i class="bi" :class="mySavedType === recipientBloodType ? 'bi-star-fill' : 'bi-star'"></i></button>
+                            </div>
+                             <div class="rarity-info" x-text="recipientRarity" :style="{ opacity: recipientRarity ? 1 : 0 }"></div>
+                        </div>
+                        <div class="form-error" x-show="error" x-text="error" x-transition></div>
+                        <button class="btn btn-primary" @click="checkCompatibility()"><i class="bi bi-heart-pulse-fill"></i> Check Compatibility</button>
+                    </div>
+
+                    <!-- Right side: DYNAMIC DISPLAY PANEL -->
+                    <div class="display-panel card" x-show="viewMode !== 'initial'" x-cloak x-transition.opacity.duration.500ms>
+                        <template x-if="viewMode === 'info' && focusedTypeInfo">
+                            <!-- Instant Info View -->
+                            <div class="info-view-card">
+                                <h3 class="blood-type-title" x-text="focusedTypeInfo.group + ' (' + compatibilityMode + ')'"></h3>
+                                <div><p><strong>Can Donate To:</strong></p><ul class="compatibility-list donor-list"><template x-for="t in focusedTypeInfo.canDonateTo"><li x-text="t"></li></template></ul></div>
+                                <hr style="border:none; margin: 1rem 0;">
+                                <div><p><strong>Can Receive From:</strong></p><ul class="compatibility-list recipient-list"><template x-for="t in focusedTypeInfo.canReceiveFrom"><li x-text="t"></li></template></ul></div>
+                            </div>
+                        </template>
+                        <template x-if="viewMode === 'result' && result.status">
+                            <!-- Compatibility Result View -->
+                            <div class="result-box" :class="result.isCompatible ? 'is-compatible' : 'is-incompatible'">
+                                <i class="icon bi" :class="result.isCompatible ? 'bi-check-circle-fill' : 'bi-x-octagon-fill'"></i>
+                                <h3 x-text="result.title"></h3>
+                                <p x-html="result.message"></p>
+                                <template x-if="result.warning"><div class="warning-panel"><i class="icon bi bi-exclamation-triangle-fill"></i><p x-html="result.warning"></p></div></template>
+                                <template x-if="result.donationInfo"><div class="info-panel"><i class="icon bi bi-info-circle-fill"></i><p x-html="result.donationInfo"></p></div></template>
+                                <button class="btn" @click="shareResult()" style="margin-top: 1rem; background-color: var(--border-color); color: var(--subtle-text-color);" x-ref="shareBtn">
+                                    <i class="bi bi-clipboard-check-fill"></i> <span x-ref="shareBtnText">Share Result</span>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections -->
+            <section class="card">
+                <h2>"Can I Donate?" Pre-Checklist</h2>
+                <p style="margin-bottom:1.5rem;">This is a basic guide, not a medical screening. Always consult a donation center.</p>
+                <div class="checklist-item"><span>Are you feeling healthy and well today?</span><div class="toggle-group"><button @click="donationChecklist.q1 = true" :class="['toggle-btn', donationChecklist.q1 === true && 'active']">Yes</button><button @click="donationChecklist.q1 = false" :class="['toggle-btn', donationChecklist.q1 === false && 'active']">No</button></div></div>
+                <div class="checklist-item"><span>Do you weigh at least 110 lbs (50 kg)?</span><div class="toggle-group"><button @click="donationChecklist.q2 = true" :class="['toggle-btn', donationChecklist.q2 === true && 'active']">Yes</button><button @click="donationChecklist.q2 = false" :class="['toggle-btn', donationChecklist.q2 === false && 'active']">No</button></div></div>
+                <div class="checklist-item"><span>Are you 17+ years old (or 16 with consent)?</span><div class="toggle-group"><button @click="donationChecklist.q3 = true" :class="['toggle-btn', donationChecklist.q3 === true && 'active']">Yes</button><button @click="donationChecklist.q3 = false" :class="['toggle-btn', donationChecklist.q3 === false && 'active']">No</button></div></div>
+                <template x-if="checklistResult !== null"><div class="checklist-result" :class="checklistResult ? 'checklist-success' : 'checklist-fail'"><p style="margin:0; font-weight:600;" x-text="checklistResult ? 'You might be eligible! Please contact a donation center.' : 'Based on your answers, you may not be eligible at this time.'"></p></div></template>
+            </section>
+            <section class="bento-grid-section">
+                <h2>General <span x-text="compatibilityMode"></span> Compatibility Guide</h2>
+                <div class="bento-grid">
+                    <template x-for="type in compatibilityData"><div class="card bento-card">
+                        <h3 class="blood-type-title" x-text="type.group"></h3>
+                        <div><p><strong>Can Donate To:</strong></p><ul class="compatibility-list donor-list"><template x-for="t in type.canDonateTo"><li x-text="t"></li></template></ul></div>
+                        <hr style="border:none; margin: 1rem 0;">
+                        <div><p><strong>Can Receive From:</strong></p><ul class="compatibility-list recipient-list"><template x-for="t in type.canReceiveFrom"><li x-text="t"></li></template></ul></div>
+                    </div></template>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer and Modal -->
+        <footer><p>Data sourced from official transfusion guidelines. This tool is for informational purposes only. <a href="https://www.redcrossblood.org/donate-blood/blood-types.html" target="_blank" rel="noopener noreferrer">American Red Cross</a> | Not a substitute for professional medical advice.</p></footer>
+        <div class="modal-overlay" x-show="isModalOpen" x-cloak @click.self="isModalOpen = false"><div class="card modal-content" @click.away="isModalOpen = false" x-show="isModalOpen" x-transition.scale><button class="icon-btn" @click="isModalOpen = false" style="position:absolute; top:1rem; right:1rem;"><i class="bi bi-x-lg"></i></button><h2>About Blood Groups</h2><p>This application provides a way to check blood type compatibility for both Red Blood Cells and Plasma.</p><h3>How to Use</h3><p>1. <strong>Select Mode:</strong> Choose "Red Blood Cells" or "Plasma".<br>2. <strong>Instant Info:</strong> Select a blood type from any dropdown to see its profile.<br>3. <strong>Check Compatibility:</strong> Fill both dropdowns and click the button.<br>4. <strong>Save Your Type:</strong> Click the star icon to save a blood type for your next visit.</p><h3><i class="bi bi-exclamation-triangle-fill" style="color: var(--error-color);"></i> Critical Disclaimer</h3><p><strong>For informational purposes ONLY. Not a substitute for professional medical advice.</strong></p></div></div>
+    </div>
+
+<script>
+function bloodGroupApp() {
+    return {
+        // State
+        theme: 'light', compatibilityMode: 'RBC', donorBloodType: '', recipientBloodType: '', donorRarity: '',
+        recipientRarity: '', mySavedType: null, error: '', isModalOpen: false, viewMode: 'initial',
+        focusedTypeInfo: null, result: { status: null }, donationChecklist: { q1: null, q2: null, q3: null },
+        
+        // Data (shortened for brevity)
+        compatibilityRules: {
+            RBC: {'O-':{d:['O-','O+','A-','A+','B-','B+','AB-','AB+'],r:['O-']},'O+':{d:['O+','A+','B+','AB+'],r:['O-','O+']},'A-':{d:['A-','A+','AB-','AB+'],r:['O-','A-']},'A+':{d:['A+','AB+'],r:['O-','O+','A-','A+']},'B-':{d:['B-','B+','AB-','AB+'],r:['O-','B-']},'B+':{d:['B+','AB+'],r:['O-','O+','B-','B+']},'AB-':{d:['AB-','AB+'],r:['O-','A-','B-','AB-']},'AB+':{d:['AB+'],r:['O-','O+','A-','A+','B-','B+','AB-','AB+']}},
+            Plasma: {'O':{d:['O'],r:['O','A','B','AB']},'A':{d:['A','O'],r:['A','AB']},'B':{d:['B','O'],r:['B','AB']},'AB':{d:['AB','A','B','O'],r:['AB']}}
+        },
+        rarityData: { 'O+': '~38%', 'A+': '~34%', 'B+': '~9%', 'O-': '~7%', 'A-': '~6%', 'AB+': '~3%', 'B-': '~2%', 'AB-': '~1%' },
+        
+        // Computed Properties
+        get compatibilityData() {
+            const rules = this.compatibilityMode === 'Plasma' ? this.compatibilityRules.Plasma : this.compatibilityRules.RBC;
+            return Object.entries(rules).map(([group, ruleData]) => ({ group, canDonateTo: ruleData.d, canReceiveFrom: ruleData.r }));
+        },
+        get checklistResult() { const { q1, q2, q3 } = this.donationChecklist; if (q1 === null || q2 === null || q3 === null) return null; return q1 && q2 && q3; },
+
+        // Methods
+        init() {
+            this.theme = localStorage.getItem('blood_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', this.theme);
+            this.mySavedType = localStorage.getItem('my_blood_type');
+            if (this.mySavedType) { this.donorBloodType = this.mySavedType; }
+            this.populateDropdowns();
+            this.handleDonorSelect();
+        },
+        populateDropdowns() {
+            const donorSelect = document.getElementById('donor-blood-type');
+            const recipientSelect = document.getElementById('recipient-blood-type');
+            const options = this.compatibilityMode === 'Plasma' ? Object.keys(this.compatibilityRules.Plasma) : Object.keys(this.compatibilityRules.RBC);
+            
+            donorSelect.innerHTML = '<option value="">Select donor type</option>';
+            recipientSelect.innerHTML = '<option value="">Select recipient type</option>';
+            
+            options.forEach(type => {
+                donorSelect.add(new Option(type, type));
+                recipientSelect.add(new Option(type, type));
+            });
+
+            donorSelect.value = this.donorBloodType;
+            recipientSelect.value = this.recipientBloodType;
+        },
+        toggleTheme() { this.theme = this.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('blood_theme', this.theme); document.documentElement.setAttribute('data-theme', this.theme); },
+        setCompatibilityMode(mode) { if (this.compatibilityMode === mode) return; this.compatibilityMode = mode; this.clearAll(); this.populateDropdowns(); },
+        saveMyType(type) { if (!type) return; this.mySavedType = type; localStorage.setItem('my_blood_type', type); },
+        updateRarity(target, bloodType) { this[target] = this.rarityData[bloodType] || ''; },
+        showInfoFor(bloodType) {
+            this.result.status = null;
+            if (bloodType) {
+                const rules = this.compatibilityMode === 'Plasma' ? this.compatibilityRules.Plasma : this.compatibilityRules.RBC;
+                const typeForRules = this.compatibilityMode === 'Plasma' ? bloodType.replace(/[+-]/g, '') : bloodType;
+                const info = rules[typeForRules];
+                if (info) { this.focusedTypeInfo = { group: bloodType, canDonateTo: info.d, canReceiveFrom: info.r }; this.viewMode = 'info'; }
+            } else { this.viewMode = 'initial'; this.focusedTypeInfo = null; }
+        },
+        handleDonorSelect() { this.updateRarity('donorRarity', this.donorBloodType); this.showInfoFor(this.donorBloodType); },
+        handleRecipientSelect() { this.updateRarity('recipientRarity', this.recipientBloodType); this.showInfoFor(this.recipientBloodType); },
+        clearAll() { this.donorBloodType = ''; this.recipientBloodType = ''; this.donorRarity = ''; this.recipientRarity = ''; this.viewMode = 'initial'; this.error = ''; this.result.status = null; if(this.mySavedType){this.donorBloodType = this.mySavedType;} },
+        checkCompatibility() {
+            this.error = '';
+            if (!this.donorBloodType || !this.recipientBloodType) { this.error = 'Please select both donor and recipient blood types.'; return; }
+            this.viewMode = 'result';
+            const rules = this.compatibilityMode === 'Plasma' ? this.compatibilityRules.Plasma : this.compatibilityRules.RBC;
+            const donorRuleKey = this.compatibilityMode === 'Plasma' ? this.donorBloodType.replace(/[+-]/g, '') : this.donorBloodType;
+            const recipientRuleKey = this.compatibilityMode === 'Plasma' ? this.recipientBloodType.replace(/[+-]/g, '') : this.recipientBloodType;
+            const canDonate = rules[donorRuleKey].d.includes(recipientRuleKey);
+            
+            this.result = {
+                isCompatible: canDonate, status: canDonate ? 'compatible' : 'incompatible',
+                title: canDonate ? 'Compatible!' : 'Incompatible!',
+                message: `A donor with <strong>${this.donorBloodType}</strong> ${this.compatibilityMode.toLowerCase()} is ${canDonate ? 'COMPATIBLE' : 'INCOMPATIBLE'} with a recipient with <strong>${this.recipientBloodType}</strong>.`,
+                donationInfo: canDonate ? 'Compatibility is based on standard ABO/Rh rules for the selected blood component.' : '', warning: ''
+            };
+            if (!canDonate) {
+                 if (this.compatibilityMode === 'RBC' && this.donorBloodType.slice(-1) === '+' && this.recipientBloodType.slice(-1) === '-') {
+                    this.result.warning = '<strong>Rh Incompatibility Risk:</strong> Donating Rh+ red cells to an Rh- recipient can cause serious immune reactions.';
+                 } else {
+                    this.result.warning = `<strong>${this.compatibilityMode === 'RBC' ? 'ABO' : 'Plasma'} Incompatibility Risk:</strong> This combination can lead to a serious transfusion reaction.`;
+                 }
+            }
+        },
+        shareResult() {
+            const summary = `Blood Group Compatibility (${this.compatibilityMode}): A donor with ${this.donorBloodType} is ${this.result.isCompatible ? 'COMPATIBLE' : 'INCOMPATIBLE'} with a recipient with ${this.recipientBloodType}.`;
+            navigator.clipboard.writeText(summary).then(() => {
+                this.$refs.shareBtnText.innerText = "Copied!";
+                setTimeout(() => { this.$refs.shareBtnText.innerText = "Share Result"; }, 2000);
+            });
+        }
+    }
+}
+</script>
+</body>
+</html>

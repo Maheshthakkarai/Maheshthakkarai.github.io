@@ -55,5 +55,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Shoelace.png",
         "url": "/webapps/Shoelace.html"
+    },
+{
+        "title": "Blood Group",
+        "description": "Blood group and Plasma Compatability",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Bloodgroup.png",
+        "url": "/webapps/BloodGroup.html"
     }
+
 ];
