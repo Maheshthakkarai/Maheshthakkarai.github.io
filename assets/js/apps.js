@@ -47,6 +47,13 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Hats.png",
         "url": "/webapps/Hats.html"
+    },
+    {
+        "title": "Shoelace",
+        "description": "How to measure shoelace length needed",
+        "category": "Fashion and Style",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Shoelace.png",
+        "url": "/webapps/Shoelace.html"
     }
-
 ];
