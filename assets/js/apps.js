@@ -40,5 +40,4 @@ window.apps = [
         "image": "/assets/images/Sunglass.png",
         "url": "/webapps/SunGlass.html"
     }
-
 ];
