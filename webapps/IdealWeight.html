@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideal Weight</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  /* Modern font */
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);  /* Use CSS variables */
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        :root { /* Define CSS variables for theming */
+            --bg-color: #ecf0f1;
+            --text-color: #34495e;
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #f39c12;
+            --container-bg: #fff;
+        }
+
+        .dark-mode :root {  /* Dark mode variables */
+            --bg-color: #2c3e50;
+            --text-color: #ecf0f1;
+            --container-bg: #34495e;
+        }
+
+        .container {
+            width: 95%; /* Increased width on all devices */
+            max-width: 800px; /* Added max-width for larger screens */
+            margin: 20px auto; /* Reduced top/bottom margin */
+            background-color: var(--container-bg);
+            padding: 20px; /* Reduced padding */
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+            transition: background-color 0.3s; /* Smooth transition */
+            box-sizing: border-box; /* Important: Include padding in width calculation */
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: grid;  /* Use grid layout */
+            grid-template-columns: 1fr;  /* Single column by default */
+            gap: 15px;  /* Reduced gap */
+            align-items: start;
+        }
+
+        form > div {
+            margin-bottom: 0; /* Remove bottom margin from individual divs */
+        }
+
+        label {
+            margin-top: 0;
+            font-weight: 500; /* Lighter font weight */
+            display: block; /* Ensure labels take full width */
+        }
+
+        input[type="number"],
+        select {
+            padding: 10px; /* Reduced padding */
+            margin-top: 5px;
+            margin-bottom: 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px; /* Rounded corners */
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s; /* Smooth transition */
+            color: var(--text-color); /* Ensure text color inherits */
+            background-color: var(--container-bg);
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px; /* Adjusted button size */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px; /* Reduced margin */
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;  /* Hover effect */
+            grid-column: 1; /* Single column */
+            justify-self: center; /* Center the button */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Button shadow */
+            width: 100%; /* Button takes full width */
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px); /* Slight lift  */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #results {
+            margin-top: 20px; /* Reduced margin */
+            padding: 15px; /* Reduced padding */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            color: var(--text-color); /* Ensure text color inherits */
+            box-sizing: border-box;
+        }
+
+        #results h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        #results p {
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 769px) { /* Apply to tablets and larger */
+             .container {
+                width: 80%; /*Revert to previous setting */
+                max-width: 800px;
+                padding: 30px;
+            }
+
+            form {
+                grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
+                gap: 20px;
+            }
+
+            button {
+                grid-column: 1 / span 2; /* Span both columns */
+                width: auto; /* Back to auto width */
+            }
+        }
+
+        /* Dark Mode */
+        .dark-mode body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        .dark-mode .container {
+            background-color: #34495e;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.08);
+            color: #ecf0f1; /* Force text color */
+        }
+
+        .dark-mode h1,
+        .dark-mode h2 {
+            color: #fff;
+        }
+
+        .dark-mode #results {
+            background-color: #34495e;
+            border-color: #444;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+            color: #ecf0f1; /* Force text color */
+        }
+
+        .dark-mode input[type="number"],
+        .dark-mode select {
+            background-color: #34495e;
+            color: #ecf0f1;
+            border-color: #444;
+        }
+
+        .dark-mode button {
+            background-color: #34495e;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+        }
+
+        .dark-mode button:hover {
+            background-color: #2c3e50;
+        }
+
+        .dark-mode-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .dark-mode-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Additional Styles */
+        #height-metric,
+        #height-imperial {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        #height-imperial {
+            display: none;
+        }
+
+        #health-advice-link {
+            display: block;
+            margin-top: 15px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        #health-advice-link:hover {
+            text-decoration: underline;
+            color: #27ae60; /* A slightly darker green */
+        }
+
+        /* Result Buttons */
+        #results button {
+            background-color: var(--secondary-color);
+            margin: 5px;
+            grid-column: auto; /* Reset grid column */
+            justify-self: start; /* Align to start */
+              display: inline-flex; /* Align icon and text */
+            align-items: center;
+            padding: 8px 12px; /* Reduced padding */
+            font-size: 0.9em; /* Smaller font size */
+        }
+
+        #results button:hover {
+             background-color: #27ae60;
+             transform: translateY(-1px);
+        }
+
+        /* Error Message Styling */
+        .error-message {
+            color: #e74c3c;  /* Red color */
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ideal Weight</h1>
+
+        <button id="dark-mode-toggle" class="dark-mode-button">Toggle Dark Mode</button>
+
+        <form id="weight-form">
+
+            <div>
+                <label>Units:</label>
+                <input type="radio" id="metric" name="units" value="metric" checked>
+                <label for="metric">Metric (cm, kg)</label>
+                <input type="radio" id="imperial" name="units" value="imperial">
+                <label for="imperial">Imperial (ft, in, lbs)</label>
+            </div>
+
+            <div>
+                <label for="age">Age:</label>
+                <input type="number" id="age" required>
+                <div id="age-error" class="error-message"></div>
+            </div>
+
+            <div>
+                <label>Gender:</label>
+                <input type="radio" id="male" name="gender" value="male" checked>
+                <label for="male">Male</label>
+                <input type="radio" id="female" name="gender" value="female">
+                <label for="female">Female</label>
+                <input type="radio" id="other" name="gender" value="other">
+                <label for="other">Other</label>
+            </div>
+
+            <div id="height-metric">
+                <label for="height-cm">Height (cm):</label>
+                <input type="number" id="height-cm">
+                <div id="height-cm-error" class="error-message"></div>
+            </div>
+
+            <div id="height-imperial" style="display: none;">
+                <label for="height-ft">Height (ft):</label>
+                <input type="number" id="height-ft">
+                 <div id="height-ft-error" class="error-message"></div>
+                <label for="height-in">Height (in):</label>
+                <input type="number" id="height-in">
+                <div id="height-in-error" class="error-message"></div>
+            </div>
+
+            <button type="button" onclick="calculateWeight()">Calculate</button>
+        </form>
+
+        <div id="results" style="margin-top: 20px;">
+            <h2>Results:</h2>
+            <p id="devine-result"></p>
+            <p id="hamwi-result"></p>
+            <p id="bmi-result"></p>
+            <p id="weight-range"></p>
+            <p id="date-time"></p>
+            <button onclick="printResults()">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16" style="margin-right: 5px; vertical-align: middle;">
+                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v2a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V10h1a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V8H5v.5zm3 1.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+              </svg>
+             Print
+            </button>
+            <button onclick="saveResults()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save" viewBox="0 0 16 16"  style="margin-right: 5px; vertical-align: middle;">
+                <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm7.5 1a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7 8.293V1.5a.5.5 0 0 1 .5-.5z"/>
+              </svg>
+            Save
+           </button>
+
+            <button onclick="emailResults()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16"  style="margin-right: 5px; vertical-align: middle;">
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.447A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/>
+              </svg>
+             Email
+            </button>
+
+            <a id="health-advice-link" href="https://www.who.int/health-topics/obesity" target="_blank">Health Advice</a>
+        </div>
+
+    </div>
+
+    <script>
+         // Focus States
+        const inputs = document.querySelectorAll('input[type="number"], select');
+
+        inputs.forEach(input => {
+          input.addEventListener('focus', () => {
+            input.style.boxShadow = '0 0 5px rgba(52, 152, 219, 0.5)'; // Glowing blue shadow
+            input.style.borderColor = '#3498db';
+          });
+
+          input.addEventListener('blur', () => {
+            input.style.boxShadow = 'none';
+            input.style.borderColor = '#bdc3c7';
+          });
+        });
+
+        // Dark Mode Toggle Functionality
+        document.addEventListener('DOMContentLoaded', () => { // Wait for DOM to load
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const body = document.body;
+
+            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+            }
+
+            darkModeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                const newTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme); // Save to local storage
+            });
+        });
+
+
+        // Function to calculate weight (called by the "Calculate" button)
+        function calculateWeight() {
+            // Clear previous error messages
+            clearErrors();
+
+            const units = document.querySelector('input[name="units"]:checked').value;
+            const age = parseFloat(document.getElementById('age').value);
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            let heightInInches;
+
+            if (units === 'metric') {
+                const heightCm = parseFloat(document.getElementById('height-cm').value);
+                heightInInches = heightCm / 2.54; // Convert cm to inches
+            } else {
+                const heightFt = parseFloat(document.getElementById('height-ft').value);
+                const heightIn = parseFloat(document.getElementById('height-in').value);
+                heightInInches = (heightFt * 12) + heightIn;
+            }
+
+            // Error Handling:  Check for valid inputs *before* calculations
+            let hasErrors = false;
+
+            if (isNaN(age) || age <= 0) {
+                displayError('age', "Please enter a valid age.");
+                hasErrors = true;
+            }
+
+             if (units === 'metric') {
+                if (isNaN(parseFloat(document.getElementById('height-cm').value)) || parseFloat(document.getElementById('height-cm').value) <= 0) {
+                    displayError('height-cm', "Please enter a valid height in cm.");
+                    hasErrors = true;
+                }
+            } else {
+                if (isNaN(parseFloat(document.getElementById('height-ft').value)) || parseFloat(document.getElementById('height-ft').value) <= 0) {
+                    displayError('height-ft', "Please enter a valid height in feet.");
+                    hasErrors = true;
+                }
+                if (isNaN(parseFloat(document.getElementById('height-in').value))) {
+                    displayError('height-in', "Please enter a valid height in inches.");
+                    hasErrors = true;
+                }
+            }
+
+
+            if (isNaN(heightInInches) || heightInInches <= 0) {
+              //  alert("Please enter valid age and height.");  //Removed alert as per instruction to use inline
+              //  return; // Stop the function if input is invalid
+
+            }
+
+            if (hasErrors) {
+                return; // Stop calculation if there are errors
+            }
+            // Calculations
+            const devineIdealWeightKg = calculateDevine(heightInInches, gender);
+            const hamwiIdealWeightKg = calculateHamwi(heightInInches, gender);
+            const devineIdealWeightLbs = devineIdealWeightKg * 2.205;
+            const hamwiIdealWeightLbs = hamwiIdealWeightKg * 2.205;
+
+            // BMI Calculation
+            const bmi = calculateBMI(heightInInches, devineIdealWeightLbs);  // Or use another weight estimate
+            const bmiCategory = getBMICategory(bmi);
+
+            //Weight Range
+            const weightRange = calculateWeightRange(heightInInches);
+            const weightRangeMinKg = weightRange.min / 2.205;
+            const weightRangeMaxKg = weightRange.max / 2.205;
+
+            // Display Results
+            const devineResultText = `Devine: ${devineIdealWeightLbs.toFixed(2)} lbs / ${devineIdealWeightKg.toFixed(2)} kg`;
+            const hamwiResultText = `Hamwi: ${hamwiIdealWeightLbs.toFixed(2)} lbs / ${hamwiIdealWeightKg.toFixed(2)} kg`;
+            const bmiResultText = `BMI: ${bmi.toFixed(2)} (${bmiCategory})`;
+            const weightRangeText = `Healthy weight range: ${weightRange.min.toFixed(2)} lbs - ${weightRange.max.toFixed(2)} lbs / ${weightRangeMinKg.toFixed(2)} kg - ${weightRangeMaxKg.toFixed(2)} kg`;
+
+            document.getElementById('devine-result').textContent = devineResultText;
+            document.getElementById('hamwi-result').textContent = hamwiResultText;
+            document.getElementById('bmi-result').textContent = bmiResultText;
+            document.getElementById('weight-range').textContent = weightRangeText;
+            displayDateTime(); // See function below
+
+        }
+
+        // Ideal Weight Formulas
+        function calculateDevine(heightInches, gender) {
+            let idealWeightKg = (gender === 'male') ? 50 : 45.5;
+            idealWeightKg += 2.3 * (heightInches - 60);
+            return idealWeightKg;
+        }
+
+        function calculateHamwi(heightInches, gender) {
+          let idealWeightKg = (gender === 'male') ? 48.0 : 45.5;
+          idealWeightKg += 2.7 * (heightInches - 60);
+          return idealWeightKg;
+        }
+
+
+        // BMI Calculation
+        function calculateBMI(heightInches, weightLbs) {
+          const heightMeters = heightInches * 0.0254;
+          const weightKg = weightLbs * 0.453592;
+          return weightKg / (heightMeters * heightMeters);
+        }
+
+        function getBMICategory(bmi) {
+          if (bmi < 18.5) return "Underweight";
+          if (bmi < 25) return "Normal";
+          if (bmi < 30) return "Overweight";
+          return "Obese";
+        }
+
+        // Function to calculate weight range (example)
+        function calculateWeightRange(heightInches) {
+            // This is a simplified example. Use a more accurate formula if needed.
+            const bmiLowerBound = 18.5;
+            const bmiUpperBound = 24.9;
+            const heightMeters = heightInches * 0.0254;
+            const minWeightKg = bmiLowerBound * (heightMeters * heightMeters);
+            const maxWeightKg = bmiUpperBound * (heightMeters * heightMeters);
+
+            return {
+                min: minWeightKg * 2.205,
+                max: maxWeightKg * 2.205
+            };
+        }
+
+        // Display Date and Time with Time Zone
+        function displayDateTime() {
+          try {
+            const now = new Date();
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Try to get time zone
+            const dateTimeString = now.toLocaleString(undefined, { timeZone: timeZone });
+             dateTimeText = `Date and Time: ${dateTimeString} (${timeZone})`;
+            document.getElementById('date-time').textContent = dateTimeText;
+
+          } catch (error) {
+            console.error("Error getting timezone:", error);
+             dateTimeText = "Date and Time: Could not determine timezone.";
+            document.getElementById('date-time').textContent = dateTimeText;
+          }
+        }
+
+        // Collect Input Data
+        function getInputData() {
+            const units = document.querySelector('input[name="units"]:checked').value;
+            const age = document.getElementById('age').value;
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            let height;
+
+            if (units === 'metric') {
+                height = document.getElementById('height-cm').value + " cm";
+            } else {
+                height = document.getElementById('height-ft').value + " ft, " + document.getElementById('height-in').value + " in";
+            }
+
+            return `Units: ${units}\nAge: ${age}\nGender: ${gender}\nHeight: ${height}\n`;
+        }
+
+        // Display Error Message
+        function displayError(fieldId, message) {
+            const errorElementId = fieldId + "-error";
+            document.getElementById(errorElementId).textContent = message;
+        }
+
+        // Clear Error Messages
+        function clearErrors() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach(message => message.textContent = "");
+        }
+
+
+        // Print Functionality
+        function printResults() {
+            window.print();
+        }
+
+        // Save Functionality
+        function saveResults() {
+            const inputData = getInputData();
+            const resultsText = document.getElementById('results').innerText;
+            const fullText = "Input Data:\n" + inputData + "\nResults:\n" + resultsText;
+
+            const blob = new Blob([fullText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ideal_weight_results.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Email Functionality
+        function emailResults() {
+             const inputData = getInputData();
+            const resultsText = document.getElementById('results').innerText;
+            const fullText = "Input Data:\n" + inputData + "\nResults:\n" + resultsText;
+
+
+            const subject = "Ideal Weight Calculation Results";
+            const body = encodeURIComponent(fullText);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        // Local Storage for Unit Preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUnits = localStorage.getItem('preferredUnits') || 'metric';
+            document.getElementById(savedUnits).checked = true; // Set the radio button
+            toggleHeightFields(savedUnits); // Show/hide relevant fields
+
+            //Set Focus to the first Input Field on page load
+            document.getElementById('age').focus();
+
+            document.querySelectorAll('input[name="units"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const selectedUnits = radio.value;
+                    localStorage.setItem('preferredUnits', selectedUnits);
+                    toggleHeightFields(selectedUnits);
+
+                });
+            });
+        });
+
+        function toggleHeightFields(units) {
+            const heightMetric = document.getElementById('height-metric');
+            const heightImperial = document.getElementById('height-imperial');
+
+            if (units === 'metric') {
+                heightMetric.style.display = 'flex'; // Changed to flex for layout consistency
+                heightImperial.style.display = 'none';
+            } else {
+                heightMetric.style.display = 'none';
+                heightImperial.style.display = 'flex'; // Changed to flex for layout consistency
+            }
+        }
+
+    </script>
+
+</body>
+</html>

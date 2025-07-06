@@ -79,6 +79,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/BMIandCalories.png",
         "url": "/webapps/BMIandCalories.html"
+    },
+{
+        "title": "Ideal Weight",
+        "description": "Ideal weight based on Age and Weight",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/IdealWeight.png",
+        "url": "/webapps/IdealWeight.html"
     }
 
 ];
