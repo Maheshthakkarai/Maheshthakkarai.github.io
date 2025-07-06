@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI & Calorie Essentials</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary-color: #4CAF50; /*  Green Theme */
+            --secondary-color: #FF9800; /*  Orange accent */
+            --neutral-bg: #F0F4C3; /* Light Yellow */
+            --text-color: #212121; /* Dark Gray */
+            --text-light: #757575; /* Medium Gray */
+            --error-color: #F44336; /* Red */
+            --success-color: #43A047;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align to top */
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--neutral-bg);
+            margin: 0;
+            padding: 0;  /* Remove body padding */
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 95%; /* Almost full width on phone */
+            max-width: 600px; /* Max width to avoid excessive stretching on larger screens */
+            margin: 10px auto; /* Center and provide top/bottom margin */
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .input-group>label,
+        .input-group>input,
+        .input-group>.custom-select-wrapper {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-group>input,
+        .input-group>.custom-select-wrapper {
+            margin-top: 5px;
+        }
+
+        label {
+            color: var(--text-light);
+            font-weight: bold;
+            font-size: 14px; /* Smaller font for labels */
+        }
+
+        input,
+        .custom-select-wrapper {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px; /* Smaller font for input */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus,
+        .custom-select-wrapper:focus-within {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 5px rgba(var(--secondary-color-rgb), 0.3);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 10px;
+            top: 35px;
+            color: var(--text-light);
+            pointer-events: none;
+            font-size: 14px; /* Smaller Icon */
+        }
+
+        input {
+            padding-left: 30px;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            display: block;
+            padding: 0;
+        }
+
+        .custom-select {
+            position: relative;
+            font-size: 14px; /* Smaller Font */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-select select {
+            position: relative;
+            z-index: 1;
+            border: none;
+            background-color: transparent;
+            padding: 10px;
+            font-size: inherit;
+            appearance: none;
+            outline: none;
+            width: 100%;
+            cursor: pointer;
+            padding-right: 30px;
+            box-sizing: border-box;
+        }
+
+        .custom-select::after {
+            content: '\f078';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .custom-select:focus-within::after {
+            color: var(--secondary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 16px; /* Smaller button padding */
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px; /* Smaller button font */
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 10px; /* Button spacing */
+        }
+
+        button:hover {
+            background-color: #388E3C;
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #advice {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .error {
+            color: var(--error-color);
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        #bmiInfo {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #bmiInfo h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        #bmiInfo h3 {
+            margin-top: 10px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        #bmiInfo ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #bmiInfo li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        #bmiInfo a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        #bmiInfo a:hover {
+            text-decoration: underline;
+        }
+
+        .underweight {
+            color: #f0ad4e;
+        }
+
+        .normal-weight {
+            color: #5cb85c;
+        }
+
+        .overweight {
+            color: #f0ad4e;
+        }
+
+        .obese {
+            color: #d9534f;
+        }
+
+        #calorieCalculator {
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+        }
+
+        #calorieCalculator h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        #calorieResult {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        #calorieAdjustment {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        #weeklyPlan {
+            overflow-x: auto;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        #weeklyPlan table {
+            width: auto;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            min-width: 100%;
+        }
+
+        #weeklyPlan th,
+        #weeklyPlan td {
+            border: 1px solid #ddd;
+            padding: 6px; /* Reduced padding */
+            text-align: left;
+            font-size: 12px; /* Smaller font */
+        }
+
+        #weeklyPlan th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+
+        #disclaimer {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            font-size: 12px; /* Smaller font */
+            color: var(--text-light);
+            text-align: left;
+        }
+
+        #disclaimer strong {
+            color: #d9534f;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 22px;
+            }
+
+            input,
+            button,
+            .custom-select {
+                font-size: 13px;
+            }
+        }
+
+        /* Touch-friendly adjustments */
+        button {
+            -webkit-tap-highlight-color: transparent;
+            /* Remove highlight on tap */
+        }
+
+        .custom-select {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>BMI & Calorie Essentials</h1>
+
+        <div class="input-group">
+            <label for="weight">Weight:</label>
+            <i class="fas fa-weight-scale"></i>
+            <input type="number" id="weight" placeholder="Enter weight" required>
+            <div class="custom-select-wrapper">
+                <div class="custom-select">
+                    <select id="weightUnit">
+                        <option value="kg">Kilograms (kg)</option>
+                        <option value="lbs">Pounds (lbs)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="weightError" class="error"></div>
+        </div>
+
+        <div class="input-group">
+            <label for="height">Height:</label>
+            <i class="fas fa-ruler-vertical"></i>
+            <input type="number" id="height" placeholder="Enter height" required>
+            <div class="custom-select-wrapper">
+                <div class="custom-select">
+                    <select id="heightUnit">
+                        <option value="cm">Centimeters (cm)</option>
+                        <option value="m">Meters (m)</option>
+                        <option value="in">Inches (in)</option>
+                        <option value="ft">Feet (ft)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="heightError" class="error"></div>
+        </div>
+
+        <button onclick="calculateBMI()">Calculate BMI</button>
+
+        <div id="result"></div>
+        <div id="advice"></div>
+
+        <div id="calorieCalculator" style="display: none;">
+            <h2>Calorie Intake Calculator</h2>
+            <p>Based on your BMI, we can estimate your daily calorie needs.</p>
+
+            <div class="input-group">
+                <label for="age">Age:</label>
+                <i class="fas fa-birthday-cake"></i>
+                <input type="number" id="age" placeholder="Enter your age" required>
+                <div id="ageError" class="error"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="gender">Gender:</label>
+                <div class="custom-select-wrapper">
+                    <div class="custom-select">
+                        <select id="gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="activityLevel">Activity Level:</label>
+                <div class="custom-select-wrapper">
+                    <div class="custom-select">
+                        <select id="activityLevel">
+                            <option value="1.2">Sedentary (little or no exercise)</option>
+                            <option value="1.375">Lightly active (light exercise/sports 1-3 days/week)</option>
+                            <option value="1.55">Moderately active (moderate exercise/sports 3-5 days/week)</option>
+                            <option value="1.725">Very active (hard exercise/sports 6-7 days a week)</option>
+                            <option value="1.9">Extra active (very hard exercise/sports & physical job)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="calculateCalories()">Calculate Calorie Needs</button>
+
+            <div id="calorieResult"></div>
+        </div>
+
+        <div id="calorieAdjustment"></div>
+
+        <div id="weeklyPlan"></div>
+
+        <div id="disclaimer">
+            <p><strong>Disclaimer:</strong> The food and exercise suggestions provided are for informational purposes
+                only and are not intended as a substitute for professional medical advice. Always consult with a
+                qualified healthcare provider or registered dietitian before making any changes to your diet or exercise
+                routine. The creator(s) of this app is not responsible for any adverse effects resulting from the use of
+                this information.</p>
+        </div>
+
+        <div id="bmiInfo">
+            <h2>Understanding Your BMI</h2>
+            <p>
+                BMI (Body Mass Index) is a value derived from the weight and height of a person. The BMI is defined as
+                the body mass divided by the square of the body height, and is universally expressed in units of
+                kg/m².
+            </p>
+            <h3>BMI Categories:</h3>
+            <ul>
+                <li><strong>Underweight:</strong> BMI less than 18.5</li>
+                <li><strong>Normal weight:</strong> BMI between 18.5 and 24.9</li>
+                <li><strong>Overweight:</strong> BMI between 25 and 29.9</li>
+                <li><strong>Obesity:</strong> BMI 30 or greater</li>
+            </ul>
+            <p>
+                Keep in mind that BMI is just one indicator of health, and factors like muscle mass, age, and ethnicity
+                can influence the interpretation of BMI. It's always best to consult with a healthcare professional
+                for
+                personalized advice.
+            </p>
+            <p>
+                For more information, you can visit the <a href="https://www.who.int/health-topics/obesity"
+                    target="_blank">World Health Organization (WHO)</a> website.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let weightInKg;
+        let heightInMeters;
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById("weight").value);
+            const height = parseFloat(document.getElementById("height").value);
+            const weightUnit = document.getElementById("weightUnit").value;
+            const heightUnit = document.getElementById("heightUnit").value;
+
+            document.getElementById("weightError").textContent = "";
+            document.getElementById("heightError").textContent = "";
+
+            let isValid = true;
+            if (isNaN(weight) || weight <= 0) {
+                document.getElementById("weightError").textContent = "Please enter a valid weight.";
+                isValid = false;
+            }
+            if (isNaN(height) || height <= 0) {
+                document.getElementById("heightError").textContent = "Please enter a valid height.";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                document.getElementById("result").textContent = "";
+                document.getElementById("advice").textContent = "";
+                return;
+            }
+
+            weightInKg = weight;
+            if (weightUnit === "lbs") {
+                weightInKg = weight * 0.453592;
+            }
+
+            heightInMeters = height;
+            switch (heightUnit) {
+                case "cm":
+                    heightInMeters = height / 100;
+                    break;
+                case "in":
+                    heightInMeters = height * 0.0254;
+                    break;
+                case "ft":
+                    heightInMeters = height * 0.3048;
+                    break;
+            }
+
+            const bmi = weightInKg / (heightInMeters * heightInMeters);
+            const bmiRounded = bmi.toFixed(2);
+
+            let bmiCategory = "";
+            let bmiColorClass = "";
+            if (bmi < 18.5) {
+                bmiCategory = "Underweight";
+                bmiColorClass = "underweight";
+            } else if (bmi >= 18.5 && bmi < 25) {
+                bmiCategory = "Normal weight";
+                bmiColorClass = "normal-weight";
+            } else if (bmi >= 25 && bmi < 30) {
+                bmiCategory = "Overweight";
+                bmiColorClass = "overweight";
+            } else {
+                bmiCategory = "obese";
+                bmiColorClass = "obese";
+            }
+
+            const resultElement = document.getElementById("result");
+            resultElement.textContent = `Your BMI: ${bmiRounded} (${bmiCategory})`;
+            resultElement.className = bmiColorClass;
+
+            let advice = "";
+            if (bmi < 18.5) {
+                advice = "You are underweight. Consider consulting with a healthcare professional for dietary advice.";
+            } else if (bmi >= 18.5 && bmi < 25) {
+                advice = "You have a normal weight. Keep up the good work!";
+            } else if (bmi >= 25 && bmi < 30) {
+                advice = "You are overweight. Consider making lifestyle changes to achieve a healthier weight.";
+            } else {
+                advice = "You are obese. Consulting with a healthcare professional is recommended for personalized advice.";
+            }
+            document.getElementById("advice").textContent = advice;
+
+            document.getElementById("result").className = bmiColorClass;
+            showCalorieCalculator();
+
+            // Call the function to generate and display calorie adjustments and the weekly plan
+            generateCalorieAdjustmentAndPlan(bmi);
+        }
+
+        function showCalorieCalculator() {
+            document.getElementById("calorieResult").textContent = "";
+            document.getElementById("calorieCalculator").style.display = "block";
+        }
+
+        function calculateCalories() {
+            const age = parseFloat(document.getElementById("age").value);
+            const gender = document.getElementById("gender").value;
+            const activityLevel = parseFloat(document.getElementById("activityLevel").value);
+            const heightInCm = heightInMeters * 100; // From BMI calculation
+            const weightInKgLocal = weightInKg; // Weight from BMI calculation
+
+            document.getElementById("ageError").textContent = ""; // Clear any previous errors
+
+            if (isNaN(age) || age <= 0) {
+                document.getElementById("ageError").textContent = "Please enter a valid age.";
+                return;
+            }
+
+            let bmr;
+            if (gender === "male") {
+                bmr = 88.362 + (13.397 * weightInKgLocal) + (4.799 * heightInCm) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weightInKgLocal) + (3.098 * heightInCm) - (4.330 * age);
+            }
+
+            const totalCalories = bmr * activityLevel;
+            const roundedCalories = totalCalories.toFixed(0);
+
+            document.getElementById("calorieResult").textContent =
+                `Estimated Daily Calorie Needs: ${roundedCalories} calories`;
+        }
+
+        function generateCalorieAdjustmentAndPlan(bmi) {
+            let calorieAdjustment = 0;
+            let adjustmentMessage = "";
+
+            if (bmi < 18.5) {
+                calorieAdjustment = 250; // Suggest adding 250 calories
+                adjustmentMessage = `To gain a healthy weight, consider adding approximately ${calorieAdjustment} calories per day.`;
+            } else if (bmi >= 25) {
+                calorieAdjustment = -500; // Suggest reducing 500 calories
+                adjustmentMessage = `To achieve a healthier weight, consider reducing approximately ${Math.abs(calorieAdjustment)} calories per day.`;
+            }
+
+            // Display the calorie adjustment message
+            document.getElementById("calorieAdjustment").textContent = adjustmentMessage;
+
+            // Generate the weekly plan
+            const weeklyPlan = generateWeeklyPlan(bmi);
+            displayWeeklyPlan(weeklyPlan);
+        }
+
+        function generateWeeklyPlan(bmi) {
+            const plan = {};
+
+            if (bmi < 18.5) {
+                plan.monday = {
+                    food: "Oatmeal with nuts and fruits, whole milk",
+                    vegFood: "Oatmeal with nuts and fruits, soy milk",
+                    exercise: "Light stretching"
+                };
+                plan.tuesday = {
+                    food: "Peanut butter sandwich on whole wheat bread, banana",
+                    vegFood: "Tofu scramble on whole wheat toast, banana",
+                    exercise: "Strength training: squats, push-ups"
+                };
+                plan.wednesday = {
+                    food: "Chicken and rice with vegetables, avocado",
+                    vegFood: "Lentil stew with rice and vegetables, avocado",
+                    exercise: "Rest"
+                };
+                plan.thursday = {
+                    food: "Trail mix, Greek yogurt with honey",
+                    vegFood: "Trail mix, soy yogurt with maple syrup",
+                    exercise: "Light stretching"
+                };
+                plan.friday = {
+                    food: "Pasta with meat sauce, salad with olive oil",
+                    vegFood: "Pasta with lentil-based sauce, salad with olive oil",
+                    exercise: "Strength training: lunges, rows"
+                };
+                plan.saturday = {
+                    food: "Pizza with vegetables, nuts",
+                    vegFood: "Pizza with extra vegetables and vegan cheese, nuts",
+                    exercise: "Rest"
+                };
+                plan.sunday = {
+                    food: "Pancakes with syrup, eggs, bacon",
+                    vegFood: "Pancakes with syrup, tofu scramble, veggie sausages",
+                    exercise: "Walk"
+                };
+            } else if (bmi >= 25) {
+                plan.monday = {
+                    food: "Grilled chicken salad with mixed greens",
+                    vegFood: "Tofu salad with mixed greens",
+                    exercise: "30 min brisk walk"
+                };
+                plan.tuesday = {
+                    food: "Lentil soup with whole-grain bread",
+                    vegFood: "Lentil soup with whole-grain bread", // Already vegetarian
+                    exercise: "Strength training: squats, push-ups"
+                };
+                plan.wednesday = {
+                    food: "Baked fish with steamed broccoli",
+                    vegFood: "Baked tofu with steamed broccoli",
+                    exercise: "30 min cycling"
+                };
+                plan.thursday = {
+                    food: "Greek yogurt with berries, almonds",
+                    vegFood: "Soy yogurt with berries, almonds",
+                    exercise: "Yoga"
+                };
+                plan.friday = {
+                    food: "Turkey breast wrap with avocado, veggies",
+                    vegFood: "Hummus and veggie wrap with avocado",
+                    exercise: "Strength training: lunges, rows"
+                };
+                plan.saturday = {
+                    food: "Vegetable stir-fry with tofu",
+                    vegFood: "Vegetable stir-fry with tofu", // Already vegetarian
+                    exercise: "Hiking"
+                };
+                plan.sunday = {
+                    food: "Omelet with spinach, mushrooms, whole-wheat toast",
+                    vegFood: "Tofu scramble with spinach, mushrooms, whole-wheat toast",
+                    exercise: "Rest"
+                };
+            } else {
+                // Normal weight plan
+                plan.monday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "30 min cardio"
+                };
+                plan.tuesday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "Strength training"
+                };
+                plan.wednesday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "Rest or light activity"
+                };
+                plan.thursday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "30 min cardio"
+                };
+                plan.friday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "Strength training"
+                };
+                plan.saturday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "Active recovery (yoga, stretching)"
+                };
+                plan.sunday = {
+                    food: "Balanced meal of your choice",
+                    vegFood: "Vegetarian balanced meal of your choice",
+                    exercise: "Rest"
+                };
+            }
+
+            return plan;
+        }
+
+        function displayWeeklyPlan(plan) {
+            const weeklyPlanDiv = document.getElementById("weeklyPlan");
+            weeklyPlanDiv.innerHTML = `
+            <h2>Weekly Plan Suggestion</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Food Suggestion</th>
+                        <th>Vegetarian Food Suggestion</th>
+                        <th>Exercise Suggestion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monday</td>
+                        <td>${plan.monday.food}</td>
+                        <td>${plan.monday.vegFood}</td>
+                        <td>${plan.monday.exercise}</td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>${plan.tuesday.food}</td>
+                        <td>${plan.tuesday.vegFood}</td>
+                        <td>${plan.tuesday.exercise}</td>
+                    </tr>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td>${plan.wednesday.food}</td>
+                        <td>${plan.wednesday.vegFood}</td>
+                        <td>${plan.wednesday.exercise}</td>
+                    </tr>
+                    <tr>
+                        <td>Thursday</td>
+                        <td>${plan.thursday.food}</td>
+                        <td>${plan.thursday.vegFood}</td>
+                        <td>${plan.thursday.exercise}</td>
+                    </tr>
+                    <tr>
+                        <td>Friday</td>
+                        <td>${plan.friday.food}</td>
+                        <td>${plan.friday.vegFood}</td>
+                        <td>${plan.friday.exercise}</td>
+                    </tr>
+                    <tr>
+                        <td>Saturday</td>
+                        <td>${plan.saturday.food}</td>
+                        <td>${plan.saturday.vegFood}</td>
+                        <td>${plan.saturday.exercise}</td>
+                    </tr>
+                    <tr>
+                        <td>Sunday</td>
+                        <td>${plan.sunday.food}</td>
+                        <td>${plan.sunday.vegFood}</td>
+                        <td>${plan.sunday.exercise}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectWrappers = document.querySelectorAll('.custom-select-wrapper');
+
+            selectWrappers.forEach(wrapper => {
+                const select = wrapper.querySelector('select');
+                const customSelect = wrapper.querySelector('.custom-select');
+                let originalValue = select.value;
+
+                select.addEventListener('change', function () {
+                    originalValue = this.value;
+                });
+
+                customSelect.setAttribute('tabindex', '0');
+            });
+        });
+    </script>
+</body>
+
+</html>

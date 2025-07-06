@@ -71,6 +71,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/BloodPressure.png",
         "url": "/webapps/BloodPressure.html"
+    },
+{
+        "title": "BMI and Calories",
+        "description": "BMI & Calorie Essentials",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/BMIandCalories.png",
+        "url": "/webapps/BMIandCalories.html"
     }
 
 ];
