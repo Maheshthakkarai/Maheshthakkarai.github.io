@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hat Size Finder ✦ Advanced</title>
+    <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👒</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
+    <style>
+        /* CSS Styles remain identical to the previous version, except for toggle-slider:before. Condensed for brevity. */
+        :root {
+            --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --bg-color-light: #eef3f7; --text-color-light: #3d4a59; --primary-color-light: #007bff;
+            --primary-color-hover-light: #0056b3; --secondary-color-light: #6c757d;
+            --card-bg-light: rgba(255, 255, 255, 0.6); --card-border-light: rgba(255, 255, 255, 0.8);
+            --neumorph-shadow-light-outer1: #ffffff; --neumorph-shadow-light-outer2: #d1d9e6;
+            --neumorph-shadow-light-inner1: #d1d9e6; --neumorph-shadow-light-inner2: #ffffff;
+            --input-bg-light: #eef3f7; --danger-color-light: #dc3545; --success-color-light: #28a745;
+            --glow-color-light: rgba(0, 123, 255, 0.3); --primary-color-rgb-light: 0, 123, 255;
+            --accent-text-light: var(--primary-color-light);
+
+            --bg-color-dark: #2c3038; --text-color-dark: #c5d0e0; --primary-color-dark: #0d6efd;
+            --primary-color-hover-dark: #3b82f6; --secondary-color-dark: #8a99ad;
+            --card-bg-dark: rgba(50, 55, 65, 0.6); --card-border-dark: rgba(70, 75, 85, 0.8);
+            --neumorph-shadow-dark-outer1: #353a43; --neumorph-shadow-dark-outer2: #23262c;
+            --neumorph-shadow-dark-inner1: #23262c; --neumorph-shadow-dark-inner2: #353a43;
+            --input-bg-dark: #2c3038; --danger-color-dark: #f8d7da; --success-color-dark: #90ee90;
+            --glow-color-dark: rgba(13, 110, 253, 0.4); --primary-color-rgb-dark: 13, 110, 253;
+            --accent-text-dark: #39ff14; 
+
+            --bg-color: var(--bg-color-light); --text-color: var(--text-color-light);
+            --primary-color: var(--primary-color-light); --primary-color-hover: var(--primary-color-hover-light);
+            --secondary-color: var(--secondary-color-light); --card-bg: var(--card-bg-light);
+            --card-border: var(--card-border-light); --neumorph-shadow-outer1: var(--neumorph-shadow-light-outer1);
+            --neumorph-shadow-outer2: var(--neumorph-shadow-light-outer2); --neumorph-shadow-inner1: var(--neumorph-shadow-light-inner1);
+            --neumorph-shadow-inner2: var(--neumorph-shadow-light-inner2); --input-bg: var(--input-bg-light);
+            --danger-color: var(--danger-color-light); --success-color: var(--success-color-light);
+            --glow-color: var(--glow-color-light); --primary-color-rgb: var(--primary-color-rgb-light);
+            --accent-text-color: var(--accent-text-light); --border-color: #d1d9e6; 
+        }
+        [data-theme="dark"] {
+            --bg-color: var(--bg-color-dark); --text-color: var(--text-color-dark);
+            --primary-color: var(--primary-color-dark); --primary-color-hover: var(--primary-color-hover-dark);
+            --secondary-color: var(--secondary-color-dark); --card-bg: var(--card-bg-dark);
+            --card-border: var(--card-border-dark); --neumorph-shadow-outer1: var(--neumorph-shadow-dark-outer1);
+            --neumorph-shadow-outer2: var(--neumorph-shadow-dark-outer2); --neumorph-shadow-inner1: var(--neumorph-shadow-dark-inner1);
+            --neumorph-shadow-inner2: var(--neumorph-shadow-dark-inner2); --input-bg: var(--input-bg-dark);
+            --danger-color: var(--danger-color-dark); --success-color: var(--success-color-dark);
+            --glow-color: var(--glow-color-dark); --primary-color-rgb: var(--primary-color-rgb-dark);
+            --accent-text-color: var(--accent-text-dark);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); line-height: 1.7; padding: 1rem; transition: background-color 0.3s, color 0.3s; display: flex; flex-direction: column; align-items: center; min-height: 100vh; background-image: linear-gradient(135deg, var(--bg-color) 0%, color-mix(in srgb, var(--bg-color) 80%, var(--secondary-color)) 100%); }
+        body::before { content: ''; position: fixed; top: 50%; left: 50%; width: 100vw; height: 100vh; max-width: 1200px; max-height: 1200px; transform: translate(-50%, -50%); background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%); filter: blur(100px); opacity: 0.5; z-index: -1; pointer-events: none; transition: background 0.3s; }
+        .container { background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 2rem 2.5rem; border-radius: 20px; box-shadow: 10px 10px 30px rgba(0,0,0,0.1), -5px -5px 15px color-mix(in srgb, var(--neumorph-shadow-outer1) 50%, transparent); border: 1px solid var(--card-border); width: 100%; max-width: 650px; margin-top: 2rem; position: relative; z-index: 1; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid color-mix(in srgb, var(--text-color) 10%, transparent); }
+        .app-header h1 { font-size: 2rem; font-weight: 600; color: var(--accent-text-color); text-shadow: 1px 1px 2px color-mix(in srgb, var(--bg-color) 50%, transparent); }
+        .greeting { font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 0.5rem; text-align: center; }
+        .neumorph-button, .controls button, .app-button, .input-group .unit-toggle, .hat-type-button { background: var(--input-bg); color: var(--text-color); border: none; padding: 0.75rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 500; font-family: var(--font-family); font-size: 0.95rem; transition: all 0.2s ease-out; box-shadow: -4px -4px 8px var(--neumorph-shadow-outer1), 4px 4px 8px var(--neumorph-shadow-outer2); display: inline-flex; align-items: center; justify-content: center; }
+        .neumorph-button:hover, .controls button:hover, .app-button:hover, .input-group .unit-toggle:hover, .hat-type-button:hover { box-shadow: -2px -2px 5px var(--neumorph-shadow-outer1), 2px 2px 5px var(--neumorph-shadow-outer2); }
+        .neumorph-button:active, .controls button:active, .app-button:active, .input-group .unit-toggle:active, .hat-type-button.active, .app-button.primary:active { box-shadow: inset -3px -3px 7px var(--neumorph-shadow-inner1), inset 3px 3px 7px var(--neumorph-shadow-inner2); color: var(--primary-color); }
+        .app-button.primary { background: var(--primary-color); color: white; box-shadow: -4px -4px 8px color-mix(in srgb, var(--neumorph-shadow-outer1) 50%, var(--primary-color)), 4px 4px 8px color-mix(in srgb, var(--neumorph-shadow-outer2) 50%, var(--primary-color)), 0 0 15px var(--glow-color); }
+        .app-button.primary:hover { background: var(--primary-color-hover); box-shadow: -2px -2px 5px color-mix(in srgb, var(--neumorph-shadow-outer1) 50%, var(--primary-color-hover)), 2px 2px 5px color-mix(in srgb, var(--neumorph-shadow-outer2) 50%, var(--primary-color-hover)), 0 0 20px var(--glow-color); }
+        .controls { display: flex; gap: 0.75rem; }
+        .controls button { margin-left: 0; min-width: 100px; text-align: center;}
+        .form-group { margin-bottom: 2rem; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 0.8rem; color: var(--secondary-color); font-size: 0.9rem; }
+        .input-group, .select-group { display: flex; width: 100%; border-radius: 10px; background: var(--input-bg); box-shadow: inset -3px -3px 7px var(--neumorph-shadow-inner1), inset 3px 3px 7px var(--neumorph-shadow-inner2); padding: 0.25rem; }
+        .input-group input[type="number"], .input-group input[type="text"], .select-group select { flex-grow: 1; padding: 0.75rem 1rem; border: none; background: transparent; color: var(--text-color); font-family: var(--font-family); font-size: 1rem; outline: none; }
+        .input-group input[type="number"] { -moz-appearance: textfield; }
+        .input-group input[type="number"]::-webkit-inner-spin-button, .input-group input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .input-group .unit-toggle { border-radius: 8px; margin-left: 0.25rem; flex-shrink: 0; }
+        .input-group:focus-within, .select-group:focus-within { box-shadow: inset -3px -3px 7px var(--neumorph-shadow-inner1), inset 3px 3px 7px var(--neumorph-shadow-inner2), 0 0 0 2px var(--primary-color), 0 0 10px var(--glow-color); }
+        .select-group select { border-radius: 8px; cursor: pointer; }
+        [data-theme="dark"] .select-group select option { background-color: var(--input-bg-dark); color: var(--text-color-dark); }
+        .radio-group label { display: inline-flex; align-items: center; margin-right: 1.5rem; font-weight: 400; cursor: pointer; position: relative; padding: 0.5rem; }
+        .radio-group input[type="radio"] { opacity: 0; position: absolute; }
+        .radio-group label .custom-radio { width: 20px; height: 20px; border-radius: 50%; margin-right: 0.75rem; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease-out; background: var(--input-bg); box-shadow: inset -2px -2px 4px var(--neumorph-shadow-inner1), inset 2px 2px 4px var(--neumorph-shadow-inner2); }
+        .radio-group input[type="radio"]:checked + .custom-radio { box-shadow: -2px -2px 4px var(--neumorph-shadow-outer1), 2px 2px 4px var(--neumorph-shadow-outer2); }
+        .radio-group input[type="radio"]:checked + .custom-radio::after { content: ''; width: 10px; height: 10px; background-color: var(--primary-color); border-radius: 50%; box-shadow: 0 0 5px var(--glow-color); }
+        .radio-group input[type="radio"]:focus-visible + .custom-radio { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+        .hat-type-selector { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: flex-start; margin-top: 0.5rem; }
+        .hat-type-button { flex-direction: column; align-items: center; text-align: center; font-size: 0.8rem; min-width: 90px; padding: 0.8rem 0.5rem; }
+        .hat-type-button svg { width: 30px; height: 30px; margin-bottom: 0.5rem; fill: var(--secondary-color); transition: fill 0.2s; }
+        .hat-type-button.active svg { fill: var(--primary-color); }
+        .toggle-switch-container { display: flex; justify-content: center; align-items: center; margin-bottom: 1.5rem; }
+        .toggle-switch-label { display: flex; align-items: center; cursor: pointer; font-weight: 500; color: var(--secondary-color); }
+        .toggle-switch-label span:first-of-type { margin-right: 0.75rem; }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--input-bg); border-radius: 26px; transition: .3s; box-shadow: inset -2px -2px 4px var(--neumorph-shadow-inner1), inset 2px 2px 4px var(--neumorph-shadow-inner2); }
+        .toggle-slider:before { /* SLIDER KNOB ADJUSTED */
+            position: absolute; content: ""; 
+            height: 20px; width: 20px; /* Slightly larger knob for better visual fit if original was too small */
+            left: 3px; bottom: 3px; /* Adjusted to center 20px knob in 26px track */
+            background-color: var(--secondary-color); border-radius: 50%; transition: .3s; 
+            box-shadow: -1px -1px 2px var(--neumorph-shadow-outer1), 1px 1px 2px var(--neumorph-shadow-outer2); 
+        }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--primary-color); box-shadow: inset -2px -2px 4px color-mix(in srgb, var(--neumorph-shadow-inner1) 50%, var(--primary-color)), inset 2px 2px 4px color-mix(in srgb, var(--neumorph-shadow-inner2) 50%, var(--primary-color)); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); background-color: white; }
+        .results-area { margin-top: 2.5rem; padding: 1.5rem; border-radius: 15px; background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--card-border); box-shadow: 5px 5px 20px rgba(0,0,0,0.05), -3px -3px 10px color-mix(in srgb, var(--neumorph-shadow-outer1) 50%, transparent); }
+        .results-area h3 { margin-top: 0; margin-bottom: 0.75rem; color: var(--accent-text-color); font-weight: 600; }
+        .results-area p { margin-bottom: 1rem; }
+        .results-area .highlight { font-weight: 700; font-size: 1.4em; color: var(--success-color); display: block; margin-bottom: 0.75rem; text-shadow: 1px 1px 3px color-mix(in srgb, var(--bg-color) 70%, transparent); }
+        .size-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .size-detail { background: var(--input-bg); padding: 1rem; border-radius: 10px; box-shadow: -3px -3px 6px var(--neumorph-shadow-outer1), 3px 3px 6px var(--neumorph-shadow-outer2); font-size: 0.9rem; text-align: center; }
+        .size-detail strong { display: block; font-size: 0.8rem; color: var(--secondary-color); margin-bottom: 0.4rem; font-weight: 500;}
+        .error-message { color: var(--danger-color); font-size: 0.9rem; margin-top: 0.75rem; font-weight: 500; }
+        .info-note { font-size: 0.9rem; color: var(--secondary-color); margin-top: 1.5rem; padding: 1rem; background: var(--input-bg); border-radius: 10px; border-left: 4px solid var(--primary-color); box-shadow: -2px -2px 5px var(--neumorph-shadow-outer1), 2px 2px 5px var(--neumorph-shadow-outer2); }
+        [data-theme="dark"] .info-note { border-left-color: var(--accent-text-color); }
+        .modal-overlay{ position:fixed; top:0; left:0; right:0; bottom:0; background-color:rgba(0,0,0,0.3); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display:flex; align-items:center; justify-content:center; z-index:1000; padding:1rem; }
+        .modal-content{ background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding:2.5rem; border-radius:20px; max-width:750px; width:95%; max-height:90vh; overflow-y:auto; position:relative; border: 1px solid var(--card-border); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.2); }
+        .modal-content h2{ margin-top:0; margin-bottom:1.5rem; color:var(--accent-text-color); border-bottom:1px solid color-mix(in srgb, var(--text-color) 10%, transparent); padding-bottom:.75rem; font-weight:600; }
+        .modal-content h3{ margin-top:1.5rem; margin-bottom:.75rem; font-weight:600; color: var(--accent-text-color); }
+        .modal-close-button{ position:absolute; top:1.5rem; right:1.5rem; background:transparent; border:none; font-size:2rem; cursor:pointer; color:var(--secondary-color); transition:color .2s, transform .2s; }
+        .modal-close-button:hover{ color:var(--primary-color); transform: rotate(90deg); }
+        .modal-size-table{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.9rem; background: color-mix(in srgb, var(--input-bg) 50%, transparent); border-radius: 8px; overflow: hidden;}
+        .modal-size-table th,.modal-size-table td{border:1px solid color-mix(in srgb, var(--text-color) 15%, transparent);padding:.6rem;text-align:left}
+        .modal-size-table th{background-color:color-mix(in srgb, var(--accent-text-color) 10%, transparent);font-weight:600}
+        .app-footer { text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid color-mix(in srgb, var(--text-color) 10%, transparent); font-size: 0.85rem; color: var(--secondary-color); width: 100%; max-width: 650px; }
+        .app-footer a { color: var(--primary-color); text-decoration: none; font-weight:500; }
+        .app-footer a:hover { text-decoration: underline; color:var(--primary-color-hover); }
+        @media (max-width: 600px) { .container { padding: 1.5rem 1.2rem; margin-top:1rem; } .app-header { flex-direction:column; align-items:center; text-align:center; } .app-header h1 { font-size:1.8rem; margin-bottom: 0.5rem; } .controls { margin-top: 1rem; } .input-group, .select-group { flex-direction: column; background: transparent; box-shadow:none; padding:0; } .input-group input[type="number"], .input-group input[type="text"], .select-group select, .input-group .unit-toggle { width: 100%; margin-bottom: 0.75rem; border-radius: 10px; background: var(--input-bg); box-shadow: -3px -3px 6px var(--neumorph-shadow-outer1), 3px 3px 6px var(--neumorph-shadow-outer2); } .input-group input[type="number"], .input-group input[type="text"] { padding: 0.75rem 1rem; } .input-group .unit-toggle { margin-left: 0; } .select-group select { margin-bottom:0; } .hat-type-selector { gap: 0.5rem; } .hat-type-button { min-width: 75px; font-size: 0.75rem; padding: 0.6rem 0.4rem;} .hat-type-button svg { width: 24px; height: 24px; margin-bottom:0.3rem;} .toggle-switch-label { flex-direction: column; align-items: center; } .toggle-switch-label span:first-of-type { margin-bottom: 0.5rem; margin-right:0;} .toggle-switch { margin: 0.5rem 0; } }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body x-data="hatSizerApp()" x-effect="applyTheme()">
+
+    <div class="container">
+        <p class="greeting" x-text="greeting"></p>
+        <header class="app-header">
+            <h1>👒 Hat Size Finder</h1>
+            <div class="controls">
+                <button @click="toggleDarkMode()" x-text="darkMode ? '☀️ Light' : '🌙 Dark'" title="Toggle light/dark theme"></button>
+                <button @click="showModal = true" title="Show help and sizing guide">ℹ️ Help</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="toggle-switch-container">
+                <label class="toggle-switch-label">
+                    <span x-text="lookupMode ? 'Find Measurement from Known Size' : 'Calculate Size from Measurement'"></span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="lookupModeToggle" x-model="lookupMode">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+            </div>
+
+            <div x-show="!lookupMode" x-transition>
+                <!-- Standard calculation form elements... -->
+                 <div class="form-group"> <label for="userCategory">This hat is for a:</label> <div class="radio-group" id="userCategory" role="radiogroup"> <label><input type="radio" name="category" value="child" x-model="userCategory"><span class="custom-radio"></span> Child</label> <label><input type="radio" name="category" value="teen" x-model="userCategory"><span class="custom-radio"></span> Teen</label> <label><input type="radio" name="category" value="adult" x-model="userCategory"><span class="custom-radio"></span> Adult</label> </div> </div>
+                <div class="form-group"> <label for="hatTypeSelector">Select Hat Type (Optional):</label> <div class="hat-type-selector" id="hatTypeSelector"> <button class="hat-type-button" :class="{ 'active': selectedHatType === 'beanie' }" @click="selectHatType('beanie')" title="Beanie"><svg viewBox="0 0 100 100"><path d="M20 50 C20 20, 80 20, 80 50 Q80 80, 50 90 Q20 80, 20 50 M15 55 H85 M15 65 H85 M15 75 H85" fill="none" stroke-width="5" stroke="currentColor"/></svg>Beanie</button> <button class="hat-type-button" :class="{ 'active': selectedHatType === 'baseball_cap' }" @click="selectHatType('baseball_cap')" title="Baseball Cap"><svg viewBox="0 0 100 100"><path d="M20 40 C20 20, 80 20, 80 40 C80 60, 60 60, 50 60 C40 60, 20 60, 20 40 M10 40 Q50 35, 90 45 L90 40 Z M45 25 A5 5 0 0 1 55 25 A5 5 0 0 1 45 25" fill="none" stroke-width="5" stroke="currentColor"/></svg>Baseball Cap</button> <button class="hat-type-button" :class="{ 'active': selectedHatType === 'fedora' }" @click="selectHatType('fedora')" title="Fedora"><svg viewBox="0 0 100 100"><path d="M10 50 H90 M20 50 C20 30, 35 20, 50 20 C65 20, 80 30, 80 50 M40 20 Q50 25, 60 20" fill="none" stroke-width="5" stroke="currentColor"/></svg>Fedora</button> <button class="hat-type-button" :class="{ 'active': selectedHatType === 'sun_hat' }" @click="selectHatType('sun_hat')" title="Sun Hat"><svg viewBox="0 0 100 100"><path d="M5 50 Q50 30, 95 50 M20 50 C20 35, 35 25, 50 25 C65 25, 80 35, 80 50 Z" fill="none" stroke-width="5" stroke="currentColor"/></svg>Sun Hat</button> </div> </div>
+                <div class="form-group"> <label for="circumference">Head Circumference:</label> <div class="input-group"> <input type="number" id="circumference" x-model.number="circumferenceInput" placeholder="E.g., 22 or 56" @input="validateAndConvertInput" min="0" step="0.1"> <button class="unit-toggle" @click="toggleUnit()" x-text="unit === 'in' ? 'inches' : 'cm'"></button> </div> <p class="error-message" x-show="errorMessage && !lookupMode" x-text="errorMessage"></p> </div>
+                <button class="app-button primary" @click="calculateHatSize()" style="width: 100%;">📏 Find My Hat Size</button>
+            </div>
+
+            <div x-show="lookupMode" x-transition>
+                <!-- Reverse lookup form elements... -->
+                <div class="form-group"> <label for="knownSizeSystem">Known Size System:</label> <div class="select-group"> <select id="knownSizeSystem" x-model="knownSizeSystem"> <option value="us">US (e.g., 7 1/4)</option> <option value="uk">UK (e.g., 7 1/8)</option> <option value="eu">EU/CM (e.g., 58)</option> <option value="alpha">Alpha (e.g., M, L)</option> <option value="inches_lookup">Inches (e.g., 22.5)</option> </select> </div> </div>
+                <div class="form-group"> <label for="knownSizeInput">Enter Known Size:</label> <div class="input-group"> <input type="text" id="knownSizeInput" x-model.trim="knownSizeInput" placeholder="E.g., 7 1/4, M, 58, 22.5"> </div> <p class="error-message" x-show="errorMessage && lookupMode" x-text="errorMessage"></p> </div>
+                <button class="app-button primary" @click="findMeasurementFromSize()" style="width: 100%;">🔍 Find Approx. Measurement</button>
+            </div>
+            
+            <button class="app-button" @click="resetForm()" style="width: 100%; margin-top: 1rem;">🔄 Clear Form</button>
+
+            <!-- Results Area - DEFENSIVE NULL CHECKS ADDED -->
+            <div x-show="calculationAttempted && ( (!lookupMode && calculatedSizes.primary) || (lookupMode && reverseLookupResult) )" class="results-area" x-transition>
+                <div x-show="!lookupMode && calculatedSizes.primary">
+                    <h3>Your Recommended Hat Size:</h3>
+                    <p>For a <span x-text="userCategory"></span> <span x-show="selectedHatType" x-text="' (' + getHatTypeName(selectedHatType) + ') '"></span>with <span x-text="originalInputDisplay"></span> head circumference:</p>
+                    <p class="highlight" x-text="calculatedSizes.primary || 'N/A'"></p>
+                    <div x-show="calculatedSizes.alpha && calculatedSizes.alpha !== calculatedSizes.primary">Equivalent to: <strong x-text="calculatedSizes.alpha"></strong></div>
+                    <h4>Detailed Sizes:</h4>
+                    <div class="size-details-grid">
+                        <div class="size-detail" x-show="calculatedSizes.cm"><strong>CM:</strong> <span x-text="calculatedSizes.cm"></span></div>
+                        <div class="size-detail" x-show="calculatedSizes.inches"><strong>Inches:</strong> <span x-text="calculatedSizes.inches"></span></div>
+                        <div class="size-detail" x-show="calculatedSizes.us"><strong>US:</strong> <span x-text="calculatedSizes.us"></span></div>
+                        <div class="size-detail" x-show="calculatedSizes.uk"><strong>UK:</strong> <span x-text="calculatedSizes.uk"></span></div>
+                        <div class="size-detail" x-show="calculatedSizes.eu"><strong>EU:</strong> <span x-text="calculatedSizes.eu"></span></div>
+                    </div>
+                </div>
+                <div x-show="lookupMode && reverseLookupResult">
+                    <h3>Approximate Measurement for <span x-text="reverseLookupResult && reverseLookupResult.inputSizeDisplay ? reverseLookupResult.inputSizeDisplay : ''"></span>:</h3>
+                    <p class="highlight">
+                        CM: <span x-text="reverseLookupResult && reverseLookupResult.cmRange ? reverseLookupResult.cmRange : ''"></span><br>
+                        Inches: <span x-text="reverseLookupResult && reverseLookupResult.inchRange ? reverseLookupResult.inchRange : ''"></span>
+                    </p>
+                    <p x-show="reverseLookupResult && reverseLookupResult.notes" x-text="reverseLookupResult && reverseLookupResult.notes ? reverseLookupResult.notes : ''" style="font-style: italic;"></p>
+                    <p>This corresponds to general sizes like:</p>
+                    <div class="size-details-grid">
+                        <div class="size-detail" x-show="reverseLookupResult && reverseLookupResult.us"><strong>US:</strong> <span x-text="reverseLookupResult && reverseLookupResult.us ? reverseLookupResult.us : ''"></span></div>
+                        <div class="size-detail" x-show="reverseLookupResult && reverseLookupResult.uk"><strong>UK:</strong> <span x-text="reverseLookupResult && reverseLookupResult.uk ? reverseLookupResult.uk : ''"></span></div>
+                        <div class="size-detail" x-show="reverseLookupResult && reverseLookupResult.eu"><strong>EU:</strong> <span x-text="reverseLookupResult && reverseLookupResult.eu ? reverseLookupResult.eu : ''"></span></div>
+                        <div class="size-detail" x-show="reverseLookupResult && reverseLookupResult.alpha"><strong>Alpha:</strong> <span x-text="reverseLookupResult && reverseLookupResult.alpha ? reverseLookupResult.alpha : ''"></span></div>
+                    </div>
+                </div>
+                <p class="info-note" x-show="typeSpecificNote && !lookupMode" x-text="typeSpecificNote"></p>
+                <p class="info-note" x-show="ageSpecificNote && !lookupMode && !typeSpecificNote" x-text="ageSpecificNote"></p>
+            </div>
+            <p class="info-note" x-show="calculationAttempted && !((!lookupMode && calculatedSizes.primary) || (lookupMode && reverseLookupResult)) && !errorMessage" 
+               x-text="'Could not determine a size or measurement. Please check your input or try different criteria.'" x-transition></p>
+        </main>
+    </div>
+
+    <!-- Modal HTML remains the same -->
+    <div class="modal-overlay" x-show="showModal" @click.self="showModal = false" x-transition.opacity role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-content" @click.stop><button class="modal-close-button" @click="showModal = false" title="Close dialog">&times;</button><h2 id="modalTitle">About Hat Size Finder & Sizing Guide</h2><section><h3>About This App</h3><p>"Hat Size Finder" helps you determine the correct hat size based on head circumference. Select whether the hat is for a child, teen, or adult, enter the measurement, and the app will suggest sizes across various international systems.</p></section><section><h3>How to Measure Head Circumference</h3><ol><li>Use a soft measuring tape (like one used for sewing). If you don't have one, use a piece of non-stretchy string or ribbon, mark it, and then measure the string with a ruler.</li><li>Wrap the tape or string around the head, approximately 1/2 inch (or 1-1.5 cm) above the eyebrows and ears. Ensure it goes around the fullest part of the back of the head.</li><li>The tape should be snug but not too tight. It should be level all the way around.</li><li>Read the measurement where the tape overlaps.</li></ol><svg class="measurement-diagram" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" aria-label="Diagram showing head measurement tape placement"><title>Head measurement diagram</title><path d="M50 10 A30 30 0 0 0 50 70 A30 30 0 0 0 50 10 Z" stroke-dasharray="4 2" opacity="0.3"/><circle cx="50" cy="40" r="35" stroke-linecap="round"/><path d="M30 50 Q50 55 70 50" stroke-width="1.5" /><ellipse cx="35" cy="50" rx="3" ry="1.5" fill="currentColor" stroke="none"/><ellipse cx="65" cy="50" rx="3" ry="1.5" fill="currentColor" stroke="none"/><path d="M20 55 C15 45, 15 30, 25 25" /><path d="M80 55 C85 45, 85 30, 75 25" /><path d="M10 42 Q50 35 90 42" stroke="var(--primary-color)" stroke-width="3" stroke-dasharray="5 3"/><text x="5" y="38" font-size="5" fill="var(--primary-color)">Tape</text></svg><p><strong>Tip:</strong> If you're between sizes, it's often recommended to size up, especially for hats made of non-stretchable materials. You can always add a hat sizer strip if it's slightly too loose.</p></section><section><h3>Understanding Hat Size Systems</h3><p>Hat sizes vary globally. Common systems include:</p><ul><li><strong>CM (Centimeters) / EU (European):</strong> Directly based on head circumference in centimeters.</li><li><strong>Inches:</strong> Head circumference in inches.</li><li><strong>US Sizes:</strong> Typically numeric (e.g., 7 1/4). Based on head diameter in inches.</li><li><strong>UK Sizes:</strong> Similar to US but often 1/8 smaller (e.g., UK 7 1/8 is US 7 1/4).</li><li><strong>Alpha/Generic (S, M, L, XL):</strong> General sizes that cover a range of measurements. These can vary significantly between brands.</li></ul><p>This app provides conversions to help you navigate these systems.</p></section><section><h3>Quick Size Reference Chart (General Guide)</h3><p>This table provides a general overview. Specific brands may vary.</p><table class="modal-size-table"><thead><tr><th>Category</th><th>CM</th><th>Inches (approx.)</th><th>Typical Alpha</th><th>US (Adult Est.)</th></tr></thead><tbody><tr><td>Child (1-2y)</td><td>47-49</td><td>18.5 - 19.25</td><td>Toddler S</td><td>-</td></tr><tr><td>Child (3-5y)</td><td>50-51</td><td>19.6 - 20</td><td>Child S</td><td>-</td></tr><tr><td>Child (6-10y)</td><td>52-53</td><td>20.5 - 20.8</td><td>Child M/L</td><td>~6 1/2</td></tr><tr><td>Teen/Adult XS</td><td>53-54</td><td>20.8 - 21.25</td><td>XS</td><td>6 5/8 - 6 3/4</td></tr><tr><td>Adult S</td><td>54-55</td><td>21.25 - 21.6</td><td>S</td><td>6 3/4 - 6 7/8</td></tr><tr><td>Adult M</td><td>56-57</td><td>22 - 22.4</td><td>M</td><td>7 - 7 1/8</td></tr><tr><td>Adult L</td><td>58-59</td><td>22.8 - 23.2</td><td>L</td><td>7 1/4 - 7 3/8</td></tr><tr><td>Adult XL</td><td>60-61</td><td>23.6 - 24</td><td>XL</td><td>7 1/2 - 7 5/8</td></tr><tr><td>Adult XXL</td><td>62-63</td><td>24.4 - 24.8</td><td>XXL</td><td>7 3/4 - 7 7/8</td></tr></tbody></table></section><section><h3>General Sizing Tips</h3><ul><li>Hat styles can affect fit. A beanie might be more forgiving than a structured fedora.</li><li>Material matters. Some materials stretch (e.g., knits), while others don't (e.g., straw, felt).</li><li>Always check the specific brand's size chart if available, as variations exist. This app provides general guidance.</li><li>For children, re-measure frequently as their heads grow quickly.</li></ul></section></div></div>
+
+    <footer class="app-footer">
+        <p>&copy; <span x-text="new Date().getFullYear()"></span> Hat Size Finder. Styled with ✦. For informational purposes only.</p>
+        <p>Built with HTML, CSS, Alpine.js. Always check brand-specific charts for precise fitting.</p>
+    </footer>
+
+    <script>
+    // JavaScript functions remain largely the same as the previous version.
+    // The core change is in the HTML template for stricter null checks in x-text.
+    function hatSizerApp() {
+        return {
+            greeting: '', userCategory: 'adult', selectedHatType: null, circumferenceInput: null,
+            circumferenceCm: null, unit: 'in', calculatedSizes: {}, errorMessage: '', showModal: false,
+            darkMode: false, ageSpecificNote: '', typeSpecificNote: '', originalInputDisplay: '',
+            calculationAttempted: false, lookupMode: false, knownSizeInput: '', knownSizeSystem: 'us',
+            reverseLookupResult: null,
+
+            hatSizeCharts: { /* ... same data as before ... */ 
+                child: [{ fromCm: 35, toCm: 38, displayCm: "35-38", displayIn: "13 3/4 - 15", us: "Preemie", uk: "Preemie", eu: "35-38", alpha: "Preemie", age_approx: "0-3m" },{ fromCm: 38.1, toCm: 43, displayCm: "39-43", displayIn: "15 1/4 - 17", us: "Infant S", uk: "Infant S", eu: "39-43", alpha: "Infant S", age_approx: "3-6m" },{ fromCm: 43.1, toCm: 46, displayCm: "44-46", displayIn: "17 1/4 - 18 1/8", us: "Infant M", uk: "Infant M", eu: "44-46", alpha: "Infant M", age_approx: "6-12m" },{ fromCm: 46.1, toCm: 49, displayCm: "47-49", displayIn: "18 1/2 - 19 1/4", us: "Toddler S", uk: "Toddler S", eu: "47-49", alpha: "Toddler S", age_approx: "1-2y" },{ fromCm: 49.1, toCm: 51, displayCm: "50-51", displayIn: "19 5/8 - 20", us: "Toddler M", uk: "Toddler M", eu: "50-51", alpha: "Toddler M", age_approx: "2-3y" },{ fromCm: 51.1, toCm: 53, displayCm: "52-53", displayIn: "20 1/2 - 20 7/8", us: "Child S", uk: "Child S", eu: "52-53", alpha: "Child S", age_approx: "3-5y" },{ fromCm: 53.1, toCm: 55, displayCm: "54-55", displayIn: "21 1/4 - 21 5/8", us: "Child M", uk: "Child M", eu: "54-55", alpha: "Child M", age_approx: "6-10y" },],
+                teen: [{ fromCm: 52, toCm: 53, displayCm: "52-53", displayIn: "20 1/2 - 20 7/8", us: "6 1/2 - 6 5/8", uk: "6 3/8 - 6 1/2", eu: "52-53", alpha: "XXS/XS" },{ fromCm: 53.1, toCm: 55, displayCm: "54-55", displayIn: "21 1/4 - 21 5/8", us: "6 3/4 - 6 7/8", uk: "6 5/8 - 6 3/4", eu: "54-55", alpha: "S" },{ fromCm: 55.1, toCm: 57, displayCm: "56-57", displayIn: "22 - 22 3/8", us: "7 - 7 1/8", uk: "6 7/8 - 7", eu: "56-57", alpha: "M" },{ fromCm: 57.1, toCm: 59, displayCm: "58-59", displayIn: "22 3/4 - 23 1/4", us: "7 1/4 - 7 3/8", uk: "7 1/8 - 7 1/4", eu: "58-59", alpha: "L" },],
+                adult: [{ fromCm: 51, toCm: 52, displayCm: "52", displayIn: "20 1/2", us: "6 1/2", uk: "6 3/8", eu: "52", alpha: "XXS" },{ fromCm: 52.1, toCm: 53, displayCm: "53", displayIn: "20 7/8", us: "6 5/8", uk: "6 1/2", eu: "53", alpha: "XS" },{ fromCm: 53.1, toCm: 55, displayCm: "54-55", displayIn: "21 1/4 - 21 5/8", us: "6 3/4 - 6 7/8", uk: "6 5/8 - 6 3/4", eu: "54-55", alpha: "S" },{ fromCm: 55.1, toCm: 57, displayCm: "56-57", displayIn: "22 - 22 3/8", us: "7 - 7 1/8", uk: "6 7/8 - 7", eu: "56-57", alpha: "M" },{ fromCm: 57.1, toCm: 59, displayCm: "58-59", displayIn: "22 3/4 - 23 1/4", us: "7 1/4 - 7 3/8", uk: "7 1/8 - 7 1/4", eu: "58-59", alpha: "L" },{ fromCm: 59.1, toCm: 61, displayCm: "60-61", displayIn: "23 5/8 - 24", us: "7 1/2 - 7 5/8", uk: "7 3/8 - 7 1/2", eu: "60-61", alpha: "XL" },{ fromCm: 61.1, toCm: 63, displayCm: "62-63", displayIn: "24 3/8 - 24 3/4", us: "7 3/4 - 7 7/8", uk: "7 5/8 - 7 3/4", eu: "62-63", alpha: "XXL" },{ fromCm: 63.1, toCm: 65, displayCm: "64-65", displayIn: "25 1/8 - 25 1/2", us: "8 - 8 1/8", uk: "7 7/8 - 8", eu: "64-65", alpha: "XXXL" }]
+            },
+            hatTypeNames: { 'beanie': 'Beanie', 'baseball_cap': 'Baseball Cap', 'fedora': 'Fedora', 'sun_hat': 'Sun Hat' },
+
+            init() {
+                this.setGreeting(); this.loadSettings(); this.applyTheme();
+                this.$watch('lookupMode', () => this.resetFormFields(false));
+                this.$watch('userCategory', v => localStorage.setItem('hatSizer_userCategory', v));
+                this.$watch('selectedHatType', v => v ? localStorage.setItem('hatSizer_selectedHatType', v) : localStorage.removeItem('hatSizer_selectedHatType'));
+                this.$watch('unit', v => localStorage.setItem('hatSizer_unit', v));
+                this.$watch('circumferenceInput', v => (v !== null && !isNaN(v)) ? localStorage.setItem('hatSizer_circumferenceInput', v) : localStorage.removeItem('hatSizer_circumferenceInput'));
+                this.$watch('darkMode', v => { localStorage.setItem('hatSizer_darkMode', v); this.applyTheme(); });
+                this.$watch('knownSizeSystem', v => localStorage.setItem('hatSizer_knownSizeSystem', v));
+                this.$watch('knownSizeInput', v => localStorage.setItem('hatSizer_knownSizeInput', v));
+                this.$watch('lookupMode', v => localStorage.setItem('hatSizer_lookupMode', v));
+                if (this.circumferenceInput !== null && !this.lookupMode) this.validateAndConvertInput();
+            },
+            applyTheme() { document.documentElement.dataset.theme = this.darkMode ? 'dark' : 'light'; },
+            loadSettings() {
+                this.userCategory = localStorage.getItem('hatSizer_userCategory') || 'adult';
+                this.selectedHatType = localStorage.getItem('hatSizer_selectedHatType') || null;
+                this.unit = localStorage.getItem('hatSizer_unit') || 'in';
+                const sc = localStorage.getItem('hatSizer_circumferenceInput'); if (sc) this.circumferenceInput = parseFloat(sc);
+                this.darkMode = localStorage.getItem('hatSizer_darkMode') === 'true';
+                this.lookupMode = localStorage.getItem('hatSizer_lookupMode') === 'true';
+                this.knownSizeSystem = localStorage.getItem('hatSizer_knownSizeSystem') || 'us';
+                this.knownSizeInput = localStorage.getItem('hatSizer_knownSizeInput') || '';
+            },
+            setGreeting() { const h = new Date().getHours(); if (h < 12) this.greeting = "Good Morning! ☀️ Ready to find the perfect hat?"; else if (h < 18) this.greeting = "Good Afternoon! 🌤️ Let's size you up!"; else this.greeting = "Good Evening! 🌙 Hat hunting?"; },
+            selectHatType(type) { this.selectedHatType = (this.selectedHatType === type) ? null : type; this.setTypeSpecificNote(); },
+            getHatTypeName(typeKey) { return this.hatTypeNames[typeKey] || ''; },
+            toggleUnit() { this.unit = (this.unit === 'in') ? 'cm' : 'in'; if (this.circumferenceInput !== null && !isNaN(this.circumferenceInput)) { if (this.unit === 'cm') this.circumferenceInput = parseFloat((this.circumferenceInput * 2.54).toFixed(1)); else this.circumferenceInput = parseFloat((this.circumferenceInput / 2.54).toFixed(1)); } this.validateAndConvertInput(); },
+            validateAndConvertInput() { this.errorMessage = ''; if (this.circumferenceInput === null || String(this.circumferenceInput).trim() === '') { this.circumferenceCm = null; if (!this.lookupMode) {this.calculatedSizes = {}; this.calculationAttempted = false;} return; } const val = parseFloat(this.circumferenceInput); if (isNaN(val) || val <= 0) { this.errorMessage = 'Please enter a valid positive number.'; this.circumferenceCm = null; if (!this.lookupMode) {this.calculatedSizes = {}; this.calculationAttempted = false;} return; } let currentCmVal = (this.unit === 'in') ? val * 2.54 : val; if (currentCmVal < 30 || currentCmVal > 70) { this.errorMessage = 'Realistic head circumference: 30-70cm or 12-27.5in.'; this.circumferenceCm = null; if (!this.lookupMode) {this.calculatedSizes = {}; this.calculationAttempted = false;} return; } this.circumferenceCm = currentCmVal; },
+            calculateHatSize() { this.calculationAttempted = true; this.typeSpecificNote = ''; this.ageSpecificNote = ''; this.reverseLookupResult = null; this.validateAndConvertInput(); if (this.errorMessage || this.circumferenceCm === null) { this.calculatedSizes = {}; return; } this.originalInputDisplay = `${parseFloat(this.circumferenceInput).toFixed(1)} ${this.unit === 'in' ? 'inches' : 'cm'}`; const chart = this.hatSizeCharts[this.userCategory]; let foundSize = null; for (const size of chart) { if (this.circumferenceCm >= size.fromCm && this.circumferenceCm <= size.toCm) { foundSize = size; break; } } let underOverNote = ''; if (!foundSize) { if (this.circumferenceCm < chart[0].fromCm) { foundSize = chart[0]; underOverNote = "Measurement is smaller than typical range. Smallest size shown."; } else if (this.circumferenceCm > chart[chart.length - 1].toCm) { foundSize = chart[chart.length - 1]; underOverNote = "Measurement is larger than typical range. Largest size shown."; } } if (foundSize) { this.calculatedSizes = { primary: foundSize.alpha || foundSize.us || foundSize.eu, cm: foundSize.displayCm, inches: foundSize.displayIn, us: foundSize.us, uk: foundSize.uk, eu: foundSize.eu, alpha: foundSize.alpha }; if (underOverNote) { this.ageSpecificNote = underOverNote; } else { this.setAgeSpecificNote(foundSize); } this.setTypeSpecificNote(); } else { this.calculatedSizes = {}; this.errorMessage = "Could not find a matching size for the entered circumference.";} },
+            setAgeSpecificNote(foundSize) { if (this.ageSpecificNote && this.ageSpecificNote.includes("typical range")) return; this.ageSpecificNote = ''; if (this.userCategory === 'child') { this.ageSpecificNote = "Children's heads grow quickly! Re-measure often."; if (foundSize && foundSize.age_approx) { this.ageSpecificNote += ` This size is typically for ages ${foundSize.age_approx}.`; } } else if (this.userCategory === 'teen') { this.ageSpecificNote = "Teen sizes can overlap with adult S/M/L."; } },
+            setTypeSpecificNote() { this.typeSpecificNote = ''; if (!this.selectedHatType) return; switch(this.selectedHatType) { case 'beanie': this.typeSpecificNote = "Beanies are often stretchy. Size down for snug, up for slouchy."; break; case 'baseball_cap': this.typeSpecificNote = "Fitted caps need snug fit. Adjustable caps offer flexibility."; break; case 'fedora': this.typeSpecificNote = "Structured hats need precise fit. Size up if between, use sizer strip."; break; case 'sun_hat': this.typeSpecificNote = "Sun hats: slightly looser for comfort, especially non-adjustable."; break; } if (this.typeSpecificNote && (this.userCategory === 'adult' || this.userCategory === 'teen')) { this.ageSpecificNote = ''; } },
+            findMeasurementFromSize() {
+                this.calculationAttempted = true; this.errorMessage = ''; this.calculatedSizes = {}; this.reverseLookupResult = null;
+                if (!this.knownSizeInput.trim()) { this.errorMessage = "Please enter a known size value."; return; }
+                const searchTerm = this.knownSizeInput.trim().toLowerCase(); let foundMatch = null;
+                for (const category of Object.keys(this.hatSizeCharts)) {
+                    for (const sizeEntry of this.hatSizeCharts[category]) {
+                        let match = false;
+                        switch (this.knownSizeSystem) {
+                            case 'us': match = sizeEntry.us && sizeEntry.us.toLowerCase() === searchTerm; break;
+                            case 'uk': match = sizeEntry.uk && sizeEntry.uk.toLowerCase() === searchTerm; break;
+                            case 'eu': if (sizeEntry.eu) { const euParts = sizeEntry.eu.split('-'); if(euParts.length > 1) { match = (parseFloat(searchTerm) >= parseFloat(euParts[0]) && parseFloat(searchTerm) <= parseFloat(euParts[1])) || sizeEntry.eu.toLowerCase() === searchTerm; } else { match = sizeEntry.eu.toLowerCase() === searchTerm; } } break;
+                            case 'alpha': match = sizeEntry.alpha && sizeEntry.alpha.toLowerCase().replace(/\s*\(.*\)\s*/, '').trim() === searchTerm; break;
+                            case 'inches_lookup': const searchInches = parseFloat(searchTerm); if (!isNaN(searchInches)) { const searchCm = searchInches * 2.54; match = searchCm >= sizeEntry.fromCm && searchCm <= sizeEntry.toCm; } break;
+                        }
+                        if (match) { foundMatch = sizeEntry; break; }
+                    }
+                    if (foundMatch) break;
+                }
+                if (foundMatch) {
+                    this.reverseLookupResult = {
+                        inputSizeDisplay: `${this.knownSizeInput.toUpperCase()} (${this.knownSizeSystem.replace('_lookup','').toUpperCase()})`, // .toUpperCase() for consistency
+                        cmRange: `${foundMatch.fromCm.toFixed(1)} - ${foundMatch.toCm.toFixed(1)} cm`,
+                        inchRange: `${(foundMatch.fromCm / 2.54).toFixed(1)} - ${(foundMatch.toCm / 2.54).toFixed(1)} inches`,
+                        us: foundMatch.us || 'N/A', uk: foundMatch.uk || 'N/A', eu: foundMatch.eu || 'N/A', alpha: foundMatch.alpha || 'N/A',
+                        notes: foundMatch.age_approx ? `Typically for ages: ${foundMatch.age_approx}.` : (this.knownSizeSystem === 'alpha' ? 'Alpha sizes can vary significantly between brands.' : '')
+                    };
+                } else { this.errorMessage = `Could not find a measurement for size "${this.knownSizeInput}" in ${this.knownSizeSystem.replace('_lookup','').toUpperCase()} system.`; }
+            },
+            resetFormFields(resetLookupInputs = true) {
+                this.circumferenceInput = null; this.circumferenceCm = null; this.errorMessage = '';
+                this.calculatedSizes = {}; this.ageSpecificNote = ''; this.typeSpecificNote = '';
+                this.originalInputDisplay = ''; this.reverseLookupResult = null; this.calculationAttempted = false;
+                if(resetLookupInputs){ this.knownSizeInput = ''; this.knownSizeSystem = 'us'; }
+            },
+            resetForm() { this.userCategory = 'adult'; this.selectedHatType = null; this.resetFormFields(true); /* this.lookupMode = false; // Optional */ },
+            toggleDarkMode() { this.darkMode = !this.darkMode; }
+        }
+    }
+    </script>
+</body>
+</html>

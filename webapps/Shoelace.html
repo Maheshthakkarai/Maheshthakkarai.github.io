@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoelace - Shoelace Length Calculator</title>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* CSS Reset/Normalize (very basic) */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.6; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
+
+        /* CSS Variables for Theming and Design */
+        :root {
+            --primary-color: #007bff; 
+            --primary-hover-color: #0056b3;
+            --secondary-color: #6c757d;
+            --tertiary-color: #5cb85c; 
+            --tertiary-hover-color: #4cae4c;
+            --info-color: #17a2b8; 
+            --info-hover-color: #138496;
+
+            --light-bg: #f0f2f5; 
+            --light-text: #212529;
+            --light-card-bg: rgba(255, 255, 255, 0.8); 
+            --light-card-border: rgba(0, 0, 0, 0.08);
+            --light-shadow: 0 6px 24px 0 rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0,0,0,0.04);
+            --light-input-bg: #fff;
+            --light-input-border: #ced4da;
+            --light-input-text: #495057;
+            --light-disabled-bg: #e9ecef;
+            --light-disabled-text: #6c757d;
+
+            --dark-bg: #0A0A0A; 
+            --dark-text: #EDEDED; 
+            --dark-card-bg: rgba(22, 22, 24, 0.7); 
+            --dark-card-border: rgba(255, 255, 255, 0.07);
+            --dark-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.06);
+            --dark-input-bg: #181818;
+            --dark-input-border: #333333;
+            --dark-input-text: var(--dark-text);
+            --dark-disabled-bg: #202020;
+            --dark-disabled-text: #555;
+            
+            --border-radius: 12px; 
+            --input-padding: 0.75em 1em;
+            --button-padding: 0.75em 1.5em;
+
+            /* Default to light theme variables */
+            --bg-color: var(--light-bg);
+            --text-color: var(--light-text);
+            --card-bg-color: var(--light-card-bg);
+            --card-border-color: var(--light-card-border);
+            --shadow-color: var(--light-shadow);
+            --input-bg: var(--light-input-bg);
+            --input-border: var(--light-input-border);
+            --input-text: var(--light-input-text);
+            --current-disabled-bg: var(--light-disabled-bg);
+            --current-disabled-text: var(--light-disabled-text);
+        }
+
+        body.dark-theme {
+            --bg-color: var(--dark-bg);
+            --text-color: var(--dark-text);
+            --card-bg-color: var(--dark-card-bg);
+            --card-border-color: var(--dark-card-border);
+            --shadow-color: var(--dark-shadow);
+            --input-bg: var(--dark-input-bg);
+            --input-border: var(--dark-input-border);
+            --input-text: var(--dark-input-text);
+            --current-disabled-bg: var(--dark-disabled-bg);
+            --current-disabled-text: var(--dark-disabled-text);
+        }
+
+        .app-container {
+            max-width: 650px; 
+            margin: 2rem auto;
+            padding: 2rem; /* Increased padding for a bit more space */
+            border-radius: var(--border-radius);
+            background: var(--card-bg-color);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border-color);
+            box-shadow: var(--shadow-color);
+            transition: background 0.3s, border 0.3s, box-shadow 0.3s;
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        body.dark-theme .app-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 65%; 
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.0) 100%);
+            border-radius: var(--border-radius) var(--border-radius) 0 0; 
+            pointer-events: none;
+            z-index: 1; 
+        }
+        .app-container > * {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .header-controls h1 { font-size: clamp(1.5rem, 5vw, 2.25rem); margin: 0; margin-right: 1rem; }
+        .theme-toggle, .readme-toggle {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--text-color);
+            padding: 0.5em 0.8em;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover, .readme-toggle:hover { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .utility-buttons { display: flex; gap: 0.5rem; }
+        
+        form { margin: 0; padding: 0; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group label .mandatory { color: #dc3545; margin-left: 0.2rem;}
+        
+        input[type="number"], select.pattern-select, select#units, select#shoeType, input#textToCopyArea {
+            width: 100%;
+            padding: var(--input-padding);
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+        input[type="number"]:focus, select.pattern-select:focus, select#units:focus, select#shoeType:focus, input#textToCopyArea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: none;
+        }
+        input[type="number"][disabled], select[disabled] {
+            background-color: var(--current-disabled-bg); 
+            color: var(--current-disabled-text);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        input#textToCopyArea { margin-top: 0.5rem; }
+
+        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: flex-start; flex-wrap: wrap;}
+        .btn {
+            padding: var(--button-padding);
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+             margin-bottom: 0.5rem; 
+        }
+        body.dark-theme .btn { box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .btn:active { transform: translateY(1px); }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover-color); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-secondary:hover { background-color: #5a6268; box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
+        .btn-tertiary { background-color: var(--tertiary-color); color: white; }
+        .btn-tertiary:hover { background-color: var(--tertiary-hover-color); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
+        .btn-info { background-color: var(--info-color); color: white; }
+        .btn-info:hover { background-color: var(--info-hover-color); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
+
+        .output-section { 
+            margin-top: 2rem; padding: 1.5rem; 
+            background-color: var(--input-bg); 
+            border-radius: var(--border-radius); 
+            border: 1px solid var(--input-border);
+        }
+        .output-section h3 { margin-top: 0; margin-bottom: 0.5rem; }
+        .output-section p { font-size: 1.25rem; font-weight: bold; color: var(--primary-color); margin-bottom: 1rem; }
+        
+        .error-message { 
+            color: #dc3545; background-color: rgba(220, 53, 69, 0.1); 
+            border: 1px solid rgba(220, 53, 69, 0.3); 
+            padding: 0.75rem; border-radius: var(--border-radius); margin-bottom: 1rem;
+        }
+        body.dark-theme .error-message {
+            background-color: rgba(220, 53, 69, 0.15); /* Slightly more opaque for dark bg */
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background-color: rgba(0,0,0,0.5); 
+            display: flex; align-items: center; justify-content: center; 
+            z-index: 1000; 
+        }
+
+        .modal-content {
+            background: var(--card-bg-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border-color);
+            box-shadow: var(--shadow-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            max-width: 90%;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative; /* For ::before pseudo-element if needed on modal */
+            z-index: 2; /* Ensure modal content is above its overlay's pseudo-elements if any */
+        }
+         body.dark-theme .modal-content::before { /* Glossy sheen for modal in dark theme */
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 60%; 
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.0) 100%);
+            border-radius: var(--border-radius) var(--border-radius) 0 0; 
+            pointer-events: none;
+            z-index: -1; /* Behind modal's actual content */
+        }
+
+        .modal-content h2 { margin-top: 0; margin-bottom: 1rem; }
+        .modal-content .close-modal { float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color); }
+        .modal-content p, .modal-content ul { margin-bottom: 1rem; }
+        .modal-content li { margin-left: 1.5rem; }
+        .modal-content code { background-color: rgba(0,0,0,0.05); padding: 0.2em 0.4em; border-radius: 3px; }
+        body.dark-theme .modal-content code { background-color: rgba(255,255,255,0.1); }
+
+        [x-cloak] { display: none !important; }
+
+        .mode-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            flex-wrap: wrap; 
+            margin-bottom: 1.5rem;
+            padding: 0.75rem 1rem; 
+            background-color: var(--input-bg); /* Give it a background like inputs */
+            border-radius: var(--border-radius);
+            border: 1px solid var(--input-border);
+        }
+        .mode-toggle-container label:not(.toggle-switch) { 
+            margin-right: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0; 
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px; 
+            height: 24px; 
+            flex-shrink: 0; 
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px; 
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px; 
+            left: 3px; bottom: 3px; 
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(26px); }
+        body.dark-theme .slider { background-color: #555; }
+        body.dark-theme input:checked + .slider { background-color: var(--primary-color);}
+
+        @media (max-width: 768px) {
+            .app-container { margin: 1rem; padding: 1rem; }
+            .header-controls { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .utility-buttons { margin-top: 0.5rem; }
+        }
+        @media (max-width: 480px) {
+            .header-controls h1 { font-size: 1.3rem; }
+            .form-actions { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body x-data="shoelaceApp()" :class="{ 'dark-theme': isDarkTheme }" x-cloak>
+
+    <div class="app-container">
+        <!-- Header Controls and Error Message Template are direct children -->
+        <div class="header-controls">
+            <h1>Shoelace</h1>
+            <div class="utility-buttons">
+                <button @click="toggleTheme()" class="theme-toggle" x-text="isDarkTheme ? '☀️ Light' : '🌙 Dark'"></button>
+                <button @click="toggleReadme()" class="readme-toggle">ℹ️ Help/About</button>
+            </div>
+        </div>
+
+        <template x-if="errorMessage">
+            <div class="error-message"
+                x-show="errorMessage"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-y-2"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-y-0"
+                x-transition:leave-end="opacity-0 transform translate-y-2"
+                x-text="errorMessage">
+            </div>
+        </template>
+        
+        <form @submit.prevent="calculateLength">
+            <!-- Mode Toggle MOVED INSIDE FORM -->
+            <div class="mode-toggle-container">
+                <label for="modeToggle">Quick Estimate Mode:</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="modeToggle" x-model="isQuickEstimateMode" @change="showCopyTextInstruction = false">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="eyeletPairs">Number of Eyelet Pairs<span class="mandatory">*</span></label>
+                <input type="number" id="eyeletPairs" x-model.number="inputs.eyeletPairs" min="1" max="20" required @input="showCopyTextInstruction = false">
+            </div>
+            <div class="form-group">
+                <label for="pattern">Lacing Pattern<span class="mandatory">*</span></label>
+                <select id="pattern" x-model="inputs.pattern" class="pattern-select" required @change="showCopyTextInstruction = false">
+                    <template x-for="p in availablePatterns" :key="p.id">
+                        <option :value="p.id" x-text="p.name"></option>
+                    </template>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="units">Measurement Units<span class="mandatory">*</span></label>
+                 <select id="units" x-model="inputs.units" @change="showCopyTextInstruction = false">
+                    <option value="cm">Centimeters (cm)</option>
+                    <option value="in">Inches (in)</option>
+                </select>
+            </div>
+
+            <div x-show="!isQuickEstimateMode" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                <div class="form-group">
+                    <label for="horizontalSpacing">Horizontal Eyelet Spacing (<span x-text="inputs.units"></span>)<span class="mandatory">*</span></label>
+                    <input type="number" id="horizontalSpacing" x-model.number="inputs.horizontalSpacing" step="0.1" min="0.1" :required="!isQuickEstimateMode" :disabled="isQuickEstimateMode" @input="showCopyTextInstruction = false">
+                </div>
+                <div class="form-group">
+                    <label for="verticalSpacing">Vertical Eyelet Spacing (<span x-text="inputs.units"></span>)<span class="mandatory">*</span></label>
+                    <input type="number" id="verticalSpacing" x-model.number="inputs.verticalSpacing" step="0.1" min="0.1" :required="!isQuickEstimateMode" :disabled="isQuickEstimateMode" @input="showCopyTextInstruction = false">
+                </div>
+            </div>
+
+            <div x-show="isQuickEstimateMode"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                <div class="form-group">
+                    <label for="shoeType">Shoe Type<span class="mandatory">*</span></label>
+                    <select id="shoeType" x-model="quickEstimateInputs.shoeTypeId" :required="isQuickEstimateMode" @change="showCopyTextInstruction = false">
+                        <option value="" disabled>-- Select Shoe Type --</option>
+                        <template x-for="type in shoeTypes" :key="type.id">
+                            <option :value="type.id" x-text="type.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="freeEndLength">Desired Free-End Length (per side, for tying) (<span x-text="inputs.units"></span>)<span class="mandatory">*</span></label>
+                <input type="number" id="freeEndLength" x-model.number="inputs.freeEndLength" step="0.1" min="0" required @input="showCopyTextInstruction = false">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Calculate Length</button>
+                <button type="button" @click="resetForm()" class="btn btn-secondary">Reset</button>
+                <button type="button" @click="loadExampleData()" class="btn btn-tertiary">Load Example</button>
+            </div>
+        </form>
+
+        <template x-if="totalLength !== null && !(errorMessage && errorMessage.includes('Please adjust or select another pattern.'))">
+            <div class="output-section"
+                x-show="totalLength !== null && !(errorMessage && errorMessage.includes('Please adjust or select another pattern.'))"
+                x-transition:enter="transition ease-out duration-300 delay-100" 
+                x-transition:enter-start="opacity-0 transform translate-y-2 scale-98"
+                x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 transform translate-y-2 scale-98">
+                <h3 x-text="isQuickEstimateMode ? 'Quick Estimated Shoelace Length:' : 'Estimated Shoelace Length:'"></h3>
+                <p><span x-text="totalLength.toFixed(2)"></span> <span x-text="inputs.units"></span></p>
+                <button @click="handleCopy()" class="btn btn-info" x-text="copyButtonText"></button>
+                <input type="text" id="textToCopyArea" x-show="showCopyTextInstruction" :value="textForClipboard" readonly 
+                       style="margin-top: 0.5rem;"
+                       @blur="showCopyTextInstruction = false; copyButtonText = 'Copy Results'">
+            </div>
+        </template>
+    </div>
+
+    <!-- README Modal -->
+    <div class="modal-overlay" 
+        x-show="showReadme" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click.self="toggleReadme()"
+        x-cloak> 
+        <div class="modal-content"
+            x-show="showReadme"
+            x-transition:enter="transition ease-out duration-300 delay-50" 
+            x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+            x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 transform scale-95 translate-y-2">
+            <button class="close-modal" @click="toggleReadme()">×</button>
+            <h2>About Shoelace Calculator</h2>
+            <p>This app helps you estimate the required shoelace length for your footwear.</p>
+            <h3>How to Measure (Precise Mode):</h3>
+            <ul>
+                <li><strong>Number of Eyelet Pairs:</strong> Count pairs you intend to use.</li>
+                <li><strong>Horizontal Eyelet Spacing:</strong> Center-to-center distance between left/right eyelets.</li>
+                <li><strong>Vertical Eyelet Spacing:</strong> Center-to-center distance between eyelets on the same side.</li>
+                <li><strong>Desired Free-End Length:</strong> Length for tying (per side).</li>
+            </ul>
+             <h3>Quick Estimate Mode:</h3>
+            <p>If you don't have precise measurements, switch to "Quick Estimate Mode". Select your shoe type, number of eyelet pairs, desired pattern, and free-end length. The app will use average spacing values for the selected shoe type.</p>
+            <h3>Lacing Patterns:</h3>
+            <p>Select a pattern. Some have minimum eyelet recommendations. Formulas are based on common geometries; specialized calculators may vary for certain named patterns.</p>
+            <h3>Formula (Basic Criss-Cross):</h3>
+            <p><code>Length = H + 2*(P-1)*sqrt(H²+V²) + 2*F</code> (for P>1). If P=1, <code>Length = H + 2*F</code>.</p>
+            <h3>Source Info:</h3>
+            <p>Inspired by Ian's Shoelace Site (fieggen.com).</p>
+            <p><em>Note: This calculator provides an estimate. Actual required length can vary slightly due to shoe design, eyelet type, and lacing tightness. Quick Estimates are broader approximations.</em></p>
+            <p><strong>Shoelace Thickness:</strong> Thicker shoelaces may require slightly more length. Consider adding a small buffer.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('shoelaceApp', () => ({
+                inputs: {
+                    eyeletPairs: 6,
+                    pattern: 'criss-cross',
+                    horizontalSpacing: 5, 
+                    verticalSpacing: 2,   
+                    freeEndLength: 25,
+                    units: 'cm',
+                },
+                defaultInputs: { 
+                    eyeletPairs: 6,
+                    pattern: 'criss-cross',
+                    horizontalSpacing: 5,
+                    verticalSpacing: 2,
+                    freeEndLength: 25,
+                    units: 'cm', 
+                },
+                isQuickEstimateMode: false,
+                quickEstimateInputs: {
+                    shoeTypeId: '', 
+                },
+                shoeTypes: [ 
+                    { id: 'low-sneaker', name: 'Low-Top Sneaker (e.g., Converse Lo, Vans)', H_cm: 5, V_cm: 2, H_in: 2, V_in: 0.8 },
+                    { id: 'high-sneaker', name: 'Mid/High-Top Sneaker (e.g., Jordan 1, Converse Hi)', H_cm: 5.5, V_cm: 2.2, H_in: 2.2, V_in: 0.9 },
+                    { id: 'running-shoe', name: 'Running Shoe', H_cm: 5, V_cm: 2.5, H_in: 2, V_in: 1 },
+                    { id: 'dress-shoe', name: 'Dress Shoe/Oxford', H_cm: 4.5, V_cm: 2, H_in: 1.8, V_in: 0.8 },
+                    { id: 'ankle-boot', name: 'Ankle Boot (6-8 eyelets)', H_cm: 6, V_cm: 2.5, H_in: 2.4, V_in: 1 },
+                    { id: 'tall-boot', name: 'Tall Boot (8+ eyelets)', H_cm: 6.5, V_cm: 2.5, H_in: 2.6, V_in: 1 }
+                ],
+                availablePatterns: [
+                    { id: 'criss-cross', name: 'Basic Criss-Cross', minEyelets: 1 },
+                    { id: 'criss-cross-helix', name: 'Criss-Cross Helix', minEyelets: 2 },
+                    { id: 'over-under', name: 'Over Under', minEyelets: 2 },
+                    { id: 'straight-bar-fashion', name: 'Straight Bar (Fashion)', minEyelets: 2 },
+                    { id: 'straight-bar-functional', name: 'Straight Bar (Functional)', minEyelets: 2 },
+                    { id: 'sawtooth', name: 'Sawtooth', minEyelets: 3 },
+                    { id: 'train-track', name: 'Train Track', minEyelets: 3 },
+                    { id: 'starburst', name: 'Starburst', minEyelets: 4 }
+                ],
+                totalLength: null,
+                errorMessage: '',
+                isDarkTheme: false,
+                showReadme: false,
+                copyButtonText: 'Copy Results',
+                showCopyTextInstruction: false,
+                textForClipboard: '',
+
+                init() {
+                    const savedTheme = localStorage.getItem('shoelace_theme');
+                    if (savedTheme) { this.isDarkTheme = JSON.parse(savedTheme); }
+                    else { this.isDarkTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+                    
+                    const savedUnits = localStorage.getItem('shoelace_units');
+                    if (savedUnits) { this.inputs.units = savedUnits; }
+
+                    this.$watch('isDarkTheme', value => localStorage.setItem('shoelace_theme', JSON.stringify(value)));
+                    this.$watch('inputs.units', value => {
+                        localStorage.setItem('shoelace_units', value);
+                        this.showCopyTextInstruction = false; 
+                        this.copyButtonText = 'Copy Results';
+                    });
+                    this.$watch('isQuickEstimateMode', (isQuick) => {
+                        this.totalLength = null; 
+                        this.errorMessage = '';
+                        this.showCopyTextInstruction = false; 
+                        this.copyButtonText = 'Copy Results';
+                        if (isQuick && !this.quickEstimateInputs.shoeTypeId && this.shoeTypes.length > 0) {
+                            // this.quickEstimateInputs.shoeTypeId = this.shoeTypes[0].id; 
+                        }
+                        if (!isQuick) {
+                            this.inputs.horizontalSpacing = this.inputs.horizontalSpacing || this.defaultInputs.horizontalSpacing;
+                            this.inputs.verticalSpacing = this.inputs.verticalSpacing || this.defaultInputs.verticalSpacing;
+                        }
+                    });
+                },
+
+                calculateLength() {
+                    this.showCopyTextInstruction = false; 
+                    this.copyButtonText = 'Copy Results';
+                    this.totalLength = null; 
+                    this.errorMessage = ''; 
+
+                    let P = parseFloat(this.inputs.eyeletPairs);
+                    let H, V; 
+                    let F = parseFloat(this.inputs.freeEndLength);
+                    const pattern = this.inputs.pattern;
+                    const units = this.inputs.units;
+
+                    if (!P || P <= 0) { this.errorMessage = 'Number of eyelet pairs must be a positive number.'; return; }
+                    if (F < 0) { this.errorMessage = 'Free-end length cannot be negative.'; return; }
+
+                    if (this.isQuickEstimateMode) {
+                        if (!this.quickEstimateInputs.shoeTypeId) {
+                            this.errorMessage = 'Please select a shoe type for Quick Estimate mode.'; return;
+                        }
+                        const selectedShoeType = this.shoeTypes.find(st => st.id === this.quickEstimateInputs.shoeTypeId);
+                        if (!selectedShoeType) {
+                            this.errorMessage = 'Invalid shoe type selected.'; return;
+                        }
+                        H = (units === 'cm') ? selectedShoeType.H_cm : selectedShoeType.H_in;
+                        V = (units === 'cm') ? selectedShoeType.V_cm : selectedShoeType.V_in;
+                    } else {
+                        H = parseFloat(this.inputs.horizontalSpacing);
+                        V = parseFloat(this.inputs.verticalSpacing);
+                        if (!H || H <= 0) { this.errorMessage = 'Horizontal spacing must be a positive number.'; return; }
+                    }
+                    
+                    if (P > 1 && (!V || V <= 0)) {
+                        const needsPositiveV = ['criss-cross', 'criss-cross-helix', 'over-under', 'sawtooth', 'train-track', 'starburst', 'straight-bar-fashion', 'straight-bar-functional'];
+                        if (needsPositiveV.includes(pattern)) {
+                             this.errorMessage = `Vertical spacing must be a positive number for the "${this.availablePatterns.find(p=>p.id === pattern)?.name}" pattern with multiple eyelet pairs.`; return;
+                        }
+                    }
+
+                    const selectedPatternInfo = this.availablePatterns.find(p => p.id === pattern);
+                    if (selectedPatternInfo && selectedPatternInfo.minEyelets && P < selectedPatternInfo.minEyelets) {
+                        this.errorMessage = `The "${selectedPatternInfo.name}" pattern is recommended for at least ${selectedPatternInfo.minEyelets} eyelet pairs. Please adjust or select another pattern.`;
+                        return;
+                    }
+
+                    let D = (V > 0 && H > 0) ? Math.sqrt(H**2 + V**2) : H; 
+                    
+                    switch (pattern) {
+                        case 'criss-cross': this.totalLength = (P === 1 ? H : H + 2 * (P - 1) * D) + (2 * F); break;
+                        case 'criss-cross-helix':
+                            this.totalLength = (P === 1 ? H : H + 2 * (P - 1) * D) + (2 * F);
+                            this.errorMessage = "Criss-Cross Helix uses Basic Criss-Cross formula. Adjust if needed."; break;
+                        case 'over-under':
+                            if (P === 1) { this.totalLength = H + (2 * F); }
+                            else { this.totalLength = (P * H) + ((P - 1) * D) + (2 * F); }
+                            this.errorMessage = "Over Under uses standard geometry. Specialized calculators may vary for this name."; break;
+                        case 'straight-bar-fashion':
+                            if (P === 1) { this.totalLength = H + (2*F); }
+                            else { this.totalLength = (P * H) + ((P - 1) * V) + (2 * F); }
+                            break;
+                        case 'straight-bar-functional': 
+                            if (P === 1) { this.totalLength = H + (2*F); }
+                            else { 
+                                let lastSegment = (P % 2 === 1) ? V : D;
+                                this.totalLength = ((P - 1) * D) + (P * H) + lastSegment + (2 * F);
+                            }
+                            break;
+                        case 'sawtooth':
+                            if (P === 1) { this.totalLength = H + (2*F); }
+                            else { this.totalLength = (P * H) + ((P - 1) * V) + ((P - 1) * D) + (2 * F); }
+                            break;
+                        case 'train-track':
+                            if (P === 1) { this.totalLength = H + (2*F); }
+                            else { this.totalLength = (P * H) + (2 * (P - 1) * V) + (2 * F);}
+                            break;
+                        case 'starburst':
+                            let crissCrossLacingPart = (P === 1 ? H : H + 2 * (P-1) * D);
+                            this.totalLength = (crissCrossLacingPart * 1.30) + (2*F);
+                            this.errorMessage = `Calculation for "Starburst" is an adjusted placeholder (uses modified Criss-Cross + 30%). Results may vary significantly based on specific Starburst technique.`; 
+                            break;
+                        default:
+                            this.errorMessage = `Calculation for "${this.availablePatterns.find(p=>p.id === pattern)?.name || pattern}" pattern is not yet implemented.`;
+                            return;
+                    }
+
+                    if (this.totalLength !== null && this.totalLength > 0) {
+                        const patternSpecificMessages = ["placeholder", "approximation", "uses Basic Criss-Cross formula", "Specialized calculators may vary"];
+                        let currentMsgIsPatternSpecific = false;
+                        if(this.errorMessage){ 
+                            for (let msg of patternSpecificMessages) {
+                                if (this.errorMessage.includes(msg)) { currentMsgIsPatternSpecific = true; break; }
+                            }
+                        }
+                        if (!currentMsgIsPatternSpecific && !(selectedPatternInfo && selectedPatternInfo.minEyelets && P < selectedPatternInfo.minEyelets) ) {
+                            this.errorMessage = '';
+                        }
+                    }
+                },
+                resetForm() { 
+                    this.inputs = JSON.parse(JSON.stringify(this.defaultInputs)); 
+                    const savedUnits = localStorage.getItem('shoelace_units');
+                    if (savedUnits) { this.inputs.units = savedUnits; }
+                    this.totalLength = null;
+                    this.errorMessage = '';
+                    this.copyButtonText = 'Copy Results';
+                    this.showCopyTextInstruction = false;
+                    if (this.isQuickEstimateMode) {
+                        this.quickEstimateInputs.shoeTypeId = ''; 
+                    }
+                 },
+                loadExampleData() { 
+                    this.inputs = {
+                        eyeletPairs: 7,
+                        pattern: 'over-under',
+                        horizontalSpacing: 5.5,
+                        verticalSpacing: 2.2,
+                        freeEndLength: 23,
+                        units: this.inputs.units, 
+                    };
+                    this.totalLength = null;
+                    this.errorMessage = '';
+                    this.copyButtonText = 'Copy Results';
+                    this.isQuickEstimateMode = false; 
+                    this.quickEstimateInputs.shoeTypeId = ''; 
+                    this.showCopyTextInstruction = false;
+                 },
+
+                handleCopy() {
+                    if (this.totalLength === null) return;
+
+                    const selectedPatternObject = this.availablePatterns.find(p => p.id === this.inputs.pattern);
+                    const patternNameForCopy = selectedPatternObject ? selectedPatternObject.name : 'Unknown Pattern';
+                    
+                    this.textForClipboard = 'Shoelace Length for ' + patternNameForCopy + 
+                                       ' pattern (' + this.inputs.eyeletPairs + ' eyelet pairs): ' + 
+                                       this.totalLength.toFixed(2) + ' ' + this.inputs.units;
+                    
+                    this.showCopyTextInstruction = true;
+                    this.copyButtonText = 'Text Ready! (Ctrl+C)';
+
+                    this.$nextTick(() => { 
+                        const textInput = document.getElementById('textToCopyArea');
+                        if(textInput) {
+                            textInput.focus();
+                            textInput.select();
+                        }
+                    });
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(this.textForClipboard).then(() => {
+                            this.copyButtonText = 'Copied!';
+                            this.showCopyTextInstruction = false; 
+                            setTimeout(() => { this.copyButtonText = 'Copy Results'; }, 2000);
+                        }).catch(err => {
+                            console.warn('Clipboard API likely blocked by browser/iframe policy. User to copy manually.', err);
+                        });
+                    }
+                },
+                toggleTheme() { this.isDarkTheme = !this.isDarkTheme; this.showCopyTextInstruction = false; },
+                toggleReadme() { this.showReadme = !this.showReadme; this.showCopyTextInstruction = false; }
+            }));
+        });
+    </script>
+</body>
+</html>
+

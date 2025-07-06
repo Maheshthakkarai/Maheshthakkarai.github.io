@@ -39,5 +39,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Sunglass.png",
         "url": "/webapps/SunGlass.html"
+    },
+   {
+        "title": "Hats",
+        "description": "Hat Measurements",
+        "category": "Fashion and Style",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Sunglass.png",
+        "url": "/webapps/Hats.html"
     }
+
 ];
