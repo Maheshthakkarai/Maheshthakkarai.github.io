@@ -144,5 +144,4 @@ window.apps = [
         "image": "/assets/images/AIBasics.png",
         "url": "/webapps/AIBasics.html"
     }
-
 ];
