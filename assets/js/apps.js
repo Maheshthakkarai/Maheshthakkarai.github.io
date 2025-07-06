@@ -63,6 +63,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Bloodgroup.png",
         "url": "/webapps/BloodGroup.html"
+    },
+{
+        "title": "Blood Pressure Measurement",
+        "description": "What your BP indicates",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/BloodPressure.png",
+        "url": "/webapps/BloodPressure.html"
     }
 
 ];
