@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPORT GUIDE Polished</title>
+    <style>
+        /* --- Global Styles & Variables (remain the same) --- */
+        :root {
+            --font-primary: 'Roboto', sans-serif;
+            --font-secondary: sans-serif;
+
+            /* Light Theme */
+            --color-bg-light: linear-gradient(180deg, #f8faff 0%, #f4f7f9 100%);
+            --color-surface-light: rgba(255, 255, 255, 0.9);
+            --color-primary-light: #8bc3eb;
+            --color-secondary-light: #e8e8e8;
+            --color-text-primary-light: #2c3e50;
+            --color-text-secondary-light: #5a6a7a;
+            --color-border-light: #d8dfe6;
+            --color-favorite-light: #ffc107;
+            --color-list-alt-light: #f9f9f9;
+            --color-quick-facts-bg-light: #eef6fc;
+            --shadow-light: 0 6px 20px rgba(0, 0, 0, 0.07);
+            --inner-shadow-light: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            --modal-bg-light: rgba(255, 255, 255, 0.85);
+
+            /* Dark Theme */
+            --color-bg-dark: linear-gradient(180deg, #2a3a4a 0%, #1f2937 100%);
+            --color-surface-dark: rgba(55, 65, 81, 0.9);
+            --color-primary-dark: #6cb2eb;
+            --color-secondary-dark: #4f5b6a;
+            --color-text-primary-dark: #e5e7eb;
+            --color-text-secondary-dark: #b0b9c4;
+            --color-border-dark: #5a6a7a;
+            --color-favorite-dark: #facc15;
+            --color-list-alt-dark: #404a58;
+            --color-quick-facts-bg-dark: #2c3a4a;
+            --shadow-dark: 0 6px 20px rgba(0, 0, 0, 0.25);
+            --inner-shadow-dark: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            --modal-bg-dark: rgba(40, 50, 65, 0.85);
+
+
+            /* Current Theme Vars */
+            --color-bg: var(--color-bg-light);
+            --color-surface: var(--color-surface-light);
+            --color-primary: var(--color-primary-light);
+            --color-secondary: var(--color-secondary-light);
+            --color-text-primary: var(--color-text-primary-light);
+            --color-text-secondary: var(--color-text-secondary-light);
+            --color-border: var(--color-border-light);
+            --color-favorite: var(--color-favorite-light);
+            --color-list-alt: var(--color-list-alt-light);
+            --color-quick-facts-bg: var(--color-quick-facts-bg-light);
+            --shadow: var(--shadow-light);
+            --inner-shadow: var(--inner-shadow-light);
+            --modal-bg: var(--modal-bg-light);
+
+            /* Spacing & Sizing */
+            --spacing-xs: 0.25rem; --spacing-sm: 0.5rem; --spacing-md: 1rem; --spacing-lg: 1.5rem; --spacing-xl: 2rem;
+            --border-radius: 14px;
+            --font-size-base: 1rem; --font-size-sm: 0.875rem; --font-size-lg: 1.25rem; --font-size-xl: 1.75rem; --font-size-xxl: 2.25rem;
+
+            /* Transitions */
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-med: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* --- Dark Theme Application (remain the same) --- */
+        [data-theme="dark"] {
+             --color-bg: var(--color-bg-dark); --color-surface: var(--color-surface-dark);
+             --color-primary: var(--color-primary-dark); --color-secondary: var(--color-secondary-dark);
+             --color-text-primary: var(--color-text-primary-dark); --color-text-secondary: var(--color-text-secondary-dark);
+             --color-border: var(--color-border-dark); --color-favorite: var(--color-favorite-dark);
+             --color-list-alt: var(--color-list-alt-dark); --color-quick-facts-bg: var(--color-quick-facts-bg-dark);
+             --shadow: var(--shadow-dark); --inner-shadow: var(--inner-shadow-dark); --modal-bg: var(--modal-bg-dark);
+        }
+        /* --- Base Styles (remain the same) --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: var(--font-size-base); scroll-behavior: smooth; height: 100%; }
+        body { font-family: var(--font-primary), var(--font-secondary); background: var(--color-bg); color: var(--color-text-primary); line-height: 1.7; min-height: 100%; display: flex; flex-direction: column; transition: background var(--transition-med), color var(--transition-med); padding: 0; opacity: 0; animation: fadeInBody var(--transition-slow) forwards; }
+        @keyframes fadeInBody { to { opacity: 1; } }
+        h1, h2, h3, h4, h5, h6 { margin-bottom: var(--spacing-md); line-height: 1.3; font-weight: 700; letter-spacing: -0.01em; }
+        h1 { font-size: var(--font-size-xxl); } h3 { font-size: var(--font-size-lg); margin-top: var(--spacing-md);}
+        p { margin-bottom: var(--spacing-md); font-size: var(--font-size-base); color: var(--color-text-secondary); }
+        p:last-child { margin-bottom: 0; }
+        a { color: var(--color-primary); text-decoration: none; font-weight: 500; transition: color var(--transition-fast); }
+        a:hover, a:focus { text-decoration: underline; filter: brightness(1.1); }
+        ul { list-style-type: none; padding-left: 0; margin-bottom: var(--spacing-md); }
+        li { margin-bottom: var(--spacing-sm); color: var(--color-text-secondary); padding: var(--spacing-xs) var(--spacing-sm); border-radius: calc(var(--border-radius) * 0.5); transition: background-color var(--transition-fast); position: relative; padding-left: var(--spacing-lg); }
+        li::before { content: '•'; position: absolute; left: var(--spacing-sm); top: var(--spacing-xs); color: var(--color-primary); font-weight: bold; }
+        .sport-info-section ul li:nth-child(odd) { background-color: var(--color-list-alt); }
+        button, select, input[type="text"] { font-family: inherit; font-size: var(--font-size-base); padding: calc(var(--spacing-sm) + 2px) var(--spacing-md); border-radius: var(--border-radius); border: 1px solid var(--color-border); cursor: pointer; transition: all var(--transition-fast); background-color: var(--color-surface); color: var(--color-text-primary); }
+        input[type="text"] { cursor: text; }
+        button:hover, select:hover, input[type="text"]:hover { border-color: var(--color-primary); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transform: translateY(-1px); }
+        button:active, select:active { transform: translateY(0px); box-shadow: var(--inner-shadow); }
+        button:focus, select:focus, input[type="text"]:focus { outline: 2px solid transparent; border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 30%, transparent); }
+        /* --- Layout & Container (remain the same) --- */
+        #app-wrapper { padding-top: 70px; }
+        .container { width: 95%; max-width: 1000px; margin: var(--spacing-xl) auto; padding: var(--spacing-lg) var(--spacing-xl); background-color: var(--color-surface); border-radius: var(--border-radius); box-shadow: var(--shadow); transition: background-color var(--transition-med), box-shadow var(--transition-med); flex-grow: 1; display: flex; flex-direction: column; transform: translateY(20px); opacity: 0; animation: slideInContainer var(--transition-slow) 0.2s forwards; }
+        @keyframes slideInContainer { to { opacity: 1; transform: translateY(0); } }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        /* --- Sticky Header (remain the same) --- */
+        .app-header { position: sticky; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-lg); background-color: color-mix(in srgb, var(--color-surface) 85%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--color-border); transition: background-color var(--transition-med), border-color var(--transition-med); width: 100%; margin-bottom: 0; }
+        .app-title { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-text-primary); margin-bottom: 0; letter-spacing: 0; }
+        .header-controls { display: flex; gap: var(--spacing-sm); }
+        .icon-button { background: none; border: none; padding: var(--spacing-sm); cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; transition: background-color var(--transition-fast), transform var(--transition-fast); }
+        .icon-button:hover { background-color: var(--color-secondary); transform: scale(1.1); }
+        .icon-button:active { transform: scale(0.95); }
+        .icon-button svg { width: 22px; height: 22px; fill: var(--color-text-primary); transition: fill var(--transition-med); }
+        /* --- Sport Selector & Search Area (remain the same) --- */
+        .controls-area { display: flex; flex-direction: column; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+        .search-area, .select-area { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+        .controls-area label { font-weight: 600; font-size: var(--font-size-base); display: block; }
+        #sport-select-label::after { content: ' *'; color: #e53e3e; font-weight: bold; }
+        #sport-search, #sport-select { width: 100%; max-width: 400px; box-shadow: var(--inner-shadow); }
+        #sport-select[size] { background-image: none; padding-right: var(--spacing-md); height: auto; max-height: 250px; overflow-y: auto; border-color: var(--color-border); scrollbar-width: thin; scrollbar-color: var(--color-primary) var(--color-secondary); }
+        #sport-select[size]::-webkit-scrollbar { width: 8px; }
+        #sport-select[size]::-webkit-scrollbar-track { background: var(--color-secondary); border-radius: 4px; }
+        #sport-select[size]::-webkit-scrollbar-thumb { background-color: var(--color-primary); border-radius: 4px; border: 2px solid var(--color-secondary); }
+        #sport-select option { padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; border-radius: calc(var(--border-radius) * 0.5); margin: 2px; transition: background-color var(--transition-fast), color var(--transition-fast); }
+        #sport-select option:hover { background-color: var(--color-secondary); }
+        #sport-select option:checked { background-color: var(--color-primary); color: var(--color-surface); font-weight: 500; }
+        [data-theme="dark"] #sport-select option:checked { color: var(--color-bg); }
+        /* --- Content Display Area (remain the same) --- */
+        #sport-info-content { margin-top: var(--spacing-md); flex-grow: 1; opacity: 0; transform: translateY(15px); transition: opacity var(--transition-slow), transform var(--transition-slow); position: relative; border: 2px solid transparent; border-radius: var(--border-radius); padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); }
+        #sport-info-content.visible { opacity: 1; transform: translateY(0); }
+        #sport-info-content.is-favorite-content { border-color: var(--color-favorite); box-shadow: 0 0 15px color-mix(in srgb, var(--color-favorite) 20%, transparent); }
+        .sport-info-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+        .sport-info-header h2 { font-size: var(--font-size-xl); margin: 0; flex-grow: 1; line-height: 1.3; padding-right: var(--spacing-sm); font-weight: 700; }
+        #favorite-button { width: 44px; height: 44px; flex-shrink: 0; margin-top: -4px; }
+        #favorite-button svg { width: 24px; height: 24px; fill: var(--color-text-secondary); transition: fill var(--transition-fast), transform var(--transition-fast); }
+        #favorite-button.is-favorite svg { fill: var(--color-favorite); transform: scale(1.1); }
+        #favorite-button:hover svg { transform: scale(1.2); }
+        /* --- Collapsible Sections (<details>/<summary>) (remain the same) --- */
+        details { margin-bottom: var(--spacing-lg); border: 1px solid var(--color-border); border-radius: calc(var(--border-radius) * 0.75); background-color: color-mix(in srgb, var(--color-surface) 50%, transparent); overflow: hidden; transition: background-color var(--transition-med); }
+        details[open] { padding-bottom: var(--spacing-md); }
+        summary { padding: var(--spacing-md) var(--spacing-lg); cursor: pointer; font-weight: 600; font-size: var(--font-size-lg); color: var(--color-text-primary); list-style: none; display: flex; align-items: center; gap: var(--spacing-sm); transition: background-color var(--transition-fast); position: relative; }
+        summary:hover { background-color: var(--color-secondary); }
+        summary::before { content: '+'; font-weight: bold; display: inline-block; margin-right: var(--spacing-sm); transition: transform var(--transition-fast); font-size: 1.2em; line-height: 1; color: var(--color-primary); }
+        details[open] > summary::before { transform: rotate(45deg); }
+        summary::-webkit-details-marker { display: none; }
+        .section-content { padding: 0 var(--spacing-lg) 0 var(--spacing-lg); opacity: 0; max-height: 0; overflow: hidden; transition: opacity var(--transition-med), max-height var(--transition-med), padding var(--transition-med); }
+        details[open] .section-content { padding-top: var(--spacing-sm); padding-bottom: var(--spacing-md); opacity: 1; max-height: 1000px; }
+        summary svg { width: 18px; height: 18px; fill: var(--color-primary); margin-right: var(--spacing-sm); flex-shrink: 0; }
+        .quick-facts-section { background-color: var(--color-quick-facts-bg) !important; border: 1px solid var(--color-primary); }
+        /* --- README / Help Section (remain the same) --- */
+        .readme-box { display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.95); opacity: 0; width: 90%; max-width: 500px; background-color: var(--modal-bg); color: var(--color-text-primary); padding: var(--spacing-lg); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); z-index: 1000; border: 1px solid var(--color-border); transition: opacity var(--transition-fast), transform var(--transition-fast); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .readme-box.active { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .readme-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-secondary); padding-bottom: var(--spacing-sm); }
+        .readme-header h3 { margin-bottom: 0; }
+        .readme-close-btn { background: none; border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer; color: var(--color-text-secondary); padding: 0 var(--spacing-sm); line-height: 1; transition: color var(--transition-fast), transform var(--transition-fast); }
+        .readme-close-btn:hover { color: var(--color-text-primary); transform: rotate(90deg) scale(1.1); }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 999; opacity: 0; transition: opacity var(--transition-med); }
+        .overlay.active { display: block; opacity: 1; }
+        /* --- Responsiveness (remain the same) --- */
+        @media (max-width: 480px) { :root { --font-size-base: 0.9rem; --font-size-xl: 1.5rem; --font-size-xxl: 1.8rem; --spacing-md: 0.8rem; --spacing-lg: 1.2rem; --border-radius: 10px; } #app-wrapper { padding-top: 60px; } .container { padding: var(--spacing-md); margin: var(--spacing-md) auto; width: 100%; } .app-header { padding: var(--spacing-xs) var(--spacing-md); } .app-title { font-size: var(--font-size-lg); } .icon-button { width: 40px; height: 40px; } .icon-button svg { width: 20px; height: 20px; } #favorite-button { width: 40px; height: 40px; margin-top: 0; } #favorite-button svg { width: 22px; height: 22px; } .sport-info-header h2 { font-size: var(--font-size-lg); } summary { font-size: var(--font-size-base); padding: var(--spacing-sm) var(--spacing-md); } .section-content { padding: 0 var(--spacing-md) 0 var(--spacing-md); } details[open] .section-content { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-sm); } }
+        @media (min-width: 481px) and (max-width: 768px) { :root { --font-size-base: 0.95rem; } .container { padding: var(--spacing-lg); margin: var(--spacing-lg) auto; width: 95%;} #app-wrapper { padding-top: 65px; } }
+
+    </style>
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1 class="app-title">SPORT GUIDE</h1>
+        <div class="header-controls">
+            <button id="help-button" class="icon-button" aria-label="Help">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
+            </button>
+            <button id="theme-toggle" class="icon-button" aria-label="Toggle theme"></button>
+        </div>
+    </header>
+
+    <!-- App Wrapper -->
+    <div id="app-wrapper">
+        <div class="container">
+            <main>
+                <div class="controls-area">
+                    <div class="search-area">
+                        <label for="sport-search">Search Sports:</label>
+                        <input type="text" id="sport-search" placeholder="Type to filter...">
+                    </div>
+                    <div class="select-area">
+                       <label for="sport-select" id="sport-select-label">Select a Sport:</label>
+                       <select id="sport-select" size="10"></select>
+                    </div>
+                </div>
+                <div id="sport-info-content">
+                    <p id="initial-message">Select a sport from the list box above to view its details.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- README Box -->
+    <div id="readme-overlay" class="overlay"></div>
+    <div id="readme-box" class="readme-box">
+         <div class="readme-header">
+            <h3>How to Use SPORT GUIDE</h3>
+            <button id="readme-close" class="readme-close-btn" aria-label="Close help">×</button>
+        </div>
+        <p>Welcome to SPORT GUIDE!</p>
+        <ul>
+            <li>Use the <strong>Search</strong> box to filter the list of sports.</li>
+            <li>Select a sport from the scrollable <strong>list box</strong> below the search bar to view its details.</li>
+            <li>Click on section titles (like Description, Rules) to expand or collapse them.</li>
+            <li>Mark your favorite sports using the <strong>star icon (★)</strong> next to the sport's title. Favorites are marked with a ⭐ in the list box.</li>
+            <li>Switch between Light and Dark themes using the <strong>sun/moon icon</strong> in the header.</li>
+        </ul>
+    </div>
+
+    <script>
+        // --- Embedded SVG Icons ---
+        const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-7a1 1 0 01-.293.707l-.009.01 1.05 1.05a1 1 0 11-1.414 1.414l-1.05-1.05-.01.009A1 1 0 0118 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-15 0a1 1 0 01-.293.707l-.009.01 1.05 1.05a1 1 0 11-1.414 1.414l-1.05-1.05-.01.009A1 1 0 012 10a1 1 0 01-1 1H0a1 1 0 110-2h1a1 1 0 011 1zM5.646 5.646a1 1 0 011.414 0l1.05 1.05A1 1 0 017.06 8.8l-1.05-1.05a1 1 0 010-1.414zm9.192 9.192a1 1 0 011.414 0l1.05 1.05a1 1 0 11-1.414 1.414l-1.05-1.05a1 1 0 010-1.414zM4.222 14.808a1 1 0 010-1.414l1.05-1.05a1 1 0 111.414 1.414l-1.05 1.05a1 1 0 01-1.414 0zm11.314-11.314a1 1 0 010-1.414l1.05-1.05a1 1 0 011.414 1.414l-1.05 1.05a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z" clip-rule="evenodd" /></svg>`;
+        const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`;
+        const starEmptyIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.31h5.418a.562.562 0 01.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 21.07a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988h5.418a.563.563 0 00.475-.31l2.125-5.11z" /></svg>`;
+        const starFilledIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354l-4.615 2.879c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>`;
+        const infoIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>`;
+        const historyIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>`;
+        const objectiveIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" /><path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.18l3.75-3.75a1.65 1.65 0 012.332 0l3.75 3.75a1.65 1.65 0 010 1.18l-3.75 3.75a1.65 1.65 0 01-2.332 0L.664 10.59zM10 18a8 8 0 100-16 8 8 0 000 16z" clip-rule="evenodd" /></svg>`;
+        const usersIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0115 11.98V12c0 .98-.446 1.854-1.15 2.44a6.97 6.97 0 01-2.573 1.08M17 14a5 5 0 01-3.07-1.02A6.97 6.97 0 0112 16c0 .34.024.673.07 1h-.07a6.97 6.97 0 00-1.5-4.33A5 5 0 019 11.98V12c0 .98-.446 1.854-1.15 2.44a6.97 6.97 0 01-2.573 1.08M9 12a5 5 0 013-4.56v-.44c0-.98.446-1.854 1.15-2.44A6.97 6.97 0 0112 4c.036 0 .07 0 .106.002A5.002 5.002 0 0115 8c0 .98.446 1.854 1.15 2.44A6.97 6.97 0 0112 16c-.036 0-.07 0-.106-.002A5.002 5.002 0 019 12z" /></svg>`;
+        const rulesIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm10.5 6a.5.5 0 000-1H10V8.5a.5.5 0 00-1 0V11H6.5a.5.5 0 000 1H9v1.5a.5.5 0 001 0V12h2.5z" clip-rule="evenodd" /></svg>`;
+        const formatIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 1a9 9 0 100 18 9 9 0 000-18zM8.34 5.027a.75.75 0 011.32 0l.594 1.19a.75.75 0 00.566.41l1.314.19a.75.75 0 01.416 1.28l-.95.926a.75.75 0 00-.217.665l.224 1.308a.75.75 0 01-1.088.79l-1.175-.617a.75.75 0 00-.698 0l-1.175.617a.75.75 0 01-1.088-.79l.224-1.308a.75.75 0 00-.217-.665l-.95-.926a.75.75 0 01.416-1.28l1.314-.19a.75.75 0 00.566-.41L8.34 5.027zM11 13a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" /></svg>`;
+        const uniqueIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM15 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V6h-1a1 1 0 110-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" clip-rule="evenodd" /></svg>`;
+        const impactIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.75 7.75a.75.75 0 000 1.5h10.5a.75.75 0 000-1.5H4.75z" clip-rule="evenodd" /></svg>`;
+
+        // --- Sport Data (Full List - Now Complete!) ---
+        let sportsData = [
+             { id: "soccer", name: "Football (Soccer)", estimatedFans: "3.5–5 billion", keyRegions: "Worldwide; most popular sport", description: "A team sport played with a spherical ball between two teams of 11 players. It is played by approximately 250 million players in over 200 countries. Estimated global fans: 3.5–5 billion, dominant worldwide.", originHistory: "Modern football originated in Britain in the mid-19th century. Earlier forms existed globally.", objective: "Score more goals than the opponent by getting the ball into their net.", teamsPlayers: "Two teams, 11 players each.", basicRules: ["No hands (except goalkeeper in penalty area).", "Score goals by putting ball in net.", "Offside rule applies.", "Fouls result in free kicks or penalties."], format: "Two 45-minute halves.", tournamentsChampions: "FIFA World Cup, UEFA Champions League. Pelé, Maradona, Messi, Ronaldo.", uniqueAspects: "Continuous flow, global appeal, simplicity.", impact: "World's most popular sport, massive cultural/economic influence." },
+             { id: "cricket", name: "Cricket", estimatedFans: "2.5 billion", keyRegions: "Asia, Australia, UK, Africa", description: "A bat-and-ball game between two teams of 11 players. Estimated fans: 2.5 billion, popular in Asia, Australia, UK, Africa.", originHistory: "Originated in Southeast England (16th century).", objective: "Score more runs than the opposing team.", teamsPlayers: "Two teams, 11 players each.", basicRules: ["Batters score runs by hitting the ball and running between wickets.", "Bowlers try to dismiss batters (bowled, caught, LBW, etc.).", "An 'over' is 6 balls bowled.", "Teams bat in innings."], format: "Test (5 days), ODI (50 overs), T20 (20 overs).", tournamentsChampions: "ICC World Cup (ODI/T20), The Ashes. Bradman, Tendulkar, Kohli.", uniqueAspects: "Multiple formats, complex rules, strategic depth.", impact: "Huge popularity in Commonwealth nations." },
+             { id: "field-hockey", name: "Field Hockey", estimatedFans: "2 billion", keyRegions: "Europe, Asia, Africa, Australia", description: "A team sport played using sticks to hit a ball into a goal. Estimated fans: 2 billion, strong in Europe, Asia, Africa, Australia.", originHistory: "Modern game emerged in England (mid-19th century). Olympic sport since 1908.", objective: "Score goals by hitting the ball into the opponent's net with a stick.", teamsPlayers: "Two teams, 11 players each.", basicRules: ["Use flat side of stick only.", "No feet (except goalie).", "Goals scored from within shooting circle.", "Rules against dangerous play."], format: "Typically four 15-minute quarters.", tournamentsChampions: "Olympic Games, FIH World Cup. Netherlands, Australia, Germany.", uniqueAspects: "Played on turf, use of curved stick, penalty corners.", impact: "Major global sport, key Olympic event." },
+             { id: "tennis", name: "Tennis", estimatedFans: "1 billion", keyRegions: "Europe, Asia, Americas", description: "A racket sport played individually (singles) or in pairs (doubles). Estimated fans: 1 billion, popular globally.", originHistory: "Modern 'lawn tennis' originated in England (late 19th century).", objective: "Score points by hitting a ball over a net so the opponent cannot return it legally.", teamsPlayers: "Singles (1v1) or Doubles (2v2).", basicRules: ["Serve alternates.", "Ball must land in court.", "Unique scoring (Love, 15, 30, 40, Game).", "Win sets by winning games.", "Win match by winning sets."], format: "Best of 3 or 5 sets.", tournamentsChampions: "Grand Slams (Wimbledon, US/French/Australian Opens). Federer, Nadal, Djokovic, Williams.", uniqueAspects: "Individual duels, various surfaces, unique scoring.", impact: "Popular global sport, high-profile athletes." },
+             { id: "volleyball", name: "Volleyball", estimatedFans: "900 million", keyRegions: "Europe, Asia, Americas, Australia", description: "A team sport with six players per side separated by a net, aiming to ground the ball on the opponent's court. Estimated fans: 900 million.", originHistory: "Invented in USA (1895) by William G. Morgan.", objective: "Score points by grounding the ball on the opponent's court.", teamsPlayers: "Two teams, 6 players each.", basicRules: ["Max 3 hits per side.", "Players rotate positions.", "Cannot hit ball twice consecutively.", "Ball must stay in bounds."], format: "Best of 5 sets, sets to 25 points (15 in 5th).", tournamentsChampions: "Olympics, World Championship. Brazil, USA, Italy.", uniqueAspects: "Team rotation, specialized roles, non-contact.", impact: "Popular indoor and beach sport worldwide." },
+             { id: "table-tennis", name: "Table Tennis", estimatedFans: "850 million", keyRegions: "Asia, Europe", description: "A fast racket sport played on a table with lightweight balls and small rackets. Estimated fans: 850 million, huge in Asia.", originHistory: "Originated in Victorian England as a parlour game.", objective: "Score points by hitting the ball so the opponent cannot return it legally onto the table.", teamsPlayers: "Singles (1v1) or Doubles (2v2).", basicRules: ["Serve must bounce once on each side.", "Alternate serves.", "Hit ball after one bounce on own side.", "Points scored on opponent errors."], format: "Best of 5 or 7 games, games to 11 points.", tournamentsChampions: "Olympics, World Championships. China (dominant), Ma Long.", uniqueAspects: "Incredible speed and spin, fast reflexes.", impact: "Massive participation, especially in Asia." },
+             { id: "basketball", name: "Basketball", estimatedFans: "800 million", keyRegions: "Americas, Asia, Oceania", description: "A team sport with five players per side aiming to shoot a ball through a hoop. Estimated fans: 800 million.", originHistory: "Invented in USA (1891) by James Naismith.", objective: "Score more points than the opponent by shooting the ball through their hoop.", teamsPlayers: "Two teams, 5 players each.", basicRules: ["Dribble ball while moving.", "Score points (2 or 3 per shot, 1 per free throw).", "Fouls called for illegal contact.", "Shot clock limits possession time."], format: "Four quarters (NBA/FIBA) or two halves (NCAA).", tournamentsChampions: "NBA Finals, Olympics, FIBA World Cup. Jordan, LeBron James.", uniqueAspects: "Fast pace, verticality, individual skill.", impact: "Hugely popular globally, strong urban culture link." },
+             { id: "baseball", name: "Baseball", estimatedFans: "500 million", keyRegions: "Americas, Japan, Korea", description: "A bat-and-ball sport between two teams of nine, involving batting, pitching, and fielding. Estimated fans: 500 million.", originHistory: "Evolved from older games in USA (mid-19th century).", objective: "Score runs by hitting a pitched ball and advancing around bases.", teamsPlayers: "Two teams, 9 players each.", basicRules: ["Batter hits pitched ball.", "Runners advance bases to score.", "Fielders get outs (strikeouts, fly outs, force outs).", "3 outs per half-inning."], format: "Typically 9 innings.", tournamentsChampions: "MLB World Series, World Baseball Classic. Babe Ruth, Hank Aaron.", uniqueAspects: "Unique pace, specialized roles, strategy.", impact: "'National pastime' in USA, major in Japan, Korea, Latin America." },
+             { id: "rugby", name: "Rugby (Union & League)", estimatedFans: "475 million", keyRegions: "Oceania, South Africa, UK", description: "Contact team sports (Union 15 players, League 13 players) involving running, kicking, and backward passing. Estimated fans: 475 million.", originHistory: "Split from football in England (mid/late 19th century).", objective: "Score points via tries (grounding ball in end zone) or kicking goals.", teamsPlayers: "Union: 15 per side. League: 13 per side.", basicRules: ["Pass backward only.", "Tackle opponents.", "Union: Rucks/Mauls. League: Play-the-ball.", "Score tries, conversions, penalties, drop goals."], format: "Two halves (usually 40 mins each).", tournamentsChampions: "Rugby World Cup (Union/League), Six Nations (U). All Blacks (U), Kangaroos (L).", uniqueAspects: "Physical contact, backward passing, set pieces.", impact: "Major sports in core regions, strong cultural ties." },
+             { id: "golf", name: "Golf", estimatedFans: "450 million", keyRegions: "Americas, Europe, Oceania", description: "A club-and-ball sport aiming to hit balls into holes on a course in the fewest strokes. Estimated fans: 450 million.", originHistory: "Modern game from 15th-century Scotland.", objective: "Complete the course (9 or 18 holes) in the fewest strokes.", teamsPlayers: "Primarily individual; team formats exist.", basicRules: ["Play ball as it lies.", "Play course as found.", "Each stroke counts.", "Rules for hazards, lost balls, penalties.", "Etiquette crucial."], format: "Stroke play (total strokes) or match play (holes won).", tournamentsChampions: "Majors (Masters, Opens, PGA), Ryder Cup. Nicklaus, Woods.", uniqueAspects: "Played on large courses, self-policing, mental game, handicap system.", impact: "Popular recreationally and professionally." },
+             { id: "badminton", name: "Badminton", estimatedFans: "400 million", keyRegions: "Asia, Europe", description: "A racket sport using rackets to hit a shuttlecock over a net. Estimated fans: 400 million, popular in Asia.", originHistory: "Developed in British India (mid-19th century).", objective: "Score points by hitting shuttlecock over net so opponent cannot return it legally.", teamsPlayers: "Singles (1v1) or Doubles (2v2).", basicRules: ["Serve underhand.", "Hit shuttlecock before it lands.", "Points on opponent errors (out of bounds, net fault)."], format: "Best of 3 games, games to 21 points.", tournamentsChampions: "Olympics, World Championships. Lin Dan, Lee Chong Wei.", uniqueAspects: "Unique shuttlecock flight, requires agility.", impact: "Huge participation sport, especially in Asia." },
+             { id: "american-football", name: "American Football", estimatedFans: "400 million", keyRegions: "USA, growing globally", description: "A team sport with 11 players per side on a rectangular field, aiming to advance an oval ball into the end zone. Estimated fans: 400 million, dominant in USA.", originHistory: "Evolved from rugby/soccer in USA (late 19th century).", objective: "Score points via touchdowns, field goals, extra points.", teamsPlayers: "Two teams, 11 on offense/defense.", basicRules: ["Advance ball via running/passing.", "4 downs to gain 10 yards.", "Complex rules for passing, tackling, penalties.", "Points: TD(6), FG(3), XP(1/2), Safety(2)."], format: "Four 15-minute quarters.", tournamentsChampions: "NFL Super Bowl, College Football Playoff. Tom Brady, Joe Montana.", uniqueAspects: "Stop-start play, specialized roles, strategy, physicality.", impact: "Most popular sport in USA, huge cultural impact." },
+             { id: "formula-1-racing", name: "Formula 1 Racing", estimatedFans: "400 million", keyRegions: "Europe, Middle East, Asia", description: "Highest class of single-seater auto racing. Estimated fans: 400 million.", originHistory: "Roots in European Grand Prix (1920s-30s). First World Championship 1950.", objective: "Win races (Grands Prix) to score points for Drivers' and Constructors' championships.", teamsPlayers: "Multiple teams (constructors), 2 drivers each.", basicRules: ["Strict technical/sporting regulations.", "Points for top finishers.", "Safety car procedures.", "DRS for overtaking."], format: "Season of Grands Prix weekends (practice, qualifying, race).", tournamentsChampions: "FIA Formula One World Championship. Hamilton, Schumacher, Senna.", uniqueAspects: "Cutting-edge tech, high speeds, global tracks.", impact: "Pinnacle of motorsport, technological driver." },
+             { id: "mma", name: "Mixed Martial Arts (MMA)", estimatedFans: "300 million", keyRegions: "USA, Brazil, Asia", description: "Full-contact combat sport combining striking and grappling techniques. Estimated fans: 300 million.", originHistory: "Modern roots in Brazilian vale tudo and early UFC (1990s).", objective: "Defeat opponent via KO, submission, or decision.", teamsPlayers: "Individual (1v1).", basicRules: ["Striking (punches, kicks, etc.) and grappling allowed.", "Prohibited dangerous techniques.", "Fights end by KO, TKO, submission, decision."], format: "3 or 5 rounds (5 mins each).", tournamentsChampions: "UFC, Bellator, ONE Championship. Jon Jones, Khabib Nurmagomedov.", uniqueAspects: "Combines diverse martial arts, high intensity.", impact: "Rapidly growing global sport." },
+             { id: "handball", name: "Handball", estimatedFans: "270 million", keyRegions: "Europe, Africa", description: "A fast-paced team sport where two teams pass a ball using their hands to score in the opponent's goal. Estimated fans: 270 million, popular in Europe and Africa.", originHistory: "Modern game originated in Northern Europe (Denmark, Germany, Sweden) in the late 19th/early 20th century.", objective: "To score more goals than the opponent by throwing the ball into their goal.", teamsPlayers: "Two teams, 7 players each (6 court players + 1 goalkeeper).", basicRules: ["Players can hold ball for 3 seconds or take 3 steps.", "Dribbling allowed.", "Only goalkeeper allowed in goal area.", "Physical contact allowed for defending.", "Fouls lead to free throws or penalties."], format: "Two 30-minute halves.", tournamentsChampions: "Olympic Games, IHF World Men's/Women's Handball Championship, EHF Champions League (Europe). Notable nations: France, Denmark, Norway.", uniqueAspects: "Very fast pace, high scoring, physical play, specific goal area rules.", impact: "Very popular in continental Europe, major Olympic sport." },
+             { id: "cycling", name: "Cycling", estimatedFans: "150 million", keyRegions: "Europe, global recreationally", description: "Competitive physical activity using bicycles. Includes road racing, track cycling, mountain biking, BMX. Estimated fans: 150 million (competitive), massive recreational participation.", originHistory: "Bicycle invented in 19th century. Racing began soon after.", objective: "Varies by discipline: Fastest time (time trials, track pursuit), first across line (road races, sprints), points accumulation, technical skill (BMX, trials).", teamsPlayers: "Individual or team sport depending on discipline.", basicRules: "Varies greatly by discipline. General rules involve fair play, designated courses, equipment regulations.", format: "Single-day races (classics), multi-day stage races (Grand Tours), track meets, MTB circuits, BMX events.", tournamentsChampions: "Tour de France, Giro d'Italia, Vuelta a España (Road), Olympics (all disciplines), UCI World Championships. Eddy Merckx, Lance Armstrong (controversial), Marianne Vos.", uniqueAspects: "Variety of disciplines, tests endurance/speed/skill, close ties to recreational activity.", impact: "Major European sport, important mode of transport and recreation globally." },
+             { id: "bowling", name: "Bowling", estimatedFans: "120 million", keyRegions: "Americas, Asia", description: "A target sport where a player rolls a bowling ball towards pins, aiming to knock them down. Most common is ten-pin bowling. Estimated fans: 120 million.", originHistory: "Ancient forms existed. Modern ten-pin bowling standardized in USA (late 19th century).", objective: "To score points by knocking down pins over ten frames.", teamsPlayers: "Individual or teams.", basicRules: ["Roll ball down lane to hit 10 pins.", "Two rolls per frame (unless a 'strike').", "Strike: All pins down on first roll (scores 10 + next two rolls).", "Spare: All pins down in two rolls (scores 10 + next one roll).", "Fouls (crossing foul line) invalidate roll."], format: "A game consists of 10 frames. Max score is 300 (12 strikes).", tournamentsChampions: "PBA Tour (Professional Bowlers Association - USA), World Bowling Championships.", uniqueAspects: "Unique scoring system, requires precision and technique, accessible recreationally.", impact: "Very popular recreational activity, professional tours mainly in USA." },
+             { id: "athletics", name: "Athletics (Track & Field)", estimatedFans: "100 million", keyRegions: "Global, Olympic staple", description: "Collection of events involving running, jumping, throwing, walking. Estimated fans: 100 million.", originHistory: "Ancient Olympic Games (776 BC). Modern form from 19th century.", objective: "Run faster, jump higher/farther, throw farther than competitors.", teamsPlayers: "Primarily individual; relays and team scores exist.", basicRules: ["Running: Lanes, no false starts.", "Jumping: Take-off rules, measurement.", "Throwing: Technique rules, sector boundaries.", "Combined Events (Decathlon/Heptathlon)."], format: "Meets with multiple events.", tournamentsChampions: "Olympics, World Championships. Usain Bolt, Carl Lewis, Jesse Owens.", uniqueAspects: "Diverse disciplines, foundation of Olympics.", impact: "Globally recognized, showcases human physical limits." },
+             { id: "horse-racing", name: "Horse Racing", estimatedFans: "100 million", keyRegions: "UK, USA, Middle East, Australia", description: "Equestrian performance sport involving horses ridden by jockeys or driven in sulkies over a set distance for competition. Estimated fans: 100 million.", originHistory: "Practiced since ancient times. Organized racing prominent since 17th/18th century England.", objective: "To be the first horse to cross the finish line.", teamsPlayers: "Horse and jockey/driver teams.", basicRules: ["Horses start from gates.", "Jockeys must carry specified weight.", "Rules against interference.", "Different race types (flat, jumps/steeplechase, harness)."], format: "Races over various distances and surfaces (dirt, turf).", tournamentsChampions: "Kentucky Derby (USA), Grand National (UK), Melbourne Cup (AUS), Dubai World Cup. Secretariat, Man o' War, Frankel.", uniqueAspects: "Partnership between human and animal, gambling element ('Sport of Kings').", impact: "Major spectator sport with significant betting industry in key regions." },
+             { id: "swimming", name: "Swimming", estimatedFans: "100 million", keyRegions: "Global, Olympic sport", description: "Individual or team racing sport in water using various strokes. Estimated fans: 100 million.", originHistory: "Competitive swimming from 1830s Britain. Original Olympic sport.", objective: "Cover specified distance in shortest time using specific stroke.", teamsPlayers: "Individual; team relays (4 swimmers).", basicRules: ["Race in lanes.", "Stroke technique rules (Freestyle, Back, Breast, Fly).", "Rules for starts, turns, finishes.", "No false starts."], format: "Races (50m-1500m), strokes, Individual Medley.", tournamentsChampions: "Olympics, World Aquatics Championships. Michael Phelps, Katie Ledecky.", uniqueAspects: "Full-body workout, technical strokes, time precision.", impact: "Vital life skill, popular recreation, major Olympic sport." },
+             { id: "ice-hockey", name: "Ice Hockey", estimatedFans: "80 million", keyRegions: "North America, Scandinavia, Russia", description: "Fast contact team sport on ice using sticks to shoot a puck into a net. Estimated fans: 80 million.", originHistory: "Developed in Canada (mid/late 19th century).", objective: "Score more goals than the opponent.", teamsPlayers: "Two teams, 6 players on ice (5 skaters + 1 goalie).", basicRules: ["Use sticks for puck.", "Checking allowed.", "Penalties for infractions (power plays).", "Offside and icing rules."], format: "Three 20-minute periods.", tournamentsChampions: "NHL Stanley Cup, Olympics, IIHF World Championship. Wayne Gretzky, Sidney Crosby.", uniqueAspects: "Played on skates, speed, physicality, line changes.", impact: "Major sport in colder climates, strong national identity." },
+             { id: "boxing", name: "Boxing", estimatedFans: "75 million", keyRegions: "Global", description: "Combat sport where two people wearing protective gloves throw punches at each other for a predetermined set of time in a ring. Estimated fans: 75 million.", originHistory: "Ancient origins. Modern rules (Marquess of Queensberry Rules) from 19th century England.", objective: "Win by knockout (KO), technical knockout (TKO), or judges' decision based on points.", teamsPlayers: "Individual (1v1).", basicRules: ["Only punches with gloved fist allowed.", "Cannot hit below the belt, back of head, kidneys.", "Clinching regulated by referee.", "Fights divided into rounds (usually 3 mins)."], format: "Professional fights (e.g., 12 rounds), amateur fights (e.g., 3 rounds).", tournamentsChampions: "Various sanctioning bodies (WBA, WBC, IBF, WBO) award world titles in different weight classes. Muhammad Ali, Mike Tyson, Floyd Mayweather Jr.", uniqueAspects: "'The Sweet Science', weight classes, requires stamina, skill, power.", impact: "Long history as major global combat sport." },
+             { id: "lacrosse", name: "Lacrosse", estimatedFans: "45 million", keyRegions: "North America, growing globally", description: "Team sport played with a stick ('crosse') having a net, used to catch, carry, and pass a rubber ball to score by shooting it into the opponent's goal. Estimated fans: 45 million.", originHistory: "Originated among Indigenous peoples of North America. Modern rules codified in Canada (mid-19th century).", objective: "Score more goals than the opponent.", teamsPlayers: "Men's Field (10 players), Women's Field (12), Box (indoor - 6).", basicRules: ["Use stick to handle ball.", "Rules vary significantly between Men's, Women's, and Box (e.g., contact levels, field size).", "Goal crease rules protect goalkeeper.", "Fouls result in penalties (time served or possession change)."], format: "Games typically divided into quarters.", tournamentsChampions: "World Lacrosse Championship, Premier Lacrosse League (PLL - USA), National Lacrosse League (NLL - Box).", uniqueAspects: "Use of netted stick, different versions (Field, Box, Women's), speed and skill.", impact: "Fastest growing sport in North America, expanding globally." },
+             { id: "fencing", name: "Fencing", estimatedFans: "35 million", keyRegions: "Europe, Olympic sport", description: "Combat sport with swords (foil, épée, sabre). Estimated fans: 35 million.", originHistory: "Evolved from swordsmanship/dueling. Modern sport 18th/19th century.", objective: "Score points by touching opponent with weapon per discipline rules.", teamsPlayers: "Individual (1v1); team relays exist.", basicRules: ["Fight on 'piste'.", "Electronic scoring.", "Foil: Torso target, priority rules.", "Épée: Full body target, no priority.", "Sabre: Upper body target, priority rules."], format: "Bouts to 5 or 15 points within time limits.", tournamentsChampions: "Olympics, World Championships. Italy, France, Hungary dominate.", uniqueAspects: "Three distinct disciplines, requires agility, precision, tactics.", impact: "Classic Olympic sport, emphasizes technique." },
+             { id: "canoeing-kayaking", name: "Canoeing & Kayaking", estimatedFans: "30 million", keyRegions: "Europe, Olympic sport", description: "Activity involving paddling a canoe or kayak. Competitive disciplines include sprint and slalom. Estimated fans: 30 million.", originHistory: "Boats used for transport for millennia. Sport developed in 19th century.", objective: "Sprint: Cover distance in fastest time. Slalom: Navigate course through gates fastest with fewest penalties.", teamsPlayers: "Individual (K1/C1) or teams (K2/C2/K4).", basicRules: ["Sprint: Straight course, stay in lane.", "Slalom: Navigate gates correctly (downstream/upstream), time penalties for touching/missing gates.", "Different boat classes (Kayak - double blade paddle, seated; Canoe - single blade, kneeling)."], format: "Sprint races over set distances (200m, 500m, 1000m). Slalom runs timed individually.", tournamentsChampions: "Olympics, ICF Canoe Sprint/Slalom World Championships. Germany, Hungary, Slovakia strong nations.", uniqueAspects: "Different boat/paddle types, requires strength (sprint) or agility/skill (slalom).", impact: "Popular recreational activity, core Olympic sport." },
+             { id: "triathlon", name: "Triathlon", estimatedFans: "25 million", keyRegions: "Global, growing", description: "Multi-discipline endurance sport consisting of swimming, cycling, and running in sequence. Estimated fans: 25 million.", originHistory: "Modern triathlon started in San Diego, USA (1974). Ironman Hawaii (1978) boosted popularity.", objective: "Complete the three disciplines in the shortest total time.", teamsPlayers: "Primarily individual; relay formats exist.", basicRules: ["Continuous race: swim -> bike -> run.", "Transitions between disciplines are timed.", "Specific rules for each leg (e.g., drafting rules on bike may vary).", "Penalties for rule violations."], format: "Various distances: Sprint, Olympic (1.5km swim, 40km bike, 10km run), Half-Ironman, Ironman (3.8km swim, 180km bike, 42.2km run).", tournamentsChampions: "Olympic Games, Ironman World Championship (Kona), ITU World Triathlon Series.", uniqueAspects: "Combines three distinct endurance sports, tests versatility and stamina, transitions are key.", impact: "Rapidly growing participation sport globally." },
+             { id: "bobsleigh", name: "Bobsleigh", estimatedFans: "20 million", keyRegions: "Winter sport nations", description: "Winter sport where teams make timed runs down narrow, twisting, iced tracks in a gravity-powered sled. Estimated fans: 20 million.", originHistory: "Invented in Switzerland (late 19th century).", objective: "Complete the track course in the fastest total time over several runs.", teamsPlayers: "Teams of 2 or 4.", basicRules: ["Push start crucial for initial momentum.", "Pilot steers the sled.", "Brakeman applies brakes after finish line.", "Strict sled weight and dimension rules."], format: "Competitions involve 2 or 4 timed runs; lowest aggregate time wins.", tournamentsChampions: "Olympic Winter Games, IBSF World Championships. Germany, Switzerland, USA, Canada strong nations.", uniqueAspects: "High speeds on ice track, requires teamwork (start), piloting skill.", impact: "Iconic Winter Olympic sport." },
+             { id: "modern-pentathlon", name: "Modern Pentathlon", estimatedFans: "15 million", keyRegions: "Olympic sport", description: "Olympic sport comprising five different events: fencing (épée), freestyle swimming (200m), equestrian show jumping, and a final combined event of pistol shooting and cross country running (laser-run). Estimated fans: 15 million.", originHistory: "Created by Baron Pierre de Coubertin (founder of modern Olympics) specifically for the Games, first held in 1912.", objective: "Accumulate the highest point total across all five disciplines.", teamsPlayers: "Individual.", basicRules: ["Points awarded based on performance in each discipline.", "Fencing: Round-robin épée.", "Swimming: Timed 200m freestyle.", "Riding: Show jumping on an unfamiliar horse.", "Laser-Run: Combined shooting (laser pistol) and running, starting positions based on points from previous events (handicap start)."], format: "All events usually held on one day.", tournamentsChampions: "Olympic Games, UIPM World Championships.", uniqueAspects: "Tests diverse skills (athletic, technical, equestrian), based on skills needed by a 19th-century cavalry soldier.", impact: "Core Olympic sport with a unique history." },
+             { id: "judo", name: "Judo", estimatedFans: "15 million", keyRegions: "Asia, Europe, Olympic sport", description: "Modern Japanese martial art, combat, and Olympic sport created in Japan in 1882 by Jigoro Kano. Means 'gentle way'. Estimated fans: 15 million.", originHistory: "Derived from jujutsu, focusing on throws and grappling.", objective: "To throw or takedown an opponent to the ground, immobilize them with a pin, or force submission with a joint lock or choke.", teamsPlayers: "Individual (1v1).", basicRules: ["Competitors wear judogi.", "Points awarded for throws (Ippon - full point, Waza-ari - half point), pins.", "Ippon wins match instantly.", "Penalties (Shido) for passivity or rule infractions.", "Focus on technique over brute force."], format: "Matches have a time limit. Winner by Ippon or highest score.", tournamentsChampions: "Olympic Games, IJF World Judo Championships. Japan (dominant nation), France.", uniqueAspects: "Emphasis on throws and grappling, belt ranking system, strong philosophical component.", impact: "Widely practiced martial art globally, major Olympic combat sport." },
+             { id: "taekwondo", name: "Taekwondo", estimatedFans: "15 million", keyRegions: "Asia, Olympic sport", description: "Korean martial art characterized by its emphasis on high, fast, spinning kicks. Also an Olympic sport. Estimated fans: 15 million.", originHistory: "Developed during 1940s/50s in Korea, incorporating elements of karate and traditional Korean martial arts.", objective: "To score points by landing accurate and powerful kicks and punches on the opponent's scoring zones (torso and head).", teamsPlayers: "Individual (1v1).", basicRules: ["Competitors wear protective gear (hogu, headgear).", "Points awarded for valid kicks/punches to scoring areas (more points for head kicks, spinning kicks).", "Penalties (Gam-jeom) for fouls (grabbing, pushing, falling, low kicks).", "Match can be won by point gap, KO, or points at end.", ], format: "Matches typically consist of 3 rounds.", tournamentsChampions: "Olympic Games, World Taekwondo Championships. South Korea (dominant nation).", uniqueAspects: "Focus on high, dynamic kicks, point-based sparring system.", impact: "One of the most practiced martial arts globally, popular Olympic sport." },
+             { id: "equestrian", name: "Equestrian Sports", estimatedFans: "10 million", keyRegions: "Global, Olympic sport", description: "Sports involving horses. Olympic disciplines are Dressage, Eventing, and Show Jumping. Estimated fans: 10 million.", originHistory: "Horsemanship ancient. Modern competitive disciplines developed over centuries.", objective: "Dressage: Demonstrate horse's training and obedience through set movements. Jumping: Navigate course of obstacles with fewest penalties (faults). Eventing: Combined test of dressage, cross-country jumping, and show jumping.", teamsPlayers: "Individual horse and rider; team competitions aggregate individual scores.", basicRules: "Complex rules specific to each discipline governing movements, obstacle negotiation, time limits, penalties.", format: "Competitions judged or timed based on discipline.", tournamentsChampions: "Olympic Games, FEI World Equestrian Games. Germany, UK, USA strong nations.", uniqueAspects: "Partnership between human and animal, only Olympic sport where men and women compete equally.", impact: "Prestigious sports with long tradition, often associated with high society." },
+             { id: "softball", name: "Softball", estimatedFans: "10 million", keyRegions: "Americas, Asia", description: "A variant of baseball played with a larger ball on a smaller field. Two main types: fastpitch and slowpitch. Estimated fans: 10 million.", originHistory: "Invented in Chicago (1887) as an indoor version of baseball.", objective: "Score more runs than the opponent by hitting a pitched ball and advancing around bases.", teamsPlayers: "Two teams, typically 9 (fastpitch) or 10 (slowpitch) players.", basicRules: ["Similar to baseball but with underhand pitching.", "Smaller field, larger ball.", "Shorter game duration (usually 7 innings).", "Rules differ between fastpitch (more competitive, like baseball) and slowpitch (more recreational)."], format: "Games consist of innings (usually 7).", tournamentsChampions: "Olympic Games (returned for 2020), WBSC Women's Softball World Championship. USA, Japan, Australia dominant.", uniqueAspects: "Underhand pitching, different field/ball size from baseball.", impact: "Very popular participation sport, particularly for women in North America and Asia." },
+             { id: "squash", name: "Squash", estimatedFans: "10 million", keyRegions: "Europe, Asia, Americas", description: "A fast-paced indoor racket sport played by two (singles) or four (doubles) players in a four-walled court with a small, hollow rubber ball. Estimated fans: 10 million.", originHistory: "Developed at Harrow School in England (early 19th century) from the game 'rackets'.", objective: "To hit the ball with the racket against the front wall so the opponent cannot make a valid return.", teamsPlayers: "Singles (1v1) or Doubles (2v2).", basicRules: ["Ball must hit front wall on every shot (directly or via side/back walls).", "Ball can only bounce once on floor before being hit.", "Players must allow opponent clear access to the ball ('let'/'stroke' rules for interference)."], format: "Matches usually best of 5 games. Games typically to 11 points (must win by 2).", tournamentsChampions: "PSA World Championships, British Open. Egypt (currently dominant), Pakistan, Australia historically strong.", uniqueAspects: "Played within an enclosed court, fast pace, requires fitness and strategy.", impact: "Popular club sport globally, striving for Olympic inclusion." },
+             { id: "surfing", name: "Surfing", estimatedFans: "10 million", keyRegions: "Australia, Americas, Europe", description: "Surface water sport where a surfer rides on the forward face of a moving wave, usually towards the shore. Estimated fans: 10 million (competitive/dedicated).", originHistory: "Ancient Polynesian culture, particularly Hawaii. Popularized globally in 20th century.", objective: "Competitive: Perform maneuvers on a wave, judged on difficulty, variety, speed, power, flow.", teamsPlayers: "Individual.", basicRules: ["Judged criteria: Commitment, degree of difficulty, innovative maneuvers, combination of maneuvers, variety, speed/power/flow.", "Priority rules determine who has right-of-way on a wave.", "Interference penalties."], format: "Heats with multiple surfers, advancing based on scores. Events held over waiting periods for best conditions.", tournamentsChampions: "World Surf League (WSL) Championship Tour, Olympic Games (debuted 2020). Kelly Slater, Stephanie Gilmore.", uniqueAspects: "Dependent on natural conditions (waves), connection with ocean, lifestyle culture.", impact: "Major lifestyle sport, significant cultural influence, growing competitive scene." },
+             { id: "snooker-billiards", name: "Snooker/Billiards", estimatedFans: "10 million", keyRegions: "UK, Asia", description: "Cue sports played on a table with balls. Snooker uses more balls and has complex rules. Billiards often refers to games like Pool (pocket billiards) or Carom billiards. Estimated fans: 10 million (primarily Snooker/Pool).", originHistory: "Cue sports evolved from lawn games in 15th century Europe. Snooker developed in British India (late 19th century).", objective: "Snooker: Score points by potting red balls and then coloured balls in sequence. Pool: Pot designated balls (stripes/solids) and then the 8-ball.", teamsPlayers: "Typically individual (1v1).", basicRules: "Complex rules for each game type (Snooker, 8-ball, 9-ball, etc.) governing order of shots, fouls, scoring.", format: "Matches played over frames (Snooker) or games (Pool).", tournamentsChampions: "World Snooker Championship, Masters (Snooker), World Pool Championship. Ronnie O'Sullivan, Stephen Hendry (Snooker).", uniqueAspects: "Requires precision, strategy, control of cue ball.", impact: "Snooker hugely popular in UK and China. Pool popular globally in bars/clubs." }
+            ];
+
+
+        // --- Global State, DOM References (remain the same) ---
+        let currentFavorites = [];
+        let currentlyDisplayedSportId = null;
+        const sportSelect = document.getElementById('sport-select');
+        const sportSearch = document.getElementById('sport-search');
+        const contentArea = document.getElementById('sport-info-content');
+        const initialMessage = document.getElementById('initial-message');
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const helpButton = document.getElementById('help-button');
+        const readmeBox = document.getElementById('readme-box');
+        const readmeCloseButton = document.getElementById('readme-close');
+        const readmeOverlay = document.getElementById('readme-overlay');
+        const htmlElement = document.documentElement;
+
+        // --- JS Functions ---
+         function loadFavorites() {
+             const storedFavorites = localStorage.getItem('sportGuideFavorites');
+             currentFavorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+         }
+
+         function saveFavorites() {
+             localStorage.setItem('sportGuideFavorites', JSON.stringify(currentFavorites));
+         }
+
+         function isFavorite(sportId) {
+             return currentFavorites.includes(sportId);
+         }
+
+         function updateFavoriteButton(sportId) {
+             const favButton = document.getElementById('favorite-button');
+             if (!favButton) return;
+             if (isFavorite(sportId)) {
+                 favButton.innerHTML = starFilledIcon;
+                 favButton.classList.add('is-favorite');
+                 favButton.setAttribute('aria-label', 'Remove from favorites');
+             } else {
+                 favButton.innerHTML = starEmptyIcon;
+                 favButton.classList.remove('is-favorite');
+                 favButton.setAttribute('aria-label', 'Add to favorites');
+             }
+         }
+
+        function toggleFavorite(sportId) {
+             if (!sportId) return;
+             const index = currentFavorites.indexOf(sportId);
+             if (index > -1) {
+                 currentFavorites.splice(index, 1); // Remove
+             } else {
+                 currentFavorites.push(sportId); // Add
+             }
+             saveFavorites();
+             updateFavoriteButton(sportId); // Update button state
+             populateSportSelector(sportSearch.value); // Repopulate list with updated stars
+             // Restore selection after repopulating
+             if (sportSelect.value !== sportId) {
+                  sportSelect.value = sportId;
+             }
+             // Update content area highlight if it's the currently displayed sport
+             if (currentlyDisplayedSportId === sportId) {
+                contentArea.classList.toggle('is-favorite-content', isFavorite(sportId));
+             }
+         }
+
+         function populateSportSelector(filter = '') {
+             if (!sportSelect) return;
+             const currentSelection = sportSelect.value;
+             sportSelect.innerHTML = ''; // Clear existing options
+             const lowerCaseFilter = filter.toLowerCase();
+             const filteredSports = sportsData
+                 .filter(sport => sport.name.toLowerCase().includes(lowerCaseFilter))
+                 .sort((a, b) => {
+                     const aIsFav = isFavorite(a.id);
+                     const bIsFav = isFavorite(b.id);
+                     if (aIsFav !== bIsFav) return bIsFav - aIsFav; // Favorites first
+                     return a.name.localeCompare(b.name); // Then alphabetical
+                 });
+
+             if (filteredSports.length === 0) {
+                 const option = document.createElement('option');
+                 option.value = "";
+                 option.textContent = filter ? "No sports match filter" : "No sports available";
+                 option.disabled = true;
+                 sportSelect.appendChild(option);
+             } else {
+                 filteredSports.forEach(sport => {
+                     const option = document.createElement('option');
+                     option.value = sport.id;
+                     const prefix = isFavorite(sport.id) ? '⭐ ' : '';
+                     option.textContent = `${prefix}${sport.name}`;
+                     sportSelect.appendChild(option);
+                 });
+             }
+
+             // Restore selection if possible
+             if (filteredSports.some(sport => sport.id === currentSelection)) {
+                 sportSelect.value = currentSelection;
+             } else {
+                 sportSelect.value = ""; // Deselect if filtered out
+             }
+        }
+
+        function displaySportInfo(sportId) {
+            if (!contentArea || !initialMessage) return;
+
+            contentArea.innerHTML = ''; // Clear content first
+            initialMessage.style.display = 'none';
+            contentArea.classList.remove('visible', 'is-favorite-content');
+            currentlyDisplayedSportId = sportId;
+
+            if (!sportId) {
+                initialMessage.textContent = "Select a sport from the list box above to view its details.";
+                initialMessage.style.display = 'block';
+                contentArea.classList.add('visible'); // Show the container for the message
+                return;
+            }
+
+            const selectedSport = sportsData.find(sport => sport.id === sportId);
+
+            if (!selectedSport) {
+                contentArea.innerHTML = '<p>Error: Sport information not found.</p>';
+                contentArea.classList.add('visible');
+                currentlyDisplayedSportId = null;
+                return;
+            }
+
+            // Add favorite class to container if needed
+            if (isFavorite(selectedSport.id)) {
+                contentArea.classList.add('is-favorite-content');
+            }
+
+            // Build HTML content
+            let html = `
+                <div class="sport-info-header">
+                    <h2>${selectedSport.name}</h2>
+                    <button id="favorite-button" class="icon-button" aria-label="Add to favorites">
+                        ${isFavorite(selectedSport.id) ? starFilledIcon : starEmptyIcon}
+                    </button>
+                </div>
+            `;
+
+            // Define sections with icons and classes
+            const sections = [
+                { title: 'Quick Facts', content: `Estimated Fans: ${selectedSport.estimatedFans || 'N/A'}<br>Key Regions: ${selectedSport.keyRegions || 'N/A'}`, icon: infoIcon, id: 'quick-facts', defaultOpen: true, cssClass: 'quick-facts-section' },
+                { title: 'Description', content: selectedSport.description, icon: infoIcon, id: 'description', defaultOpen: true },
+                { title: 'Origin & History', content: selectedSport.originHistory, icon: historyIcon, id: 'history' },
+                { title: 'Basic Objective', content: selectedSport.objective, icon: objectiveIcon, id: 'objective' },
+                { title: 'Teams / Players', content: selectedSport.teamsPlayers, icon: usersIcon, id: 'teams' },
+                { title: 'Basic Rules', content: selectedSport.basicRules, icon: rulesIcon, id: 'rules' },
+                { title: 'Playing Format', content: selectedSport.format, icon: formatIcon, id: 'format' },
+                { title: 'Major Tournaments & Champions', content: selectedSport.tournamentsChampions, icon: formatIcon, id: 'tournaments' },
+                { title: 'Unique Aspects', content: selectedSport.uniqueAspects, icon: uniqueIcon, id: 'unique' },
+                { title: 'Cultural & Global Impact', content: selectedSport.impact, icon: impactIcon, id: 'impact' }
+            ];
+
+            sections.forEach(section => {
+                 const contentExists = section.content && section.content !== 'N/A' && section.content !== 'N/A<br>Key Regions: N/A' && (!Array.isArray(section.content) || section.content.length > 0);
+
+                 if (contentExists) {
+                     const isOpen = section.defaultOpen ? 'open' : '';
+                     const sectionClass = section.cssClass ? ` ${section.cssClass}` : '';
+
+                     html += `<details ${isOpen} class="sport-info-section${sectionClass}" id="details-${section.id}">`;
+                     html += `<summary>${section.icon || ''}${section.title}</summary>`;
+                     html += `<div class="section-content">`;
+
+                     if (Array.isArray(section.content)) {
+                         html += '<ul>';
+                         section.content.forEach(item => { html += `<li>${item}</li>`; });
+                         html += '</ul>';
+                     } else {
+                         // Allow HTML in content (for <br> in Quick Facts)
+                         html += `<p>${section.content}</p>`;
+                     }
+                     html += `</div></details>`;
+                 }
+            });
+
+            // Use setTimeout for smooth transition
+            setTimeout(() => {
+                contentArea.innerHTML = html;
+                contentArea.classList.add('visible');
+
+                const favButton = document.getElementById('favorite-button');
+                if(favButton) {
+                    updateFavoriteButton(selectedSport.id); // Set initial state
+                    favButton.addEventListener('click', () => toggleFavorite(selectedSport.id));
+                }
+            }, 50); // Small delay for transition rendering
+        }
+
+        function setTheme(theme) {
+             htmlElement.setAttribute('data-theme', theme);
+             themeToggleButton.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+             themeToggleButton.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+             localStorage.setItem('sportGuideTheme', theme);
+        }
+
+        function toggleTheme() {
+             const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
+             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+             setTheme(newTheme);
+        }
+
+        function initializeTheme() {
+             const savedTheme = localStorage.getItem('sportGuideTheme');
+             const currentTheme = savedTheme ? savedTheme : 'light';
+             setTheme(currentTheme);
+        }
+
+        function toggleReadme(show) {
+             if(show) {
+                 readmeBox.classList.add('active');
+                 readmeOverlay.classList.add('active');
+             } else {
+                 readmeBox.classList.remove('active');
+                 readmeOverlay.classList.remove('active');
+             }
+        }
+
+        // --- Event Listeners ---
+        if (sportSelect) {
+            sportSelect.addEventListener('change', (event) => {
+                displaySportInfo(event.target.value);
+            });
+        }
+
+        if (sportSearch) {
+            sportSearch.addEventListener('input', (event) => {
+                 populateSportSelector(event.target.value);
+                 // When searching, maybe clear the display or leave the old one?
+                 // Let's leave the old one for now unless user selects a new one.
+            });
+        }
+
+        if (themeToggleButton) {
+            themeToggleButton.addEventListener('click', toggleTheme);
+        }
+
+        if (helpButton) {
+             helpButton.addEventListener('click', () => toggleReadme(true));
+        }
+
+        if (readmeCloseButton) {
+            readmeCloseButton.addEventListener('click', () => toggleReadme(false));
+        }
+
+        if (readmeOverlay) {
+             readmeOverlay.addEventListener('click', () => toggleReadme(false));
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && readmeBox.classList.contains('active')) {
+                toggleReadme(false);
+            }
+        });
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFavorites();
+            initializeTheme(); // Set theme first
+            populateSportSelector(); // Populate dropdown
+            displaySportInfo(""); // Show initial message / clear content area
+        });
+
+    </script>
+
+</body>
+</html>

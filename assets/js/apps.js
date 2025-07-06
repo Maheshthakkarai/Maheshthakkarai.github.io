@@ -111,6 +111,15 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/QuickRecipe.png",
         "url": "/webapps/QuickRecipe.html"
+    },
+{
+        "title": "Sports Guide",
+        "description": "Select a sport and learn the rules",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/SportsGuide.png",
+        "url": "/webapps/SportsGuide.html"
     }
+
 
 ];
