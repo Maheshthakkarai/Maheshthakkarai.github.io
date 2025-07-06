@@ -103,6 +103,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Nutrion.png",
         "url": "/webapps/Nutrition.html"
+    },
+{
+        "title": "Quick Recipe",
+        "description": "Recipe based on what you have available",
+        "category": "Health",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/QuickRecipe.png",
+        "url": "/webapps/QuickRecipe.html"
     }
 
 ];

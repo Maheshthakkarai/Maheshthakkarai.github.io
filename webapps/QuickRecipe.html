@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quick Recipe web application to generate recipes based on ingredients.">
+    <title>Quick Recipe</title>
+
+    <!-- Chart.js CDN (Necessary for charting feature) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Variables for Theming and Consistency */
+        :root {
+            --bg-color-light: #eef2f7;
+            --bg-color-dark: #2c3e50;
+            --card-bg-light: rgba(255, 255, 255, 0.6);
+            --card-bg-dark: rgba(52, 73, 94, 0.6);
+            --text-color-light: #333;
+            --text-color-dark: #ecf0f1;
+            --primary-color-light: #3498db;
+            --primary-color-dark: #5dade2;
+            --accent-color-light: #e0f0ff;
+            --accent-color-dark: #3a506b;
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --inner-shadow-light: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            --inner-shadow-dark: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            --border-radius: 15px;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --base-font-size: 16px;
+            --transition-speed: 0.3s;
+        }
+
+        /* Basic Reset and Body Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+            line-height: 1.6;
+            font-size: var(--base-font-size);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            padding: 1rem;
+        }
+
+        /* Dark Theme */
+        body.dark-theme {
+            --bg-color-light: var(--bg-color-dark);
+            --card-bg-light: var(--card-bg-dark);
+            --text-color-light: var(--text-color-dark);
+            --primary-color-light: var(--primary-color-dark);
+            --accent-color-light: var(--accent-color-dark);
+            --shadow-light: var(--shadow-dark);
+            --inner-shadow-light: var(--inner-shadow-dark);
+        }
+
+        /* Container and Card Styling */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: var(--card-bg-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* Safari */
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--accent-color-light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--inner-shadow-light);
+            transition: background-color var(--transition-speed) ease;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color-light);
+            transition: color var(--transition-speed) ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 2rem; text-align: center;}
+        h2 { font-size: 1.5rem; }
+        h3 { font-size: 1.2rem; }
+
+        /* Header & Theme Toggle */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        #theme-toggle {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--primary-color-light);
+            color: white;
+            transition: background-color var(--transition-speed) ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #theme-toggle:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        #theme-toggle:active {
+            transform: translateY(0);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: flex-end; /* Align items at the bottom */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+            flex-basis: 100%; /* Label takes full width initially */
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            flex: 1 1 150px; /* Allow inputs to grow and shrink */
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--inner-shadow-light);
+            transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        }
+         body.dark-theme .form-group input[type="text"],
+         body.dark-theme .form-group input[type="number"],
+         body.dark-theme .form-group select {
+             background-color: rgba(200, 200, 200, 0.3);
+             color: var(--text-color-dark);
+             border-color: #555;
+         }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color-light);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Focus ring */
+        }
+
+        .mandatory-star {
+            color: #e74c3c;
+            margin-left: 0.2rem;
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--primary-color-light);
+            color: white;
+            transition: background-color var(--transition-speed) ease, transform 0.2s ease;
+            box-shadow: var(--shadow-light);
+            font-weight: bold;
+        }
+        button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+            filter: brightness(0.9);
+        }
+        button.secondary {
+             background-color: #7f8c8d;
+        }
+         body.dark-theme button.secondary {
+             background-color: #95a5a6;
+             color: #2c3e50;
+         }
+
+        .add-button {
+             margin-top: 1rem; /* Align with bottom of inputs */
+             flex-basis: auto; /* Don't take full width */
+             height: fit-content; /* Match input height */
+             align-self: flex-end;
+        }
+
+        /* Ingredient List */
+        #ingredient-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        #ingredient-list li {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--inner-shadow-light);
+            transition: background-color var(--transition-speed) ease;
+        }
+        body.dark-theme #ingredient-list li {
+            background: rgba(200, 200, 200, 0.2);
+        }
+
+        #ingredient-list .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 1rem;
+            transition: background-color 0.2s ease;
+        }
+        #ingredient-list .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Recipe Output */
+        #recipe-output {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            background: var(--accent-color-light);
+            box-shadow: var(--inner-shadow-light);
+            transition: background-color var(--transition-speed) ease;
+        }
+
+        #recipe-output h3 {
+            border-bottom: 2px solid var(--primary-color-light);
+            padding-bottom: 0.5rem;
+        }
+
+        #recipe-output ul, #recipe-output ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nutrition-info p {
+            margin-bottom: 0.3rem;
+        }
+
+        /* Chart Container */
+        #chart-container {
+            margin-top: 1.5rem;
+            max-width: 350px; /* Limit chart size */
+            margin-left: auto;
+            margin-right: auto;
+            position: relative; /* Needed for Chart.js responsiveness */
+        }
+
+        /* README Box */
+        #readme-box {
+            background-color: #fdfaea; /* Light yellow */
+            border: 1px dashed #f1c40f;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        body.dark-theme #readme-box {
+            background-color: #4a4a3a;
+            border-color: #b8860b;
+            color: #eee;
+        }
+        #readme-box h3 { color: #c0980a; }
+        body.dark-theme #readme-box h3 { color: #f1c40f; }
+        #readme-box code {
+            background-color: rgba(0,0,0,0.05);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        body.dark-theme #readme-box code {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+
+        /* Preferences */
+        .preferences-group label {
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+        .preferences-group input[type="checkbox"] {
+            margin-right: 0.3rem;
+            accent-color: var(--primary-color-light); /* Style checkbox */
+            transform: scale(1.1); /* Make slightly larger */
+            vertical-align: middle;
+        }
+
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .feedback-section label {
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+        .feedback-section select {
+             padding: 0.5rem;
+             border-radius: 8px;
+             margin-right: 1rem;
+             min-width: 100px; /* Ensure dropdown is usable */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                font-size: calc(var(--base-font-size) * 0.95); /* Slightly smaller base font */
+            }
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
+
+            .form-group {
+                flex-direction: column; /* Stack elements vertically */
+                align-items: stretch; /* Stretch to full width */
+            }
+            .form-group input[type="text"],
+            .form-group input[type="number"],
+            .form-group select,
+            .add-button {
+                flex-basis: auto; /* Reset flex basis */
+                width: 100%; /* Make inputs full width */
+                margin-top: 0; /* Reset top margin */
+            }
+             .add-button {
+                 margin-top: 1rem; /* Add space before button when stacked */
+             }
+
+            #ingredient-list li {
+                 flex-direction: column;
+                 align-items: flex-start;
+                 padding: 0.7rem;
+            }
+             #ingredient-list .remove-btn {
+                 margin-top: 0.5rem;
+                 margin-left: 0;
+                 align-self: flex-end; /* Button to the right */
+             }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            #chart-container {
+                 max-width: 100%; /* Allow chart full width */
+            }
+        }
+
+        @media (max-width: 480px) {
+             body {
+                 font-size: calc(var(--base-font-size) * 0.9); /* Even smaller font */
+             }
+             h1 { font-size: 1.6rem; }
+             button { padding: 0.7rem 1.2rem; font-size: 0.9rem; }
+             .section { padding: 1rem; }
+             #recipe-output { padding: 1rem; }
+             .feedback-section select, .feedback-section button {
+                  width: 100%;
+                  margin-bottom: 0.5rem;
+                  margin-right: 0;
+             }
+        }
+
+        /* Utility class to hide elements */
+        .hidden {
+            display: none;
+        }
+
+        /* Accessibility Focus Styles */
+        button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+            outline: 3px solid var(--primary-color-light);
+            outline-offset: 2px;
+        }
+         body.dark-theme button:focus-visible,
+         body.dark-theme input:focus-visible,
+         body.dark-theme select:focus-visible,
+         body.dark-theme a:focus-visible {
+             outline-color: var(--primary-color-dark);
+         }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Quick Recipe</h1>
+            <button id="theme-toggle">Toggle Theme</button>
+        </header>
+
+        <main>
+            <!-- README Box Section -->
+            <section id="readme-box" class="section">
+                <h3>Welcome to Quick Recipe!</h3>
+                <p><strong>How to use:</strong></p>
+                <ol>
+                    <li>Use the "Ingredient Input" section below to add ingredients you have.</li>
+                    <li>Enter the ingredient name (use the suggestions!), quantity, and unit.</li>
+                    <li>Click "Add Ingredient" to add it to your list.</li>
+                    <li>Set your dietary preferences (optional).</li>
+                    <li>Once you've added your ingredients, click "Generate Recipe".</li>
+                    <li>The app will suggest a recipe idea and show estimated nutritional info below.</li>
+                </ol>
+                <p><strong>Calculations (Simplified):</strong></p>
+                <ul>
+                    <li>Nutritional values are *estimates* based on a small internal dataset.</li>
+                    <li>Calories are summed based on ingredient quantity and type.</li>
+                    <li>Macronutrient breakdown (Protein, Carbs, Fat) is shown in a pie chart.</li>
+                    <li>Formula example: `Total Calories ≈ Σ (Ingredient Quantity * Calories per Unit)`</li>
+                </ul>
+                <p><strong>Note:</strong> This is a demo application. Recipe generation and nutritional data are simplified.</p>
+            </section>
+
+            <!-- Preferences Section -->
+            <section class="section preferences-section">
+                <h2>Preferences</h2>
+                <div class="preferences-group">
+                    <label>
+                        <input type="checkbox" id="pref-vegan" value="vegan"> Vegan
+                    </label>
+                    <label>
+                        <input type="checkbox" id="pref-gluten-free" value="gluten-free"> Gluten-Free
+                    </label>
+                    <!-- Add more preferences as needed -->
+                </div>
+            </section>
+
+            <!-- Ingredient Input Section -->
+            <section class="section ingredient-input-section">
+                <h2>Ingredient Input</h2>
+                <form id="ingredient-form">
+                    <div class="form-group">
+                        <div>
+                            <label for="ingredient-name">Ingredient Name<span class="mandatory-star">*</span></label>
+                            <input type="text" id="ingredient-name" list="common-ingredients" required placeholder="e.g., Chicken Breast">
+                            <datalist id="common-ingredients">
+                                <!-- Options added dynamically by JS -->
+                            </datalist>
+                        </div>
+                        <div>
+                            <label for="ingredient-qty">Quantity<span class="mandatory-star">*</span></label>
+                            <input type="number" id="ingredient-qty" min="0.1" step="any" required placeholder="e.g., 2">
+                        </div>
+                        <div>
+                            <label for="ingredient-unit">Unit<span class="mandatory-star">*</span></label>
+                            <select id="ingredient-unit" required>
+                                <option value="g">grams (g)</option>
+                                <option value="kg">kilograms (kg)</option>
+                                <option value="ml">milliliters (ml)</option>
+                                <option value="l">liters (l)</option>
+                                <option value="tsp">teaspoon (tsp)</option>
+                                <option value="tbsp">tablespoon (tbsp)</option>
+                                <option value="cup">cup</option>
+                                <option value="pcs">piece(s)</option>
+                                <option value="oz">ounce(s)</option>
+                                <option value="pinch">pinch</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="add-button">Add Ingredient</button>
+                    </div>
+                </form>
+
+                <h3>Your Ingredients:</h3>
+                <ul id="ingredient-list">
+                    <!-- Ingredients will be added here -->
+                </ul>
+                <button id="generate-recipe-btn" style="margin-top: 1rem;">Generate Recipe</button>
+            </section>
+
+            <!-- Recipe Output Section (Initially Hidden) -->
+            <section id="recipe-output" class="section hidden">
+                <h2>Generated Recipe</h2>
+                <div id="recipe-content">
+                    <!-- Recipe details will be populated here -->
+                </div>
+
+                <h3>Estimated Nutritional Information</h3>
+                <div id="nutrition-info" class="nutrition-info">
+                    <!-- Nutrition details will be populated here -->
+                </div>
+                <div id="chart-container">
+                    <canvas id="nutrition-chart"></canvas>
+                </div>
+
+                <h3>Tips & Substitutions</h3>
+                <div id="tips-info">
+                    <!-- Tips will be populated here -->
+                </div>
+
+                <div class="feedback-section">
+                    <label for="recipe-rating">Rate this Recipe:</label>
+                    <select id="recipe-rating">
+                        <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+                        <option value="4">⭐⭐⭐⭐ (Good)</option>
+                        <option value="3">⭐⭐⭐ (Average)</option>
+                        <option value="2">⭐⭐ (Below Average)</option>
+                        <option value="1">⭐ (Poor)</option>
+                    </select>
+                    <button id="submit-feedback-btn" class="secondary">Submit Feedback</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const ingredientForm = document.getElementById('ingredient-form');
+            const ingredientNameInput = document.getElementById('ingredient-name');
+            const ingredientQtyInput = document.getElementById('ingredient-qty');
+            const ingredientUnitInput = document.getElementById('ingredient-unit');
+            const ingredientListUl = document.getElementById('ingredient-list');
+            const generateRecipeBtn = document.getElementById('generate-recipe-btn');
+            const recipeOutputSection = document.getElementById('recipe-output');
+            const recipeContentDiv = document.getElementById('recipe-content');
+            const nutritionInfoDiv = document.getElementById('nutrition-info');
+            const tipsInfoDiv = document.getElementById('tips-info');
+            const commonIngredientsDatalist = document.getElementById('common-ingredients');
+            const chartContainer = document.getElementById('chart-container');
+            const nutritionChartCtx = document.getElementById('nutrition-chart').getContext('2d');
+            const feedbackBtn = document.getElementById('submit-feedback-btn');
+            const ratingSelect = document.getElementById('recipe-rating');
+            const veganPrefCheckbox = document.getElementById('pref-vegan');
+            const glutenFreePrefCheckbox = document.getElementById('pref-gluten-free');
+
+            // --- State ---
+            let ingredients = []; // Array to hold ingredient objects {id, name, qty, unit}
+            let nutritionChart = null; // To hold the Chart.js instance
+
+            // --- Mock Data ---
+            const commonIngredientsList = [
+                "Chicken Breast", "Salmon Fillet", "Tofu", "Eggs", "Milk", "Butter", "Olive Oil",
+                "Onion", "Garlic", "Tomato", "Potato", "Carrot", "Broccoli", "Spinach", "Bell Pepper",
+                "Rice", "Pasta", "Quinoa", "Bread", "Flour", "Sugar", "Salt", "Black Pepper", "Paprika",
+                "Cumin", "Coriander", "Soy Sauce", "Lemon", "Lime", "Avocado", "Cheese"
+            ];
+
+            // Mock Nutritional Data (per unit - VERY simplified)
+            // Values per: g, ml, pcs, tsp, tbsp, cup, oz etc. This needs careful mapping in a real app.
+            // Using approximate values per typical serving/unit for demo.
+            const mockNutritionData = {
+                // Name: [Calories, Protein(g), Carbs(g), Fat(g)] - Approx values
+                "chicken breast": [165, 31, 0, 3.6], // per 100g
+                "salmon fillet": [208, 20, 0, 13],  // per 100g
+                "tofu": [76, 8, 3, 5],           // per 100g
+                "eggs": [70, 6, 1, 5],            // per 1 large egg (pcs)
+                "milk": [60, 3.5, 5, 3],          // per 100ml
+                "butter": [717, 1, 1, 81],       // per 100g
+                "olive oil": [120, 0, 0, 14],     // per 1 tbsp
+                "onion": [40, 1, 9, 0.1],        // per 100g (approx 1 medium)
+                "garlic": [4, 0.2, 1, 0.02],      // per 1 clove (pcs)
+                "tomato": [22, 1, 5, 0.2],       // per 1 medium (pcs)
+                "potato": [77, 2, 17, 0.1],       // per 100g
+                "carrot": [41, 1, 10, 0.2],       // per 100g (approx 1 medium)
+                "broccoli": [34, 3, 6, 0.4],      // per 100g (approx 1 cup chopped)
+                "spinach": [23, 3, 4, 0.4],       // per 100g
+                "bell pepper": [30, 1, 6, 0.3],   // per 1 medium (pcs)
+                "rice": [130, 3, 28, 0.3],       // per 100g cooked
+                "pasta": [158, 5, 31, 1],        // per 100g cooked
+                "quinoa": [120, 4, 21, 2],       // per 100g cooked
+                "bread": [80, 3, 15, 1],         // per 1 slice (pcs)
+                "flour": [364, 10, 76, 1],       // per 100g
+                "sugar": [16, 0, 4, 0],          // per 1 tsp
+                "salt": [0, 0, 0, 0],
+                "black pepper": [6, 0.2, 1.5, 0.1], // per 1 tsp
+                "soy sauce": [8, 1, 1, 0],       // per 1 tbsp
+                "lemon": [17, 0.5, 5, 0.2],      // per 1 medium (juice) (pcs)
+                "avocado": [240, 3, 13, 22],     // per 1 medium (pcs)
+                "cheese": [402, 25, 1.3, 33],    // per 100g (cheddar example)
+                // Add more... This is highly illustrative.
+            };
+
+            // Mock Recipe Ideas (Keyword-based)
+            const mockRecipeTemplates = [
+                { keywords: ["chicken", "rice", "broccoli"], name: "Chicken, Rice & Broccoli Bowl", method: ["Cook chicken.", "Steam rice.", "Steam broccoli.", "Combine in a bowl.", "Season to taste."] },
+                { keywords: ["chicken", "pasta", "tomato", "garlic"], name: "Chicken Tomato Pasta", method: ["Cook pasta.", "Sauté garlic.", "Cook chicken.", "Add chopped tomatoes or sauce.", "Combine with pasta."] },
+                { keywords: ["salmon", "potato", "lemon"], name: "Baked Salmon with Roasted Potatoes", method: ["Chop and roast potatoes.", "Season salmon with lemon and herbs.", "Bake salmon until cooked.", "Serve together."] },
+                { keywords: ["tofu", "rice", "soy sauce", "broccoli"], name: "Tofu Stir-fry with Rice", method: ["Press and cube tofu.", "Stir-fry tofu with broccoli and other veggies.", "Add soy sauce.", "Serve over cooked rice."] },
+                { keywords: ["eggs", "cheese", "spinach"], name: "Spinach and Cheese Omelette", method: ["Whisk eggs.", "Sauté spinach.", "Pour eggs into pan.", "Add spinach and cheese.", "Fold and cook until set."] },
+                { keywords: ["avocado", "bread", "eggs"], name: "Avocado Toast with Egg", method: ["Toast bread.", "Mash avocado and spread on toast.", "Cook egg (fried or poached).", "Place egg on top.", "Season."] },
+                { keywords: ["tomato", "onion", "garlic", "pasta"], name: "Simple Tomato Pasta Sauce", method: ["Sauté onion and garlic.", "Add chopped tomatoes or canned tomatoes.", "Simmer until thickened.", "Season with herbs.", "Serve over pasta."] },
+                // Fallback
+                { keywords: [], name: "Simple Ingredient Mix", method: ["Combine ingredients in a suitable way (e.g., salad, sauté).", "Season appropriately.", "Consider adding a sauce or dressing."] }
+            ];
+
+            // --- Functions ---
+
+            // Theme Management
+            function applyTheme(isDark) {
+                if (isDark) {
+                    document.body.classList.add('dark-theme');
+                    themeToggleBtn.textContent = 'Light Mode';
+                } else {
+                    document.body.classList.remove('dark-theme');
+                    themeToggleBtn.textContent = 'Dark Mode';
+                }
+            }
+
+            function toggleTheme() {
+                const isDarkMode = document.body.classList.toggle('dark-theme');
+                applyTheme(isDarkMode);
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            }
+
+            function loadTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                applyTheme(savedTheme === 'dark');
+            }
+
+            // Preference Management
+            function savePreferences() {
+                 const prefs = {
+                      vegan: veganPrefCheckbox.checked,
+                      glutenFree: glutenFreePrefCheckbox.checked
+                 };
+                 localStorage.setItem('preferences', JSON.stringify(prefs));
+            }
+
+             function loadPreferences() {
+                  const savedPrefs = localStorage.getItem('preferences');
+                  if (savedPrefs) {
+                      const prefs = JSON.parse(savedPrefs);
+                      veganPrefCheckbox.checked = prefs.vegan || false;
+                      glutenFreePrefCheckbox.checked = prefs.glutenFree || false;
+                  }
+             }
+
+
+            // Ingredient Management
+            function populateAutocomplete() {
+                commonIngredientsList.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item;
+                    commonIngredientsDatalist.appendChild(option);
+                });
+            }
+
+            function renderIngredients() {
+                ingredientListUl.innerHTML = ''; // Clear list
+                ingredients.forEach(ingredient => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${ingredient.qty} ${ingredient.unit} ${ingredient.name}</span>
+                        <button class="remove-btn" data-id="${ingredient.id}" aria-label="Remove ${ingredient.name}">X</button>
+                    `;
+                    ingredientListUl.appendChild(li);
+                });
+            }
+
+            function addIngredient(event) {
+                event.preventDefault();
+                const name = ingredientNameInput.value.trim();
+                const qty = parseFloat(ingredientQtyInput.value);
+                const unit = ingredientUnitInput.value;
+
+                // Validation
+                if (!name || !qty || !unit) {
+                    alert('Please fill in all ingredient fields (Name, Quantity, Unit).');
+                    return;
+                }
+                if (isNaN(qty) || qty <= 0) {
+                     alert('Please enter a valid positive quantity.');
+                     return;
+                 }
+
+                const newIngredient = {
+                    id: Date.now(), // Simple unique ID
+                    name: name,
+                    qty: qty,
+                    unit: unit
+                };
+
+                ingredients.push(newIngredient);
+                renderIngredients();
+
+                // Clear form
+                ingredientNameInput.value = '';
+                ingredientQtyInput.value = '';
+                // Keep unit selected for convenience? Or reset? Let's reset.
+                ingredientUnitInput.selectedIndex = 0;
+                ingredientNameInput.focus(); // Focus back on name input
+            }
+
+            function removeIngredient(id) {
+                ingredients = ingredients.filter(ing => ing.id !== id);
+                renderIngredients();
+            }
+
+            // Recipe Generation and Display
+            function generateRecipe() {
+                if (ingredients.length === 0) {
+                    alert('Please add at least one ingredient.');
+                    return;
+                }
+
+                // Get current preferences
+                const preferences = {
+                    vegan: veganPrefCheckbox.checked,
+                    glutenFree: glutenFreePrefCheckbox.checked
+                };
+
+                // --- MOCK Recipe Logic ---
+                const ingredientNames = ingredients.map(ing => ing.name.toLowerCase());
+                let bestMatch = mockRecipeTemplates[mockRecipeTemplates.length - 1]; // Default to fallback
+                let maxMatchCount = 0;
+
+                mockRecipeTemplates.slice(0, -1).forEach(recipe => { // Exclude fallback for matching
+                    let currentMatchCount = 0;
+                    recipe.keywords.forEach(kw => {
+                        if (ingredientNames.some(name => name.includes(kw))) {
+                            currentMatchCount++;
+                        }
+                    });
+
+                    // Basic preference check (very simplified)
+                    let passesPref = true;
+                    if (preferences.vegan && (recipe.keywords.includes("chicken") || recipe.keywords.includes("salmon") || recipe.keywords.includes("eggs") || recipe.keywords.includes("cheese") || recipe.keywords.includes("milk") || recipe.keywords.includes("butter"))) {
+                        passesPref = false;
+                    }
+                    if (preferences.glutenFree && (recipe.keywords.includes("pasta") || recipe.keywords.includes("bread") || recipe.keywords.includes("flour"))) {
+                         // Could also check specific ingredients if user entered 'wheat pasta' etc.
+                         passesPref = false;
+                    }
+
+
+                    if (passesPref && currentMatchCount > maxMatchCount && currentMatchCount > 0) {
+                        maxMatchCount = currentMatchCount;
+                        bestMatch = recipe;
+                    }
+                });
+
+                // --- MOCK Nutrition Calculation ---
+                let totalCalories = 0;
+                let totalProtein = 0;
+                let totalCarbs = 0;
+                let totalFat = 0;
+
+                ingredients.forEach(ing => {
+                    const nameLower = ing.name.toLowerCase();
+                    let nutritionKey = null;
+
+                    // Try to find a match in mock data (simple substring search)
+                    for (const key in mockNutritionData) {
+                        if (nameLower.includes(key)) {
+                            nutritionKey = key;
+                            break;
+                        }
+                    }
+
+                    if (nutritionKey) {
+                        const data = mockNutritionData[nutritionKey];
+                        // VERY crude scaling by quantity - assumes base data is per 'standard unit'
+                        // A real app needs unit conversion (g -> kg, tsp -> tbsp -> ml etc.)
+                        let scaleFactor = ing.qty;
+                         // Super basic scaling guess based on unit - needs proper conversion!
+                         if (ing.unit === 'kg') scaleFactor *= 1000;
+                         if (ing.unit === 'pcs' && !['eggs', 'garlic', 'tomato', 'bell pepper', 'lemon', 'avocado', 'bread'].includes(nutritionKey)) scaleFactor *= 100; // Guess avg piece weight
+                         if (ing.unit === 'tbsp') scaleFactor *= 15; // Approx g/ml
+                         if (ing.unit === 'tsp') scaleFactor *= 5; // Approx g/ml
+                         if (ing.unit === 'cup') scaleFactor *= 240; // Approx ml/g
+                         if (ing.unit === 'oz') scaleFactor *= 28.35; // Approx g
+
+                         // Normalize based on assumption that most data is per 100g/ml unless specified
+                         if (['g', 'ml', 'kg'].includes(ing.unit) || (scaleFactor === ing.qty && data.length > 0)) {
+                              scaleFactor /= 100; // Adjust if data is per 100
+                         }
+                         // Adjust for items where data is per piece or serving
+                         if (['eggs', 'garlic', 'tomato', 'bell pepper', 'lemon', 'avocado', 'bread'].includes(nutritionKey) && ing.unit === 'pcs') {
+                             scaleFactor = ing.qty; // Use quantity directly
+                         }
+                         if (nutritionKey === 'olive oil' && ing.unit === 'tbsp') scaleFactor = ing.qty;
+                         if (nutritionKey === 'sugar' && ing.unit === 'tsp') scaleFactor = ing.qty;
+                         if (nutritionKey === 'soy sauce' && ing.unit === 'tbsp') scaleFactor = ing.qty;
+
+
+                         totalCalories += data[0] * scaleFactor;
+                         totalProtein += data[1] * scaleFactor;
+                         totalCarbs += data[2] * scaleFactor;
+                         totalFat += data[3] * scaleFactor;
+                    }
+                });
+
+                // --- Display Results ---
+                recipeContentDiv.innerHTML = `
+                    <h3>${bestMatch.name}</h3>
+                    <p>Based on your ingredients, here's a simple idea:</p>
+                    <ol>
+                        ${bestMatch.method.map(step => `<li>${step}</li>`).join('')}
+                    </ol>
+                `;
+
+                nutritionInfoDiv.innerHTML = `
+                    <p><strong>Total Calories:</strong> ${totalCalories.toFixed(0)} kcal</p>
+                    <p><strong>Protein:</strong> ${totalProtein.toFixed(1)} g</p>
+                    <p><strong>Carbohydrates:</strong> ${totalCarbs.toFixed(1)} g</p>
+                    <p><strong>Fat:</strong> ${totalFat.toFixed(1)} g</p>
+                `;
+
+                // --- Mock Tips ---
+                let tips = ["Always wash your produce.", "Adjust seasoning to your taste.", "Ensure proteins like chicken are cooked thoroughly."];
+                if (ingredientNames.some(name => name.includes("avocado"))) tips.push("To keep avocado from browning quickly, add a little lemon or lime juice.");
+                if (ingredientNames.some(name => name.includes("tofu"))) tips.push("Pressing tofu removes excess water and helps it crisp up when cooked.");
+                if (preferences.vegan) tips.push("Ensure all added sauces or seasonings are also vegan.");
+                if (preferences.glutenFree) tips.push("Double-check labels on sauces (like soy sauce) for hidden gluten, or use tamari.");
+                tipsInfoDiv.innerHTML = `<ul>${tips.map(tip => `<li>${tip}</li>`).join('')}</ul>`;
+
+
+                // --- Render Chart ---
+                renderNutritionChart({ protein: totalProtein, carbs: totalCarbs, fat: totalFat });
+
+                // Show the output section
+                recipeOutputSection.classList.remove('hidden');
+                recipeOutputSection.scrollIntoView({ behavior: 'smooth' }); // Scroll to results
+            }
+
+            // Chart Rendering
+            function renderNutritionChart(macros) {
+                 // Ensure chart container is visible for Chart.js calculations
+                 chartContainer.style.height = '350px'; // Give it explicit height
+
+                 const totalMacros = macros.protein + macros.carbs + macros.fat;
+                 const data = {
+                     labels: [
+                         `Protein (${macros.protein.toFixed(1)}g)`,
+                         `Carbs (${macros.carbs.toFixed(1)}g)`,
+                         `Fat (${macros.fat.toFixed(1)}g)`
+                     ],
+                     datasets: [{
+                         label: 'Macronutrient Breakdown',
+                         data: totalMacros > 0 ? [macros.protein, macros.carbs, macros.fat] : [1, 1, 1], // Avoid zero sum error
+                         backgroundColor: [
+                             '#3498db', // Blue (Protein)
+                             '#f1c40f', // Yellow (Carbs)
+                             '#e74c3c'  // Red (Fat)
+                         ],
+                         hoverOffset: 4,
+                         borderColor: document.body.classList.contains('dark-theme') ? 'var(--bg-color-dark)' : 'var(--bg-color-light)',
+                         borderWidth: 2
+                     }]
+                 };
+
+                 const config = {
+                     type: 'pie',
+                     data: data,
+                     options: {
+                         responsive: true,
+                         maintainAspectRatio: false, // Allows control via container size
+                         plugins: {
+                             legend: {
+                                 position: 'top',
+                                  labels: {
+                                      color: document.body.classList.contains('dark-theme') ? 'var(--text-color-dark)' : 'var(--text-color-light)',
+                                      padding: 15, // Add padding to legend items
+                                      font: { size: 13 } // Adjust legend font size
+                                  }
+                             },
+                             tooltip: {
+                                 callbacks: {
+                                     label: function(context) {
+                                         let label = context.label || '';
+                                         if (label) {
+                                             label += ': ';
+                                         }
+                                         if (context.parsed !== null) {
+                                             const percentage = totalMacros > 0 ? (context.parsed / totalMacros * 100).toFixed(1) : 0;
+                                             label += `${percentage}%`;
+                                         }
+                                         return label;
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                 };
+
+                 // Destroy previous chart instance if it exists
+                 if (nutritionChart) {
+                     nutritionChart.destroy();
+                 }
+                 // Create new chart
+                 nutritionChart = new Chart(nutritionChartCtx, config);
+             }
+
+            // Feedback Handling
+            function handleFeedback() {
+                const rating = ratingSelect.value;
+                alert(`Thank you for your feedback! You rated this recipe ${rating} star(s).`);
+                // In a real app, this data would be sent to a server.
+            }
+
+
+            // --- Event Listeners ---
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            ingredientForm.addEventListener('submit', addIngredient);
+            ingredientListUl.addEventListener('click', (event) => {
+                if (event.target.classList.contains('remove-btn')) {
+                    const idToRemove = parseInt(event.target.getAttribute('data-id'));
+                    removeIngredient(idToRemove);
+                }
+            });
+            generateRecipeBtn.addEventListener('click', generateRecipe);
+            feedbackBtn.addEventListener('click', handleFeedback);
+
+            // Save preferences when changed
+            veganPrefCheckbox.addEventListener('change', savePreferences);
+            glutenFreePrefCheckbox.addEventListener('change', savePreferences);
+
+
+            // --- Initialization ---
+            loadTheme();
+            loadPreferences();
+            populateAutocomplete();
+            renderIngredients(); // Initial render (empty list)
+
+        });
+    </script>
+
+</body>
+</html>
