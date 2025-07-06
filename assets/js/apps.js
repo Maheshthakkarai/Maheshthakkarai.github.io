@@ -142,7 +142,7 @@ window.apps = [
         "category": "Science",
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/AIBasics.png",
-        "url": "/webapps/AIBasics.html.html"
+        "url": "/webapps/AIBasics.html"
     }
 
 ];
