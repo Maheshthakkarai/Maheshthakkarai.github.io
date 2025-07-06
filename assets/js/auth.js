@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginButton = document.getElementById('login-button');
     const signupButton = document.getElementById('signup-button');
 
+    const showSignup = document.getElementById('show-signup');
+    const showLogin = document.getElementById('show-login');
+
     // Check for user's authentication state
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -23,8 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // User is signed out.
             userInfo.classList.add('hidden');
             loginForm.classList.remove('hidden');
-            signupForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
         }
+    });
+
+    // Switch to signup form
+    showSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+    });
+
+    // Switch to login form
+    showLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
     });
 
     // Login button event listener
