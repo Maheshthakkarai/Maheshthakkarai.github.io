@@ -56,62 +56,8 @@
             <p class="mt-4 text-xl">Welcome to my blog! Here I'll be sharing my thoughts and experiences.</p>
         </section>
 
-        <section id="new-post-section" class="my-12 hidden">
-            <h3 class="text-3xl font-bold text-center mb-8">Create New Post</h3>
-            <form id="new-post-form" class="w-full max-w-lg mx-auto">
-                <div class="mb-4">
-                    <label for="post-title" class="block text-sm font-bold mb-2">Title</label>
-                    <input type="text" id="post-title" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-                </div>
-                <div class="mb-4">
-                    <label for="post-content" class="block text-sm font-bold mb-2">Content</label>
-                    <textarea id="post-content" rows="6" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700"></textarea>
-                </div>
-                <button type="submit" id="submit-post-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Submit Post</button>
-            </form>
-        </section>
-
         <section id="blog-posts" class="my-12">
             <!-- Blog posts will be dynamically inserted here -->
-        </section>
-
-        <section id="auth-section" class="my-12">
-            <div id="login-form">
-                <h3 class="text-3xl font-bold text-center mb-8">Login</h3>
-                <form class="w-full max-w-sm mx-auto">
-                    <div class="mb-4">
-                        <label for="login-email" class="block text-sm font-bold mb-2">Email</label>
-                        <input type="email" id="login-email" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-                    </div>
-                    <div class="mb-4">
-                        <label for="login-password" class="block text-sm font-bold mb-2">Password</label>
-                        <input type="password" id="login-password" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-                    </div>
-                    <button type="button" id="login-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</button>
-                </form>
-                <p class="text-center mt-4">Don't have an account? <a href="#" id="show-signup" class="text-blue-500 hover:underline">Sign up</a></p>
-            </div>
-
-            <div id="signup-form" class="hidden">
-                <h3 class="text-3xl font-bold text-center mb-8">Sign Up</h3>
-                <form class="w-full max-w-sm mx-auto">
-                    <div class="mb-4">
-                        <label for="signup-email" class="block text-sm font-bold mb-2">Email</label>
-                        <input type="email" id="signup-email" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-                    </div>
-                    <div class="mb-4">
-                        <label for="signup-password" class="block text-sm font-bold mb-2">Password</label>
-                        <input type="password" id="signup-password" class="w-full p-2 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-                    </div>
-                    <button type="button" id="signup-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Sign Up</button>
-                </form>
-                <p class="text-center mt-4">Already have an account? <a href="#" id="show-login" class="text-blue-500 hover:underline">Login</a></p>
-            </div>
-
-            <div id="user-info" class="hidden text-center">
-                <p>Welcome, <span id="user-email"></span></p>
-                <button id="logout-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Logout</button>
-            </div>
         </section>
     </main>
 
@@ -119,12 +65,6 @@
         <p>&copy; 2025 MyPortfolio. All rights reserved.</p>
     </footer>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="assets/js/firebase-config.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <script src="assets/js/blog.js"></script>
     <script src="assets/js/nav.js"></script>
 </body>
 </html>
