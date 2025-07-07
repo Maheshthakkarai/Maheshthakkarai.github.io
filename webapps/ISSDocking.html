@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceX - ISS Docking Simulator</title>
+    <style>
+        /* Import a modern font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        /* Basic Reset & Global Styles */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px; /* Base font size */
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0; /* Light grey text for contrast */
+            /* Dark space-like gradient + Subtle Starfield */
+            background-color: #0f172a; /* Fallback color */
+            background-image:
+                /* Starfield layers */
+                radial-gradient(rgba(255, 255, 255, 0.6) 0.5px, transparent 0.5px),
+                radial-gradient(rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
+                /* Base gradient */
+                linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            background-size: 100px 100px, 200px 200px, 100% 100%; /* Sizes for stars and gradient */
+            background-position: 0 0, 50px 50px, 0 0; /* Positions for stars */
+            background-attachment: fixed; /* Keep background fixed during scroll */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem; /* Add padding for smaller screens */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Main Container Styling */
+        .main-container {
+            position: relative; /* Needed for absolute positioning of spinner */
+            background: rgba(30, 41, 59, 0.7); /* Slightly increased opacity */
+            backdrop-filter: blur(12px) saturate(160%); /* Enhanced Glassmorphism */
+            -webkit-backdrop-filter: blur(12px) saturate(160%); /* Safari support */
+            border-radius: 25px; /* Slightly more rounded */
+            padding: 2.5rem 3rem;
+            text-align: center;
+            max-width: 800px; /* Limit width on larger screens */
+            width: 90%; /* Responsive width */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Slightly stronger border */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); /* Slightly stronger shadow */
+            transform: perspective(1200px); /* Prepare for 3D effect */
+            transition: transform 0.4s ease-out, box-shadow 0.4s ease-out; /* Smooth transitions */
+            animation: fadeInScaleUp 0.8s ease-out forwards; /* Entrance animation */
+        }
+
+        /* Suggestion 2: Container Hover Effect */
+        .main-container:hover {
+            transform: perspective(1200px) scale(1.01) rotateY(1deg); /* Subtle tilt and scale */
+            box-shadow: 0 15px 50px rgba(0, 100, 200, 0.2); /* Add a faint blue glow on hover */
+        }
+
+        /* Suggestion 3: Decorative CSS Spinner */
+        .spinner {
+            position: absolute;
+            top: 1.8rem; /* Adjust position relative to container padding */
+            left: 2rem; /* Adjust position */
+            width: 25px;
+            height: 25px;
+            border: 3px solid rgba(255, 255, 255, 0.2); /* Light border */
+            border-top-color: #00aaff; /* Accent color */
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            opacity: 0.7; /* Make it slightly subtle */
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Header Styling */
+        .header-title {
+            font-size: 2.5rem; /* Large title */
+            font-weight: 700;
+            color: #ffffff; /* White title */
+            margin-bottom: 1.5rem;
+            margin-top: 1rem; /* Add some space above if spinner is present */
+            text-shadow: 0 0 18px rgba(0, 191, 255, 0.6), /* Deep sky blue glow */
+                         0 0 6px rgba(255, 255, 255, 0.8); /* Subtle white inner glow */
+            letter-spacing: 1.5px; /* Slightly wider spacing */
+        }
+
+        /* Button Styling */
+        .docking-button {
+            display: inline-block;
+            background: linear-gradient(145deg, #007bff, #0056b3);
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 0.9rem 2.5rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            position: relative; /* Needed for potential future ::before/::after effects */
+            overflow: hidden; /* Helps with potential effects */
+        }
+
+        .docking-button:hover,
+        .docking-button:focus {
+            background: linear-gradient(145deg, #0069d9, #004a9e); /* Adjusted hover gradient */
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        /* Note Text Styling */
+        .info-note {
+            font-size: 0.95rem;
+            color: #bdc3c7;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .info-note strong {
+            color: #ecf0f1;
+            font-weight: 600;
+        }
+
+        /* Suggestion 4: Enhanced Text Emphasis (Icons) */
+        .info-note .icon {
+            display: inline-block; /* Prevent line breaks */
+            margin: 0 0.2em; /* Add small spacing around icons */
+            font-style: normal; /* Ensure icons are not italicized if parent is */
+            color: #7fdbff; /* Aqua color for icons */
+            opacity: 0.8;
+        }
+
+        /* --- Responsiveness --- */
+
+        /* Tablet Styles */
+        @media (max-width: 768px) {
+            html {
+                font-size: 15px;
+            }
+
+            .main-container {
+                padding: 2rem 1.5rem;
+                width: 95%;
+                border-radius: 20px; /* Adjust rounding */
+            }
+
+             .spinner {
+                top: 1.3rem;
+                left: 1.3rem;
+                width: 22px;
+                height: 22px;
+                border-width: 2px;
+             }
+
+            .header-title {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            .docking-button {
+                font-size: 1.1rem;
+                padding: 0.8rem 2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .info-note {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 480px) {
+            html {
+                font-size: 14px;
+            }
+
+            body {
+                padding: 0.5rem;
+                /* Simplify background slightly on very small screens if needed */
+                background-size: 150px 150px, 250px 250px, 100% 100%;
+            }
+
+            .main-container {
+                padding: 1.5rem 1rem;
+                border-radius: 15px;
+            }
+
+             .spinner {
+                top: 1rem;
+                left: 1rem;
+                width: 20px;
+                height: 20px;
+             }
+
+            .header-title {
+                font-size: 1.7rem;
+            }
+
+            .docking-button {
+                font-size: 1rem;
+                padding: 0.7rem 1.5rem;
+                width: 90%; /* Make button wider */
+                max-width: 320px; /* Set a max width */
+            }
+
+            .info-note {
+                font-size: 0.85rem;
+                line-height: 1.6;
+            }
+        }
+
+        /* --- Optional Enhancements --- */
+
+        /* Subtle entrance animation for the container */
+        @keyframes fadeInScaleUp {
+            from {
+                opacity: 0;
+                transform: perspective(1200px) scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: perspective(1200px) scale(1) translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Suggestion 5: Accessibility (role="main") -->
+    <div class="main-container" role="main">
+        <!-- Suggestion 3: Decorative Spinner -->
+        <div class="spinner"></div>
+
+        <h1 class="header-title">SPACEX - ISS Docking Simulator</h1>
+
+        <!-- Suggestion 5: Accessibility (aria-label) -->
+        <a href="https://iss-sim.spacex.com/" target="_blank" rel="noopener noreferrer" class="docking-button" aria-label="Practice ISS Docking Simulation">
+            Practice Docking
+        </a>
+
+        <p class="info-note">
+            This simulator will familiarize you with the controls of the actual interface used by NASA Astronauts to manually pilot the SpaceX Dragon 2 vehicle to the International Space Station. Successful docking is achieved when all <strong>green numbers</strong> in the center of the interface are below <strong>0.2</strong>. Movement in space is slow and requires <strong title="Patience"><span class="icon">⏳</span>patience</strong> & <strong title="Precision"><span class="icon">🎯</span>precision</strong>.
+            <!-- Alternative icons: ✨ (sparkles), 🧭 (compass) -->
+        </p>
+    </div>
+
+    <!-- No JavaScript needed for current functionality -->
+    <!-- <script>
+        // JavaScript could be added here for future enhancements
+    </script> -->
+
+</body>
+</html>

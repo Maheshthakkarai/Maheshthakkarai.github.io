@@ -143,5 +143,13 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/AIBasics.png",
         "url": "/webapps/AIBasics.html"
+    },
+    {
+        "title": "ISS Docking",
+        "description": "ISS Docking Simulator",
+        "category": "Science",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/ISS.jpg",
+        "url": "/webapps/ISSDocking.html"
     }
-];
+   ];
