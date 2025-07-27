@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FutureFolio - Retirement Calculator</title>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            --border-radius: 12px;
+            --transition-speed: 0.4s;
+            --bg-color-light: #f0f2f5; --card-bg-light: rgba(255, 255, 255, 0.75); --text-color-light: #1c1c1e; --primary-color-light: #007aff; --border-color-light: rgba(0, 0, 0, 0.1); --input-bg-light: #fff;
+            --bg-color-dark: #1c1c1e; --card-bg-dark: rgba(44, 44, 46, 0.75); --text-color-dark: #f2f2f7; --primary-color-dark: #0a84ff; --border-color-dark: rgba(255, 255, 255, 0.2); --input-bg-dark: #2c2c2e;
+            --error-color: #dc3545;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            --bg-color: var(--bg-color-light); --card-bg: var(--card-bg-light); --text-color: var(--text-color-light); --primary-color: var(--primary-color-light); --border-color: var(--border-color-light); --input-bg: var(--input-bg-light);
+            font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); transition: background-color var(--transition-speed), color var(--transition-speed); padding: 2rem 1rem; font-size: 16px; overflow-x: hidden;
+        }
+        body.dark {
+            --bg-color: var(--bg-color-dark); --card-bg: var(--card-bg-dark); --text-color: var(--text-color-dark); --primary-color: var(--primary-color-dark); --border-color: var(--border-color-dark); --input-bg: var(--input-bg-dark);
+        }
+        .app-wrapper { max-width: 580px; margin: 0 auto; transition: max-width var(--transition-speed) ease-in-out; }
+        .app-wrapper.has-results { max-width: 1200px; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .app-title { font-size: 2.5rem; font-weight: 700; }
+        .header-controls { display: flex; gap: 1rem; }
+        .icon-button { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; color: var(--text-color); transition: all 0.2s; backdrop-filter: blur(10px); }
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .app-wrapper.has-results .main-grid { grid-template-columns: 1fr 1fr; }
+        .card { background: var(--card-bg); border-radius: var(--border-radius); padding: 2rem; border: 1px solid var(--border-color); backdrop-filter: blur(10px); width: 100%; }
+        .card-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        label .asterisk { color: var(--error-color); }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+        input[type="date"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); color: var(--text-color); font-size: 1rem; }
+        .input-wrapper input { padding-left: 40px; }
+        select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right .75rem center; background-size: 16px 12px; }
+        body.dark select { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f2f2f7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+        .net-worth-link { display: block; text-align: right; font-size: 0.85rem; margin-top: 0.5rem; color: var(--primary-color); text-decoration: none; }
+        .net-worth-link:hover { text-decoration: underline; }
+        .button-group { display: flex; gap: 1rem; margin-top: 2rem; }
+        .btn { padding: 14px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; font-weight: 600; flex-grow: 1; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-secondary { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); }
+        .results-section-title { font-size: 1.2rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+        .results-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        .result-item { background: var(--bg-color); padding: 1rem; border-radius: var(--border-radius); text-align: center; }
+        .result-value { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
+        .retirement-summary { margin-top: 2rem; padding: 1.5rem; background: var(--bg-color); border-radius: var(--border-radius); border-left: 5px solid var(--primary-color); }
+        .chart-container { position: relative; width: 100%; margin-top: 1rem; }
+        .rate-display { font-size: 0.85rem; text-align: center; margin-top: 0.5rem; opacity: 0.7; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: var(--bg-color); color: var(--text-color); padding: 2rem; border-radius: var(--border-radius); width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; }
+        .modal-content h3 { color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .modal-content p, .modal-content li { line-height: 1.6; margin-bottom: 0.5rem; }
+        .modal-content ul { padding-left: 20px; }
+        #print-area { display: none; }
+        @media print { body { overflow-x: visible; } .no-print, .no-print * { display: none !important; } #print-area { display: block; padding: 1rem; } }
+    </style>
+</head>
+
+<body x-data="futureFolio" :class="{ 'dark': isDarkMode }">
+    <div class="app-wrapper" :class="{ 'has-results': results.calculationDone }">
+        <header class="app-header no-print">
+            <h1 class="app-title">FutureFolio</h1>
+            <div class="header-controls">
+                <button @click="toggleTheme()" class="icon-button" aria-label="Toggle Theme"><i :class="isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill'"></i></button>
+                <button @click="isModalOpen = true" class="icon-button" aria-label="Help"><i class="bi bi-question-lg"></i></button>
+            </div>
+        </header>
+
+        <main class="main-grid">
+            <div class="card no-print">
+                <h2 class="card-title">Your Financial Details</h2>
+                <div x-show="isLoading" class="form-group"><p>Loading currencies...</p></div>
+                <div x-show="isError" class="form-group"><p style="color: var(--error-color);">Could not load currency data. Please refresh.</p></div>
+                
+                <form @submit.prevent="calculate()" x-show="!isLoading && !isError">
+                    <div class="form-group"><label>Base Currency <span class="asterisk">*</span></label><select x-model="currency.baseCode"><template x-for="code in currencies" :key="code"><option :value="code" x-text="code"></option></template></select></div>
+                    <hr style="border-color: var(--border-color); margin: -0.5rem 0 1.5rem 0;">
+                    <div class="form-group"><label>Date of Birth <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-calendar-event"></i><input type="date" x-model="inputs.dob" required></div></div>
+                    <div class="form-group"><label>Life Expectancy <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-hourglass-split"></i><input type="number" x-model.number="inputs.lifeExpectancy" placeholder="e.g., 90" min="1" required></div></div>
+                    <div class="form-group"><label>Retirement Age <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-person-walking"></i><input type="number" x-model.number="inputs.retirementAge" placeholder="e.g., 65" min="1" required></div></div>
+                    <div class="form-group"><label>Annual Income Increment (%) <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-graph-up-arrow"></i><input type="number" x-model.number="inputs.incomeIncrement" placeholder="e.g., 3" min="0" step="0.1" required></div></div>
+                    <div class="form-group"><label>Annual Inflation (%) <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-reception-4"></i><input type="number" x-model.number="inputs.inflation" placeholder="e.g., 2.5" min="0" step="0.1" required></div></div>
+                    <div class="form-group"><label>Annual Investment Return (%) <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-bank"></i><input type="number" x-model.number="inputs.investmentReturn" placeholder="e.g., 7" min="0" step="0.1" required></div></div>
+                    <div class="form-group"><label>Monthly Income (in <span x-text="currency.baseCode"></span>) <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-cash-coin"></i><input type="number" x-model.number="inputs.monthlyIncome" placeholder="e.g., 5000" min="0" required></div></div>
+                    <div class="form-group"><label>Other Annual Income (in <span x-text="currency.baseCode"></span>)</label><div class="input-wrapper"><i class="bi bi-plus-circle-dotted"></i><input type="number" x-model.number="inputs.otherAnnualIncome" placeholder="e.g., 2000" min="0"></div></div>
+                    <div class="form-group"><label>Monthly Expenses (in <span x-text="currency.baseCode"></span>) <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-cart"></i><input type="number" x-model.number="inputs.monthlyExpenses" placeholder="e.g., 3000" min="0" required></div></div>
+                    <div class="form-group"><label>Other Annual Expenses (in <span x-text="currency.baseCode"></span>)</label><div class="input-wrapper"><i class="bi bi-receipt"></i><input type="number" x-model.number="inputs.otherAnnualExpenses" placeholder="e.g., 1500" min="0"></div></div>
+                    <div class="form-group">
+                        <label>Current Net Worth (in <span x-text="currency.baseCode"></span>) <span class="asterisk">*</span></label>
+                        <div class="input-wrapper"><i class="bi bi-piggy-bank"></i><input type="number" x-model.number="inputs.currentNetWorth" placeholder="e.g., -10000 or 100000" required></div>
+                        <a href="https://sites.google.com/view/maheshthakkar/apps/calculators/net-worth-calculator" target="_blank" class="net-worth-link">Need help? Calculate your net worth</a>
+                    </div>
+                    <div class="form-group"><label>Expense Reduction Post-Retirement (%) <span class="asterisk">*</span></label><div class="input-wrapper"><i class="bi bi-arrow-down-right-circle"></i><input type="number" x-model.number="inputs.expenseReduction" placeholder="e.g., 20" min="0" max="100" required></div></div>
+                    <div class="button-group"><button type="submit" class="btn btn-primary" :disabled="!isFormValid()">Calculate</button><button type="button" @click="resetForm()" class="btn btn-secondary">Reset</button></div>
+                </form>
+            </div>
+            
+            <div class="card" x-show="results.calculationDone" x-transition.opacity.duration.500ms>
+                <h2 class="card-title">Your Retirement Outlook</h2>
+                <div class="results-grid">
+                    <div class="result-item"><div class="result-label">Current Age</div><div class="result-value" x-text="results.currentAge"></div></div>
+                    <div class="result-item"><div class="result-label">Working Years</div><div class="result-value" x-text="results.remainingWorkingYears"></div></div>
+                    <div class="result-item"><div class="result-label">Retired Years</div><div class="result-value" x-text="results.retiredYears"></div></div>
+                    <div class="result-item"><div class="result-label">Annual Savings</div><div class="result-value" x-text="formatCurrency(results.annualSavings, currency.code, currency.multiplier)"></div></div>
+                </div>
+                <h3 class="results-section-title">Projections (<span x-text="currency.code"></span>)</h3>
+                <div class="results-grid">
+                    <div class="result-item" style="grid-column: 1 / -1;"><div class="result-label">Future Value of Savings</div><div class="result-value" x-text="formatCurrency(results.potentialSavingsAtRetirement, currency.code, currency.multiplier)"></div></div>
+                    <div class="result-item" style="grid-column: 1 / -1;"><div class="result-label">Net Worth at Retirement</div><div class="result-value" x-text="formatCurrency(results.potentialNetWorthOnRetirement, currency.code, currency.multiplier)"></div></div>
+                    <div class="result-item"><div class="result-label">Annual Expenses at Retirement</div><div class="result-value" x-text="formatCurrency(results.annualExpensesPostRetirement, currency.code, currency.multiplier)"></div></div>
+                    <div class="result-item"><div class="result-label">Total Expenses in Retirement</div><div class="result-value" x-text="formatCurrency(results.totalExpensesPostRetirement, currency.code, currency.multiplier)"></div></div>
+                </div>
+                <h3 class="results-section-title">Net Worth Growth (<span x-text="currency.code"></span>)</h3>
+                <div class="chart-container"><canvas id="netWorthChart"></canvas></div>
+                <div class="retirement-summary" :style="{ borderColor: results.potentialNetWorthOnRetirement >= results.totalExpensesPostRetirement ? '#28a745' : '#dc3545' }"><p x-text="generateSummary()"></p></div>
+                <div class="currency-converter">
+                    <h3 class="results-section-title">Live Currency Converter</h3>
+                    <div class="form-group"><label>Convert from <b x-text="currency.baseCode"></b> to Target Currency</label><select x-model="currency.targetCode" @change="convertCurrency()"><template x-for="code in currencies" :key="code"><option :value="code" x-text="code"></option></template></select></div>
+                    <div class="rate-display" x-show="currency.isConverted" x-text="`Rate: 1 ${currency.baseCode} = ${currency.displayRate} ${currency.targetCode}`"></div>
+                    <div class="form-group" x-show="currency.isConverted"><button class="btn btn-secondary" @click="revertCurrency()">Revert to <span x-text="currency.baseCode"></span></button></div>
+                </div>
+                 <div class="button-group no-print"><button @click="printResults()" class="btn btn-secondary"><i class="bi bi-printer"></i> Print</button></div>
+            </div>
+        </main>
+        
+        <div x-show="isModalOpen" class="modal-overlay no-print" @click.self="isModalOpen = false" x-transition>
+            <div class="modal-content" @click.away="isModalOpen = false">
+                <i class="bi bi-x-lg modal-close" @click="isModalOpen = false"></i>
+                <h2 class="card-title">About FutureFolio</h2><h3>How to Use</h3><ul><li>Select your local <b>Base Currency</b>. All money inputs should be in this currency.</li><li>Fill in your timeline details: date of birth, desired retirement age, and life expectancy.</li><li>Enter your financial assumptions: your expected annual income raise, the average inflation rate, and your estimated annual investment return.</li><li>Provide your current after-tax income and expenses, both monthly and any other annual amounts.</li><li>Enter your current total net worth. This can be negative.</li><li>Click <b>Calculate</b> to see your projection.</li></ul><h3>Calculation Formulas</h3><ul><li><b>Future Value of Savings:</b> We calculate savings for each year until retirement, factoring in income growth and inflation. We then project the future value of each year's savings by compounding it with your investment return rate.</li><li><b>Net Worth at Retirement:</b> This is the sum of: (1) The future value of your 'Current Net Worth' compounded by the investment return rate, and (2) The 'Future Value of Savings' as described above.</li><li><b>Total Expenses in Retirement:</b> We calculate your annual expenses in your first year of retirement (inflated and then reduced). We then project this amount forward for every year of retirement, increasing it by inflation each year to find the total lifetime cost.</li></ul><h3>Disclaimer</h3><p>This is a tool for high-level financial estimation. All calculations are projections based on the data you provide and do not account for taxes, market volatility, or other complex financial events. This does not constitute financial advice. For a comprehensive financial plan, please consult a certified financial advisor.</p>
+            </div>
+        </div>
+        <div id="print-area"></div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('futureFolio', () => ({
+                isLoading: true, isError: false, isDarkMode: false, isModalOpen: false, chartInstance: null,
+                inputs: {},
+                results: { calculationDone: false, chartDataBase: [] },
+                currency: { baseCode: 'USD', targetCode: 'EUR', multiplier: 1, code: 'USD', displayRate: 0, isConverted: false },
+                currencies: ['USD'], exchangeRates: {},
+                
+                getFreshInputs() { return { dob: '', lifeExpectancy: '', retirementAge: '', incomeIncrement: '', inflation: '', investmentReturn: '', monthlyIncome: '', otherAnnualIncome: 0, monthlyExpenses: '', otherAnnualExpenses: 0, currentNetWorth: '', expenseReduction: '' }; },
+                init() {
+                    this.isDarkMode = localStorage.getItem('isDarkMode') === 'true'; document.body.classList.toggle('dark', this.isDarkMode);
+                    try { const saved = localStorage.getItem('futureFolioInputs_v11'); if (saved) { const parsed = JSON.parse(saved); this.inputs = parsed.inputs || this.getFreshInputs(); this.currency.baseCode = parsed.baseCode || 'USD'; } else { this.inputs = this.getFreshInputs(); } } catch (e) { this.inputs = this.getFreshInputs(); }
+                    fetch('https://api.exchangerate-api.com/v4/latest/USD').then(res => res.json()).then(data => { this.exchangeRates = data.rates; this.currencies = Object.keys(data.rates); this.isLoading = false; }).catch(() => { this.isLoading = false; this.isError = true; });
+                    this.$watch('isDarkMode', () => this.renderChart());
+                    this.$watch(['inputs', 'currency.baseCode'], () => { localStorage.setItem('futureFolioInputs_v11', JSON.stringify({inputs: this.inputs, baseCode: this.currency.baseCode})); }, { deep: true });
+                },
+                toggleTheme() { this.isDarkMode = !this.isDarkMode; document.body.classList.toggle('dark', this.isDarkMode); localStorage.setItem('isDarkMode', this.isDarkMode); },
+                resetForm() { this.inputs = this.getFreshInputs(); this.results.calculationDone = false; localStorage.removeItem('futureFolioInputs_v11'); this.revertCurrency(); },
+                isFormValid() { const required = ['dob', 'lifeExpectancy', 'retirementAge', 'incomeIncrement', 'inflation', 'investmentReturn', 'monthlyIncome', 'monthlyExpenses', 'currentNetWorth', 'expenseReduction']; return required.every(f => this.inputs[f] !== null && this.inputs[f] !== ''); },
+                formatCurrency(val, code, mult = 1) { if (typeof val !== 'number' || isNaN(val)) return 'N/A'; const final = val * mult; try { return final.toLocaleString(undefined, { style: 'currency', currency: code, minimumFractionDigits: 0, maximumFractionDigits: 0 }); } catch (e) { return `${Math.round(final).toLocaleString()} ${code}`; } },
+                generateSummary() { const surplus = this.results.potentialNetWorthOnRetirement - this.results.totalExpensesPostRetirement; return surplus >= 0 ? `Congratulations! Your net worth may cover expenses with a surplus of ${this.formatCurrency(surplus, this.currency.code, this.currency.multiplier)}.` : `You may have a potential shortfall of ${this.formatCurrency(Math.abs(surplus), this.currency.code, this.currency.multiplier)}.`; },
+                calculate() {
+                    if (!this.isFormValid()) { alert("Please fill all mandatory fields marked with *"); return; }
+                    this.revertCurrency();
+                    const today = new Date(), birthDate = new Date(this.inputs.dob);
+                    const lifeExpectancy = Number(this.inputs.lifeExpectancy), retirementAge = Number(this.inputs.retirementAge);
+                    this.results.currentAge = Math.floor((today - birthDate) / 31557600000);
+                    this.results.remainingWorkingYears = retirementAge - this.results.currentAge;
+                    this.results.retiredYears = lifeExpectancy - retirementAge;
+                    if (this.results.remainingWorkingYears < 0 || this.results.retiredYears < 0) { alert("Age inputs are invalid."); return; }
+                    
+                    const g = Number(this.inputs.incomeIncrement)/100, i = Number(this.inputs.inflation)/100, inv_r = Number(this.inputs.investmentReturn)/100;
+                    const annualIncome = (Number(this.inputs.monthlyIncome) * 12) + (Number(this.inputs.otherAnnualIncome) || 0);
+                    const annualExpenses = (Number(this.inputs.monthlyExpenses) * 12) + (Number(this.inputs.otherAnnualExpenses) || 0);
+                    this.results.annualSavings = annualIncome - annualExpenses;
+                    
+                    let yearlyNetWorthData = [Number(this.inputs.currentNetWorth)], runningNetWorth = Number(this.inputs.currentNetWorth), fvSavings = 0;
+                    for (let k = 1; k <= this.results.remainingWorkingYears; k++) {
+                        runningNetWorth *= (1 + inv_r);
+                        const savingsThisYear = (annualIncome * Math.pow(1 + g, k)) - (annualExpenses * Math.pow(1 + i, k));
+                        runningNetWorth += savingsThisYear;
+                        yearlyNetWorthData.push(runningNetWorth);
+                        fvSavings += savingsThisYear * Math.pow(1 + inv_r, this.results.remainingWorkingYears - k);
+                    }
+                    this.results.chartDataBase = yearlyNetWorthData;
+                    
+                    this.results.potentialSavingsAtRetirement = fvSavings;
+                    this.results.potentialNetWorthOnRetirement = (Number(this.inputs.currentNetWorth) * Math.pow(1 + inv_r, this.results.remainingWorkingYears)) + fvSavings;
+                    
+                    const expensesAtRetirement = annualExpenses * Math.pow(1 + i, this.results.remainingWorkingYears);
+                    this.results.annualExpensesPostRetirement = expensesAtRetirement * (1 - (Number(this.inputs.expenseReduction) / 100));
+                    
+                    let totalRetirementExpenses = 0;
+                    for (let j = 1; j <= this.results.retiredYears; j++) { totalRetirementExpenses += this.results.annualExpensesPostRetirement * Math.pow(1 + i, j); }
+                    this.results.totalExpensesPostRetirement = totalRetirementExpenses;
+                    
+                    this.results.calculationDone = true;
+                    this.$nextTick(() => this.renderChart());
+                },
+                renderChart() {
+                    if (!this.results.calculationDone) return; if (this.chartInstance) this.chartInstance.destroy();
+                    const ctx = document.getElementById('netWorthChart').getContext('2d');
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'line', data: { labels: Array.from({length: this.results.chartDataBase.length}, (_, i) => `Y${i}`), datasets: [{ label: 'Projected Net Worth', data: this.results.chartDataBase, backgroundColor: this.isDarkMode ? 'rgba(10, 132, 255, 0.2)' : 'rgba(0, 122, 255, 0.2)', borderColor: this.isDarkMode ? '#0a84ff' : '#007aff', borderWidth: 2, fill: true, tension: 0.4 }] },
+                        options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { color: this.isDarkMode ? '#f2f2f7' : '#1c1c1e', callback: (val) => this.formatCurrency(val, this.currency.code, this.currency.multiplier) } }, x: { ticks: { color: this.isDarkMode ? '#f2f2f7' : '#1c1c1e' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => this.formatCurrency(c.raw, this.currency.code, this.currency.multiplier) } } } }
+                    });
+                },
+                convertCurrency() { const baseRate = this.exchangeRates[this.currency.baseCode]; const targetRate = this.exchangeRates[this.currency.targetCode]; if (baseRate && targetRate) { const rate = targetRate / baseRate; this.currency.displayRate = rate.toFixed(4); this.currency.multiplier = rate; this.currency.code = this.currency.targetCode; this.currency.isConverted = true; this.renderChart(); } },
+                revertCurrency() { this.currency.multiplier = 1; this.currency.code = this.currency.baseCode; this.currency.isConverted = false; if (this.results.calculationDone) { this.renderChart(); } },
+                printResults() { const printArea = document.getElementById('print-area'); const resultsContent = document.querySelector('.card[x-show="results.calculationDone"]')?.cloneNode(true); if(!resultsContent) return; resultsContent.querySelector('.currency-converter')?.remove(); resultsContent.querySelector('.chart-container')?.remove(); printArea.innerHTML = ''; printArea.appendChild(resultsContent); setTimeout(() => { window.print(); }, 100); }
+            }));
+        });
+    </script>
+</body>
+</html>

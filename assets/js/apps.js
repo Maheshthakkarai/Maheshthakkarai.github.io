@@ -159,5 +159,13 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Networthcalculator.png",
         "url": "/webapps/NetworthCalculator.html"
+    },
+    {
+        "title": "FutureFolio",
+        "description": "Retirement Financial Estimator",
+        "category": "Calculator",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Retirement.png",
+        "url": "/webapps/FutureFolio-Final.html"
     }
    ];
