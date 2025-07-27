@@ -151,5 +151,13 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/ISS.jpg",
         "url": "/webapps/ISSDocking.html"
+    },
+    {
+        "title": "Net worth Calculator",
+        "description": "Estimate your Net worth",
+        "category": "Calculator",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/Networthcalculator.png",
+        "url": "/webapps/NetworthCalculator.html"
     }
    ];

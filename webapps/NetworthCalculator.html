@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Net Worth Calculator</title>
+  <!-- Importing Roboto Font for a modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Base reset and typography */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f2f2f2, #e6e6e6);
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 500;
+      color: #222;
+    }
+    /* README Card at Top */
+    .readme {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .readme h3 {
+      margin-top: 0;
+      color: #222;
+    }
+    .readme p {
+      line-height: 1.6;
+    }
+    /* Top summary and chart container */
+    .top-summary-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+    .summary, .chart-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      flex: 1;
+      min-width: 280px;
+    }
+    .summary div {
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+    .summary span {
+      font-weight: 500;
+      color: #007aff;
+    }
+    .chart-container {
+      position: relative;
+      height: 250px;
+    }
+    /* Columns for input sections */
+    .columns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .column {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      flex: 1;
+      min-width: 300px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .column h2 {
+      text-align: center;
+      border-bottom: 2px solid #007aff;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      color: #007aff;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #555;
+      font-weight: 500;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    .input-group input:focus {
+      border-color: #007aff;
+      outline: none;
+    }
+    /* Button styles */
+    button {
+      background: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 1em;
+      margin: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #005bb5;
+    }
+    /* Centered controls */
+    .controls {
+      text-align: center;
+      margin-top: 30px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .top-summary-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .columns {
+        flex-direction: column;
+      }
+    }
+    /* Additional mobile fixes for smaller screens */
+    @media (max-width: 480px) {
+      .summary, .chart-container {
+        width: calc(100% - 20px);
+        margin: 5px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- README Section Moved to Top -->
+    <div class="readme">
+      <h3>Welcome to the Net Worth Calculator</h3>
+      <p>
+        <strong>Overview:</strong><br>
+        This is a sleek and responsive Net Worth Calculator designed to help you compute your total assets, total liabilities, and net worth in real time. Enter your financial data in the categorized fields and view your financial summary along with a visual chart.
+      </p>
+      <p>
+        <strong>How to Use:</strong><br>
+        1. Enter your financial information in the input fields. Values will auto‑format with commas and a dollar sign.<br>
+        2. The totals for assets, liabilities, and net worth update instantly and are shown in the summary at the top.<br>
+        3. The bar chart next to the summary gives you a visual overview of your financial status.<br>
+        4. Use the buttons below to download your data as a CSV file, email your data, or print your net worth statement.
+      </p>
+      <p>
+        <strong>Note:</strong> This application is designed for modern browsers and devices. All calculations are performed on the client side.
+      </p>
+    </div>
+    <h1>Net Worth Calculator</h1>
+    <!-- Top summary and chart container -->
+    <div class="top-summary-container">
+      <!-- Summary Section -->
+      <div class="summary">
+        <div>Total Assets: <span id="totalAssets">$0.00</span></div>
+        <div>Total Liabilities: <span id="totalLiabilities">$0.00</span></div>
+        <div>Net Worth: <span id="netWorth">$0.00</span></div>
+      </div>
+      <!-- Chart Container -->
+      <div class="chart-container">
+        <canvas id="netWorthChart"></canvas>
+      </div>
+    </div>
+    <!-- Input Columns -->
+    <div class="columns">
+      <!-- Assets Column -->
+      <div class="column" id="assetsColumn">
+        <h2>Assets</h2>
+        <!-- Liquid Assets -->
+        <div class="section">
+          <h3>Liquid Assets</h3>
+          <div class="input-group">
+            <label for="checking">Checking Accounts</label>
+            <input type="text" id="checking" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="savings">Savings Accounts</label>
+            <input type="text" id="savings" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="moneyMarket">Money Market Funds</label>
+            <input type="text" id="moneyMarket" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="cash">Cash on Hand</label>
+            <input type="text" id="cash" placeholder="0.00">
+          </div>
+        </div>
+        <!-- Investments -->
+        <div class="section">
+          <h3>Investments</h3>
+          <div class="input-group">
+            <label for="stocks">Stocks</label>
+            <input type="text" id="stocks" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="bonds">Bonds</label>
+            <input type="text" id="bonds" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="mutualFunds">Mutual Funds</label>
+            <input type="text" id="mutualFunds" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="retirement">Retirement Accounts (401(k), IRA, etc.)</label>
+            <input type="text" id="retirement" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="tfsa">TFSA</label>
+            <input type="text" id="tfsa" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="employeeStock">Employee Stock Options</label>
+            <input type="text" id="employeeStock" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="crypto">Cryptocurrency</label>
+            <input type="text" id="crypto" placeholder="0.00">
+          </div>
+        </div>
+        <!-- Real Estate -->
+        <div class="section">
+          <h3>Real Estate</h3>
+          <div class="input-group">
+            <label for="primaryResidence">Primary Residence (Home)</label>
+            <input type="text" id="primaryResidence" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="rentalProperties">Rental Properties</label>
+            <input type="text" id="rentalProperties" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="land">Land</label>
+            <input type="text" id="land" placeholder="0.00">
+          </div>
+        </div>
+        <!-- Other Assets -->
+        <div class="section">
+          <h3>Other Assets</h3>
+          <div class="input-group">
+            <label for="lifeInsurance">Life Insurance Cash/Surrender Value</label>
+            <input type="text" id="lifeInsurance" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="thriftPlans">Thrift Plans</label>
+            <input type="text" id="thriftPlans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="businessInterests">Business Interests</label>
+            <input type="text" id="businessInterests" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="otherAssets">Other Convertible Assets</label>
+            <input type="text" id="otherAssets" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="cars">Cars</label>
+            <input type="text" id="cars" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="otherVehicles">Other Vehicles (Motorcycles, RVs, etc.)</label>
+            <input type="text" id="otherVehicles" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="jewelry">Jewelry</label>
+            <input type="text" id="jewelry" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="art">Art</label>
+            <input type="text" id="art" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="furniture">Furniture</label>
+            <input type="text" id="furniture" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="electronics">Electronics</label>
+            <input type="text" id="electronics" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="collectibles">Collectibles</label>
+            <input type="text" id="collectibles" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="otherValuables">Other Valuable Possessions</label>
+            <input type="text" id="otherValuables" placeholder="0.00">
+          </div>
+        </div>
+      </div>
+      <!-- Liabilities Column -->
+      <div class="column" id="liabilitiesColumn">
+        <h2>Liabilities</h2>
+        <!-- Mortgages -->
+        <div class="section">
+          <h3>Mortgages</h3>
+          <div class="input-group">
+            <label for="mortgagePersonal">Mortgage - Personal</label>
+            <input type="text" id="mortgagePersonal" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="mortgageBusiness">Mortgage - Business</label>
+            <input type="text" id="mortgageBusiness" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="mortgageOther">Mortgage - Other</label>
+            <input type="text" id="mortgageOther" placeholder="0.00">
+          </div>
+        </div>
+        <!-- Loans -->
+        <div class="section">
+          <h3>Loans</h3>
+          <div class="input-group">
+            <label for="carLoans">Car Loans</label>
+            <input type="text" id="carLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="personalLoans">Personal Loans</label>
+            <input type="text" id="personalLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="studentLoans">Student Loans</label>
+            <input type="text" id="studentLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="homeEquityLoans">Home Equity Loans</label>
+            <input type="text" id="homeEquityLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="installmentLoans">Installment Loans</label>
+            <input type="text" id="installmentLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="marginLoans">Margin Loans on Brokerage Accounts</label>
+            <input type="text" id="marginLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="401kLoans">401(k) Plan Loans</label>
+            <input type="text" id="401kLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="rrspLoans">RRSP Loan</label>
+            <input type="text" id="rrspLoans" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="policyLoans">Policy Loans on Life Insurance Policies</label>
+            <input type="text" id="policyLoans" placeholder="0.00">
+          </div>
+        </div>
+        <!-- Other Liabilities -->
+        <div class="section">
+          <h3>Other Liabilities</h3>
+          <div class="input-group">
+            <label for="creditCards">Credit Card Balances</label>
+            <input type="text" id="creditCards" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="bills">Outstanding Bills (Utilities, Rent, etc.)</label>
+            <input type="text" id="bills" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="unpaidTaxes">Unpaid Taxes</label>
+            <input type="text" id="unpaidTaxes" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="alimony">Alimony Payments</label>
+            <input type="text" id="alimony" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="childSupport">Child Support Payments</label>
+            <input type="text" id="childSupport" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="medicalBills">Unpaid Medical Bills</label>
+            <input type="text" id="medicalBills" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="accountsPayable">Accounts Payable</label>
+            <input type="text" id="accountsPayable" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="unpaidWages">Unpaid Wages</label>
+            <input type="text" id="unpaidWages" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="payrollTaxes">Payroll Taxes</label>
+            <input type="text" id="payrollTaxes" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="salesTaxes">Sales Taxes</label>
+            <input type="text" id="salesTaxes" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="accruedInterest">Accrued Interest on Liabilities</label>
+            <input type="text" id="accruedInterest" placeholder="0.00">
+          </div>
+          <div class="input-group">
+            <label for="otherLiabilities">Other Liabilities</label>
+            <input type="text" id="otherLiabilities" placeholder="0.00">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Controls for Download, Email, and Print -->
+    <div class="controls">
+      <button id="downloadBtn">Download CSV Data</button>
+      <button id="emailBtn">Email Data</button>
+      <button id="printBtn">Print</button>
+    </div>
+  </div>
+
+  <!-- Include Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Utility Functions
+    function formatCurrency(value) {
+      return '$' + Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+    function getNumericValue(id) {
+      let val = document.getElementById(id).value;
+      val = val.replace(/[^0-9.-]+/g, '');
+      return parseFloat(val) || 0;
+    }
+    // Generate CSV string from input data
+    function generateCSV() {
+      let csv = 'Field,Value\n';
+      document.querySelectorAll('input[type="text"]').forEach(input => {
+        let cleanVal = input.value.replace(/[$,]/g, '');
+        csv += input.id + ',' + cleanVal + '\n';
+      });
+      return csv;
+    }
+    // Calculation Logic
+    function calculateTotals() {
+      const assetIds = [
+        'checking', 'savings', 'moneyMarket', 'cash',
+        'stocks', 'bonds', 'mutualFunds', 'retirement', 'tfsa', 'employeeStock', 'crypto',
+        'primaryResidence', 'rentalProperties', 'land',
+        'lifeInsurance', 'thriftPlans', 'businessInterests', 'otherAssets',
+        'cars', 'otherVehicles', 'jewelry', 'art', 'furniture', 'electronics', 'collectibles', 'otherValuables'
+      ];
+      const liabilityIds = [
+        'mortgagePersonal', 'mortgageBusiness', 'mortgageOther',
+        'carLoans', 'personalLoans', 'studentLoans', 'homeEquityLoans', 'installmentLoans', 'marginLoans', '401kLoans', 'rrspLoans', 'policyLoans',
+        'creditCards', 'bills', 'unpaidTaxes', 'alimony', 'childSupport', 'medicalBills', 'accountsPayable', 'unpaidWages', 'payrollTaxes', 'salesTaxes', 'accruedInterest', 'otherLiabilities'
+      ];
+      let totalAssets = 0;
+      assetIds.forEach(id => { totalAssets += getNumericValue(id); });
+      let totalLiabilities = 0;
+      liabilityIds.forEach(id => { totalLiabilities += getNumericValue(id); });
+      let netWorth = totalAssets - totalLiabilities;
+      document.getElementById('totalAssets').innerText = formatCurrency(totalAssets);
+      document.getElementById('totalLiabilities').innerText = formatCurrency(totalLiabilities);
+      document.getElementById('netWorth').innerText = formatCurrency(netWorth);
+      updateChart(totalAssets, totalLiabilities, netWorth);
+    }
+    // Input Formatting and Event Listeners
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+      input.addEventListener('input', calculateTotals);
+      input.addEventListener('blur', function() {
+        let num = parseFloat(input.value.replace(/[^0-9.-]+/g, ''));
+        if (!isNaN(num)) { input.value = formatCurrency(num); }
+      });
+      input.addEventListener('focus', function() {
+        input.value = input.value.replace(/[$,]/g, '');
+      });
+    });
+    // CSV Download Functionality
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const csvData = generateCSV();
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'netWorthData.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    // Email Data Functionality
+    document.getElementById('emailBtn').addEventListener('click', () => {
+      const csvData = generateCSV();
+      const subject = encodeURIComponent('Net Worth Calculator Data');
+      const body = encodeURIComponent('Please find below the CSV data from the Net Worth Calculator:\n\n' + csvData);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    });
+    // Print Functionality
+    document.getElementById('printBtn').addEventListener('click', () => {
+      window.print();
+    });
+    // Chart.js Visualization (Bar Chart)
+    let chart;
+    function updateChart(assets, liabilities, netWorth) {
+      const ctx = document.getElementById('netWorthChart').getContext('2d');
+      const data = {
+        labels: ['Assets', 'Liabilities', 'Net Worth'],
+        datasets: [{
+          label: 'Financial Overview',
+          data: [assets, liabilities, netWorth],
+          backgroundColor: [
+            '#4caf50', '#f44336',
+            netWorth >= 0 ? '#2196f3' : '#ff9800'
+          ]
+        }]
+      };
+      if (chart) {
+        chart.data.datasets[0].data = [assets, liabilities, netWorth];
+        chart.data.datasets[0].backgroundColor = [
+          '#4caf50', '#f44336',
+          netWorth >= 0 ? '#2196f3' : '#ff9800'
+        ];
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      }
+    }
+    // Initial calculation on page load
+    calculateTotals();
+    // Mobile Shortcut Suggestion
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      alert('For easier access, consider adding this page to your home screen.');
+    }
+  </script>
+</body>
+</html>
