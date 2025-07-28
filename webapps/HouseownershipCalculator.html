@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Ownership Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;0,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #2962ff;
+            /* Vibrant Blue */
+            --secondary-color: #64b5f6;
+            /* Light Blue */
+            --accent-color: #ffab40;
+            /* Warm Orange */
+            --text-color: #333333;
+            --background-color: #f7f9fc;
+            --card-background: #ffffff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Form Styles */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232962ff"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.02);
+        }
+
+        /* Output Styles */
+        .output {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: var(--background-color);
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .output h3 {
+            color: var(--accent-color);
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .output p {
+            font-size: 1.2em;
+            color: var(--text-color);
+        }
+
+        /* Summary Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            /* Hide border-radius overflow */
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Percentage Distribution Chart Styles */
+        #chart-container {
+            margin-top: 20px;
+            text-align: center;
+            /* Added height to ensure chart is visible */
+            height: 300px;
+            position: relative;
+        }
+
+        /* Spacing & Alignment */
+        .mb-1 {
+            margin-bottom: 1rem;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Helper Classes for Responsiveness (simplified) */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                /* Stack cards on smaller screens */
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Additional Styling Enhancements */
+        ::selection {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Minimalist Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Icon Fonts (Example, replace with your chosen icon library) */
+        .icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group input {
+            border-radius: 5px;
+        }
+
+        /* Conditional Formatting Styles */
+        .negative {
+            font-weight: bold;
+            color: #FF0000;
+            /* Red */
+        }
+
+        .low-savings {
+            font-weight: bold;
+            color: #C00000;
+            /* Maroon */
+        }
+
+        .high-mortgage {
+            font-weight: bold;
+            color: #0070C0;
+            /* Blue */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>House Ownership Calculator</h1>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2><span class="icon"><i class="fas fa-home"></i></span> Key House Details</h2>
+                <div class="input-group">
+                    <label for="housePrice">House Price:</label>
+                    <input type="number" id="housePrice" name="housePrice" required>
+                </div>
+                <div class="input-group">
+                    <label for="downPayment">Down Payment:</label>
+                    <input type="number" id="downPayment" name="downPayment" required>
+                </div>
+                <div class="input-group">
+                    <label for="totalMortgageAmount">Total Mortgage Amount:</label>
+                    <input type="number" id="totalMortgageAmount" name="totalMortgageAmount" readonly>
+                </div>
+                <div class="input-group">
+                    <label for="interestRate">Interest Rate (Annual %):</label>
+                    <input type="number" id="interestRate" name="interestRate" step="0.01" required>
+                </div>
+                <div class="input-group">
+                    <label for="amortizationPeriod">Amortization Period (Years):</label>
+                    <input type="number" id="amortizationPeriod" name="amortizationPeriod" required>
+                </div>
+                <div class="input-group">
+                    <label for="monthlyIncome">Monthly Income After Taxes:</label>
+                    <input type="number" id="monthlyIncome" name="monthlyIncome" required>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon"><i class="fas fa-dollar-sign"></i></span> Monthly Living Expenses</h2>
+                <div class="input-group">
+                    <label for="propertyTax">Property Tax:</label>
+                    <input type="number" id="propertyTax" name="propertyTax" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="utility">Utility (Gas/Heat/Water):</label>
+                    <input type="number" id="utility" name="utility" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="internet">Internet:</label>
+                    <input type="number" id="internet" name="internet" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="phone">Phone:</label>
+                    <input type="number" id="phone" name="phone" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="tv">TV:</label>
+                    <input type="number" id="tv" name="tv" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="security">Security System:</label>
+                    <input type="number" id="security" name="security" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="transit">Transit:</label>
+                    <input type="number" id="transit" name="transit" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="gas">Gas (Car):</label>
+                    <input type="number" id="gas" name="gas" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="grocery">Grocery:</label>
+                    <input type="number" id="grocery" name="grocery" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="medication">Medication:</label>
+                    <input type="number" id="medication" name="medication" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="homeInsurance">Home Insurance:</label>
+                    <input type="number" id="homeInsurance" name="homeInsurance" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="autoInsurance">Auto Insurance:</label>
+                    <input type="number" id="autoInsurance" name="autoInsurance" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="clothing">Clothing:</label>
+                    <input type="number" id="clothing" name="clothing" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="school">School / Tuition:</label>
+                    <input type="number" id="school" name="school" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="daycare">Day Care:</label>
+                    <input type="number" id="daycare" name="daycare" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="eatingOut">Eating Out:</label>
+                    <input type="number" id="eatingOut" name="eatingOut" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="entertainment">Entertainment:</label>
+                    <input type="number" id="entertainment" name="entertainment" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="haircut">Haircut / Personal Care:</label>
+                    <input type="number" id="haircut" name="haircut" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="misc1">Miscellaneous Expense 1:</label>
+                    <input type="number" id="misc1" name="misc1" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="misc2">Miscellaneous Expense 2:</label>
+                    <input type="number" id="misc2" name="misc2" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="misc3">Miscellaneous Expense 3:</label>
+                    <input type="number" id="misc3" name="misc3" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="other1">Other Expense 1:</label>
+                    <input type="number" id="other1" name="other1" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="other2">Other Expense 2:</label>
+                    <input type="number" id="other2" name="other2" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="other3">Other Expense 3:</label>
+                    <input type="number" id="other3" name="other3" value="0">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon"><i class="fas fa-cog"></i></span> Options & Calculation</h2>
+                <div class="input-group">
+                    <label for="paymentSchedule">Payment Schedule:</label>
+                    <select id="paymentSchedule" name="paymentSchedule">
+                        <option value="monthly">Monthly</option>
+                        <option value="bi-weekly">Bi-Weekly</option>
+                        <option value="accelerated-bi-weekly">Accelerated Bi-Weekly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="accelerated-weekly">Accelerated Weekly</option>
+                    </select>
+                </div>
+                <button onclick="calculateAffordability()">Calculate <span class="icon"><i
+                            class="fas fa-chart-bar"></i></span></button>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon"><i class="fas fa-coins"></i></span> Results</h2>
+                <div id="output" class="output">
+                    <p>Enter details and click Calculate.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon"><i class="fas fa-chart-line"></i></span> Summary</h2>
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Monthly Income After Taxes</td>
+                            <td id="incomeSummary"></td>
+                        </tr>
+                        <tr>
+                            <td>Monthly Mortgage Payment</td>
+                            <td id="mortgageSummary"></td>
+                        </tr>
+                        <tr>
+                            <td>Total Living Expenses</td>
+                            <td id="expensesSummary"></td>
+                        </tr>
+                        <tr>
+                            <td>Total Monthly Expenses</td>
+                            <td id="totalExpensesSummary"></td>
+                        </tr>
+                        <tr>
+                            <td>Monthly Savings</td>
+                            <td id="savingsSummary"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon"><i class="fas fa-chart-pie"></i></span> Income Distribution</h2>
+                <div id="chart-container">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function formatNumberWithCommas(number) {
+            return '$' + number.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function calculateAffordability() {
+            // Input Values
+            const housePrice = parseFloat(document.getElementById('housePrice').value);
+            const downPayment = parseFloat(document.getElementById('downPayment').value);
+
+            // Calculate and display total mortgage amount
+            const totalMortgageAmount = housePrice - downPayment;
+            document.getElementById('totalMortgageAmount').value = totalMortgageAmount.toFixed(2);
+
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+            const amortizationPeriod = parseInt(document.getElementById('amortizationPeriod').value);
+            const monthlyIncome = parseFloat(document.getElementById('monthlyIncome').value);
+
+            // Living Expenses
+            const propertyTax = parseFloat(document.getElementById('propertyTax').value);
+            const utility = parseFloat(document.getElementById('utility').value);
+            const internet = parseFloat(document.getElementById('internet').value);
+            const phone = parseFloat(document.getElementById('phone').value);
+            const tv = parseFloat(document.getElementById('tv').value);
+            const security = parseFloat(document.getElementById('security').value);
+            const transit = parseFloat(document.getElementById('transit').value);
+            const gas = parseFloat(document.getElementById('gas').value);
+            const grocery = parseFloat(document.getElementById('grocery').value);
+            const medication = parseFloat(document.getElementById('medication').value);
+            const homeInsurance = parseFloat(document.getElementById('homeInsurance').value);
+            const autoInsurance = parseFloat(document.getElementById('autoInsurance').value);
+            const clothing = parseFloat(document.getElementById('clothing').value);
+            const school = parseFloat(document.getElementById('school').value);
+            const daycare = parseFloat(document.getElementById('daycare').value);
+            const eatingOut = parseFloat(document.getElementById('eatingOut').value);
+            const entertainment = parseFloat(document.getElementById('entertainment').value);
+            const haircut = parseFloat(document.getElementById('haircut').value);
+            const misc1 = parseFloat(document.getElementById('misc1').value);
+            const misc2 = parseFloat(document.getElementById('misc2').value);
+            const misc3 = parseFloat(document.getElementById('misc3').value);
+            const other1 = parseFloat(document.getElementById('other1').value);
+            const other2 = parseFloat(document.getElementById('other2').value);
+            const other3 = parseFloat(document.getElementById('other3').value);
+
+            // Calculations
+            const loanAmount = housePrice - downPayment;
+            const monthlyInterestRate = interestRate / 12;
+            const numberOfPayments = amortizationPeriod * 12;
+
+            // Monthly Mortgage Payment
+            const monthlyPayment = (loanAmount * monthlyInterestRate) /
+                (1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments));
+
+            // Total Interest Cost (Monthly)
+            const totalInterestCostMonthly = (monthlyPayment * numberOfPayments) - loanAmount;
+
+            // Bi-Weekly Mortgage Payment
+            const biWeeklyPayment = (monthlyPayment * 12) / 26;
+
+            // Accelerated Bi-Weekly Payment (same as Monthly Payment but applied Bi-Weekly)
+            const acceleratedBiWeeklyPayment = monthlyPayment / 2;
+
+            // Weekly Mortgage Payment
+            const weeklyPayment = (monthlyPayment * 12) / 52;
+
+            // Accelerated Weekly Payment (same as Monthly Payment but applied Weekly)
+            const acceleratedWeeklyPayment = monthlyPayment / 4;
+
+            // Total Living Expenses (Renamed from totalMonthlyExpenses)
+            const totalLivingExpenses = propertyTax + utility + internet + phone + tv + security + transit +
+                gas + grocery + medication + homeInsurance + autoInsurance + clothing + school + daycare +
+                eatingOut + entertainment + haircut + misc1 + misc2 + misc3 + other1 + other2 + other3;
+
+            // Total Monthly Expenses (Mortgage + Living Expenses)
+            const totalMonthlyExpenses = monthlyPayment + totalLivingExpenses;
+
+            // Calculate Monthly Savings
+            const monthlySavings = monthlyIncome - totalMonthlyExpenses;
+
+            // Determine selected payment schedule
+            const paymentSchedule = document.getElementById("paymentSchedule").value;
+
+            let actualPayment = monthlyPayment; // This is for RESULTS panel
+            // Correct assignment of actualPayment values based on selected schedule
+            if (paymentSchedule === "bi-weekly") {
+                actualPayment = biWeeklyPayment;
+            } else if (paymentSchedule === "weekly") {
+                actualPayment = weeklyPayment;
+            }
+            // Correct assignment of actualPayment values based on selected schedule
+            else if (paymentSchedule === "accelerated-bi-weekly") {
+                actualPayment = acceleratedBiWeeklyPayment;
+            } else if (paymentSchedule === "accelerated-weekly") {
+                actualPayment = acceleratedWeeklyPayment;
+            }
+
+            // Output Results (Shows the *selected* payment amount)
+            let outputHTML = `
+                <h3>Mortgage Payment:</h3>
+                <p>${paymentSchedule}: ${formatNumberWithCommas(actualPayment)}</p>
+                <h3>Total Interest Cost:</h3>
+                <p>${paymentSchedule}: ${formatNumberWithCommas(totalInterestCostMonthly)}</p>
+                `; // Total Interest Cost is ALWAYS based on Monthly
+
+            document.getElementById('output').innerHTML = outputHTML;
+
+            // Update Summary Table (ALWAYS shows the monthly equivalent)
+            const incomeSummary = formatNumberWithCommas(monthlyIncome);
+            const mortgageSummary = formatNumberWithCommas(monthlyPayment); // Show monthly
+            const expensesSummary = formatNumberWithCommas(totalLivingExpenses);
+            const totalExpensesSummary = formatNumberWithCommas(totalMonthlyExpenses);
+            const savingsSummary = formatNumberWithCommas(monthlySavings);
+
+            document.getElementById('incomeSummary').textContent = incomeSummary;
+            document.getElementById('mortgageSummary').textContent = mortgageSummary; // Show monthly
+            document.getElementById('expensesSummary').textContent = expensesSummary;
+            document.getElementById('totalExpensesSummary').textContent = totalExpensesSummary;
+            document.getElementById('savingsSummary').textContent = savingsSummary;
+
+            // Apply Conditional Formatting (use Monthly Equivalent for percentage calculations)
+            const mortgagePercentage = (monthlyPayment / monthlyIncome) * 100;
+            const savingsPercentage = (monthlySavings / monthlyIncome) * 100;
+
+            // Add the class to the table data
+            const mortgageSummaryElement = document.getElementById('mortgageSummary');
+            const savingsSummaryElement = document.getElementById('savingsSummary');
+
+            mortgageSummaryElement.classList.remove('high-mortgage');
+            savingsSummaryElement.classList.remove('low-savings', 'negative');
+
+            if (mortgagePercentage > 32) {
+                mortgageSummaryElement.classList.add('high-mortgage');
+            }
+            if (monthlySavings <= 0) {
+                savingsSummaryElement.classList.add('negative');
+            } else if (savingsPercentage < 10) {
+                savingsSummaryElement.classList.add('low-savings');
+            }
+            // Income Distribution Chart
+            updateChart(monthlyPayment, totalLivingExpenses, monthlySavings); // Chart is based on MONTHLY values
+        }
+
+        function updateChart(mortgagePayment, totalLivingExpenses, monthlySavings) {
+            const chartContainer = document.getElementById('chart-container');
+            const incomeChartCanvas = document.getElementById('incomeChart').getContext('2d');
+
+            // Ensure the chart container is available
+            if (chartContainer) {
+                // Destroy any existing chart instance to avoid conflicts
+                if (window.myPie) {
+                    window.myPie.destroy();
+                }
+
+                // Create the chart
+                window.myPie = new Chart(incomeChartCanvas, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Mortgage', 'Living Expenses', 'Savings'],
+                        datasets: [{
+                            label: 'Income Distribution',
+                            data: [mortgagePayment, totalLivingExpenses, monthlySavings],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Income Distribution'
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error('Chart container not found.');
+            }
+        }
+    </script>
+</body>
+
+</html>

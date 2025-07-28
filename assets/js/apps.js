@@ -167,5 +167,14 @@ window.apps = [
         "tags": ["html", "css", "javascript"],
         "image": "/assets/images/Retirement.png",
         "url": "/webapps/FutureFolio-Final.html"
+    },
+    {
+        "title": "House Ownership",
+        "description": "Cost of Living in a House on Mortgage",
+        "category": "Calculator",
+        "tags": ["html", "css", "javascript"],
+        "image": "/assets/images/HouseOwnership.png",
+        "url": "/webapps/HouseownershipCalculator.html"
     }
+
    ];
