@@ -176,5 +176,4 @@ window.apps = [
         "image": "/assets/images/HouseOwnership.png",
         "url": "/webapps/HouseownershipCalculator.html"
     }
-
    ];
